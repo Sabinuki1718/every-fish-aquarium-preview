@@ -1,6 +1,6 @@
 ---
 name: make-aquarium-textures
-description: 3D水槽の素材（背景・底床・石・流木・水草・浮草など）のテクスチャ画像を、ユーザーが自分の画像生成サービスで作り、受け取った画像を継ぎ目なし化・切り抜きして3Dへ適用するときに使う。画像生成を内蔵していないAI（Claude など）で、build-aquarium-from-fish-model の「3. 素材」を進める手順。プロンプトは英語と日本語の両方をチャットに直接示す。魚の三面図には使わない（create-fish-3d-views と fish-to-3d-aquarium の画像生成の手順に従う）。
+description: 3D水槽の素材（背景・底床・石・流木・水草・浮草など）のテクスチャ画像を、ユーザーが自分の画像生成サービスで作り、受け取った画像を継ぎ目なし化・切り抜きして3Dへ適用するときに使う。画像生成を内蔵していないAI（Claude Code）で、build-aquarium-from-fish-model の「3. 素材」を進める手順。プロンプトは英語と日本語の両方をチャットに直接示す。魚の三面図には使わない（create-fish-3d-views と fish-to-3d-aquarium の画像生成の手順に従う）。
 ---
 
 # 水槽の素材テクスチャを、ユーザーの画像生成で作る

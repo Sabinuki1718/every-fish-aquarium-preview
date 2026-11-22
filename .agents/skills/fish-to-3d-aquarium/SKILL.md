@@ -12,8 +12,7 @@ description: 魚の種名（と、あれば写真）から、実在魚種を再�
 ```
 ① 入力と調査 ……………… create-fish-3d-views の「1. 調査」
 ② 側面図→必要な追加図 … create-fish-3d-views                     → ユーザーの OK
-③ 3Dモデル ……………… build-fish-3d-from-views（標準）
-                          ブラウザ簡易版（Python が使えないとき）  → ユーザーの OK
+③ 3Dモデル ……………… build-fish-3d-from-views                 → ユーザーの OK
 ④ 背景レイアウト案 …… build-aquarium-from-fish-model の 1〜2    → ユーザーの OK
 ⑤ 3D水槽 ………………… build-aquarium-from-fish-model の 3〜5
                           ＋ make-fish-fins-translucent（薄い鰭）
@@ -32,7 +31,7 @@ description: 魚の種名（と、あれば写真）から、実在魚種を再�
 
 - 新規制作の開始時に一度だけ「ご希望の画風は、アニメ調（既定）／リアル調／その他（ご自由に入力ください）のどれですか？ 希望がなければアニメ調で進めます」と聞く。この質問を出すときは、[画風の見本](#画風の見本)のネオンテトラ2枚を同じ案内に表示する。依頼ですでに画風を指定されていれば聞き直さない。指定なし・希望なし・選択のスキップはアニメ調として進める。
 - 「その他」は自由記述の希望に従う。画風見本のイラストが添付されていれば、その線・塗り・質感を使い、明示された追加の画風指定も反映する。写真は魚の形態・体色・斑紋の資料として扱う。画風と参照資料を `project.json` の `style` に記録し、再開時と後続工程で引き継ぐ。
-- [環境の確認](references/environment-check.md) を行い、③の進め方（標準 / ブラウザ簡易版）と画像生成の方法（内蔵 / ユーザーが手で作る）を決める。結果は短く伝える。
+- [環境の確認](references/environment-check.md) を行い、③に必要な Python・NumPy・Pillow の有無と画像生成の方法（内蔵 / ユーザーが手で作る）を決める。結果は短く伝える。
 - 作業フォルダ（ユーザーの指定がなければ `projects/<水槽名>/`）を作り、`project.json` を置く（[進行の記録](references/workflow-state.md)）。
 - 会話が途切れて再開したときは、まず `project.json` を読み、承認済みの工程と次にやることを確かめる。
 
@@ -78,14 +77,14 @@ Python・NumPy・Pillow が使えるときはこのスキルに従い、GLB と�
 
 長軸に沿って胴体の断面を組み立てやすい魚では、承認済みの側面図と厚み・基部等の補完資料から [側面素材を使う組み立て手順](../build-fish-3d-from-views/references/side-view-assembly.md) を選べる。側面から輪郭と色を取り、他の方向から厚みと鰭の位置を決める。
 
-### ブラウザ簡易版：Python が使えないとき
+### Python・NumPy・Pillow が無いとき
 
-[ブラウザ簡易版](references/browser-fallback.md) の手順で、三面図を読んだ数値（fish-spec）から、ブラウザだけで魚を組み立てる。インストール不要・通信不要。精度は標準より落ちる（体の断面は超楕円の近似、鰭は薄い板、模様は手続き的に描くか側面図をそのまま投影）。ユーザーにはこの違いを伝え、より高い精度を望む場合に限り、Python と NumPy・Pillow の導入を提案する。
+③は Python・NumPy・Pillow が前提。無いときは[環境の確認](references/environment-check.md)に従い、何を入れるか・なぜ必要か・どこから入れるかを添えて導入を提案し、同意を得てから入れる。コマンドを実行できない AI では③以降に進めないので、②までの成果を `project.json` に残し、Codex・Claude Code などコマンドを実行できる AI で続きから再開するよう案内する。
 
 ### すべてのモデルルートで共通
 
 - アクアリウム用は鰭・口・鰓の可動を既定にする。Fish Kitの眼の動きは、リアル調を明示された可動モデルに限り[視線の仕様](../build-fish-3d-from-views/references/model-contract.md#視線の仕様)に従って追加する。静止を明示した依頼を優先する。[呼吸動作](../build-fish-3d-from-views/references/breathing-animation.md)と[モデル機能一覧](../build-fish-3d-from-views/references/model-contract.md)で、魚種ごとの形態、GLB単体の動作、プレビューとの仕様一致を確認する。環境・ルートの制約で実装できない機能は未実装と記録し、標準の可動版が完成したと扱わない。
-- 標準・ブラウザ簡易版・外部生成のいずれでも、実モデルから描画した全方向と重要部位の画像を調査に参加した担当へ渡す。主担当を含む全員が同じ最新版にOKを出すまで、NGのリスト化・修正・再検品を繰り返す。結果をreviews.mdとproject.jsonに記録してからユーザー承認へ進む。
+- 標準・外部生成のどちらでも、実モデルから描画した全方向と重要部位の画像を調査に参加した担当へ渡す。主担当を含む全員が同じ最新版にOKを出すまで、NGのリスト化・修正・再検品を繰り返す。結果をreviews.mdとproject.jsonに記録してからユーザー承認へ進む。
 - 提示するもの：側面・上面・下面・正面・斜めの画像と、回転できるプレビュー。プレビューはスマホでも開けるように [publish-aquarium-web](../publish-aquarium-web/SKILL.md) で書き出す。research.md の特徴を1つずつ確認した結果と、三面図から推定で補った部分。
 - 修正依頼は、承認済みの部分を作り直さず局所的に直す（build-fish-3d-from-views の quality.md）。
 - OK が出たら `project.json` に記録し、承認版の GLB を `species/<id>/model/` に残す。
@@ -115,9 +114,8 @@ Python・NumPy・Pillow が使えるときはこのスキルに従い、GLB と�
 
 - [共同調査・検品](../create-fish-3d-views/references/species-review.md)：担当の役割、全員OKまでの修正、写真で見えないすべての部位の補完
 - [進行の記録](references/workflow-state.md)：project.json の書き方、承認の記録
-- [環境の確認](references/environment-check.md)：確かめること、ブラウザ簡易版へ切り替える判断、導入を提案する条件
+- [環境の確認](references/environment-check.md)：確かめること、導入を提案する条件
 - [画像生成](references/image-generation.md)：内蔵 / ユーザーが手で作る場合の流れ
-- [ブラウザ簡易版](references/browser-fallback.md) と [fish-spec の書式](references/browser-fallback-spec.md)
 - [生息環境の候補](references/habitats.md)
 - [外部3Dツール](references/external-3d.md)：ユーザーが望んだときだけ
 - [keep-illustration-style](../keep-illustration-style/SKILL.md)：イラストの画風を保つ ／ [make-aquarium-textures](../make-aquarium-textures/SKILL.md)：素材をユーザーの画像生成で作る ／ [publish-aquarium-web](../publish-aquarium-web/SKILL.md)：公開・共有の書き出し

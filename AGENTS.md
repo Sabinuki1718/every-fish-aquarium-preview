@@ -11,7 +11,7 @@ Codex を標準とするが、ファイルを読み書きできる AI ならど�
 
 | スキル | 役割 |
 |---|---|
-| `fish-to-3d-aquarium` | 全体の段取り、承認の記録、環境の確認、ブラウザ簡易版 |
+| `fish-to-3d-aquarium` | 全体の段取り、承認の記録、環境の確認 |
 | `create-fish-3d-views` | ①調査と②三面図 |
 | `build-fish-3d-from-views` | ③三面図から GLB（Python・NumPy・Pillow） |
 | `build-aquarium-from-fish-model` | ④背景レイアウト案と⑤3D水槽 |
@@ -31,7 +31,7 @@ Codex を標準とするが、ファイルを読み書きできる AI ならど�
 
 ## このリポジトリを開発するとき
 
-`dev/` はブラウザ簡易版ビューア（`assets/fish-viewer-runtime.js`）と `assets/three-offline.js` のソースとテスト。スキルの利用者には不要。
+`dev/` は `.agents/skills/fish-to-3d-aquarium/assets/three-offline.js` のソースと、水槽用モジュールのテスト。スキルの利用者には不要。
 
 ```
 cd dev && npm install && npm test && npm run build

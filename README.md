@@ -50,7 +50,7 @@ Codex を標準とし、Claude・Gemini など、ファイルを読み書きで�
 | Codex など画像生成を内蔵した AI | AI が作る | — |
 | Claude など内蔵していない AI | AI がプロンプトを用意し、ユーザーが ChatGPT・Gemini などの画面で作る | — |
 | Python・NumPy・Pillow がある | — | 標準：build-fish-3d-from-views で GLB |
-| 無い | — | ブラウザ簡易版：インストール不要・通信不要。精度は下がる |
+| 無い | — | AI が理由を添えて Python・NumPy・Pillow の導入を提案する。コマンドを実行できない AI では③以降に進めない |
 
 高品質モデルを望む場合だけ、Tripo などの外部3Dツールへの道もある（[external-3d.md](.agents/skills/fish-to-3d-aquarium/references/external-3d.md)）。
 
@@ -96,30 +96,21 @@ Claude Code で①〜⑤を通しで進めた作例の一つ。ルリヨシノ�
 
 魚2種と水草のモデルをTripoで生成し、Codexで鰭の透過・形状修正、石と底床の制作、群泳と水面の表現を仕上げた高品質バージョン。チェーンアマゾンのみを使い、中央へ広がる砂道と左右の石組みによる凹型構図を作った。
 
-[作例と制作手順](docs/examples/oudou-tripo-codex.md)に、TripoとCodexの役割分担、生成後の修正、消費クレジットと確認範囲をまとめている。[完成ページ「王道の水景」](https://oudou-aquascape.sabinuki1718.chatgpt.site/)は所有者のログインが必要な非公開ページ。
-
-### ブラウザ簡易版のサンプル
-
-`examples/` の `index.html` をダブルクリックで開くだけで動く（インストール・通信不要）。写真や三面図を使わず、図鑑的な特徴から数値化した下書き。
-
-- [カクレクマノミ](examples/amphiprion-ocellaris/index.html)
-- [オイカワ（婚姻色のオス）](examples/opsariichthys-platypus/index.html)
-- [ドジョウ](examples/misgurnus-anguillicaudatus/index.html)
+[作例と制作手順](docs/examples/oudou-tripo-codex.md)に、TripoとCodexの役割分担、生成後の修正、消費クレジットと確認範囲をまとめている。[完成ページ「王道の水景」](https://oudou-aquascape.sabinuki1718.chatgpt.site/)は公開中。
 
 ## フォルダ構成
 
 ```
 .agents/skills/            スキル（Codex はここを自動で読む）
-  fish-to-3d-aquarium/     全体の段取り。assets/ にブラウザ簡易版と three.js のオフライン版
+  fish-to-3d-aquarium/     全体の段取り。assets/ に three.js のオフライン版
   create-fish-3d-views/
   build-fish-3d-from-views/
   build-aquarium-from-fish-model/
   make-fish-fins-translucent/
 AGENTS.md / CLAUDE.md / GEMINI.md   各 AI への入口
-examples/                  ブラウザ簡易版のサンプル
 projects/                  作業フォルダの置き場所（使うと作られる。公開版には含めない）
 docs/examples/             作例のまとめ
-dev/                       開発用（ブラウザ簡易版のソースとテスト。利用者は不要）
+dev/                       開発用（three.js オフライン版のビルドとテスト。利用者は不要）
 ```
 
 ## ライセンス

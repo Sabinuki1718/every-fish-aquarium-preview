@@ -57,7 +57,7 @@ projects/<水槽名>/
 ```
 
 - `environment.image_generation`: `builtin`（内蔵）/ `manual`（ユーザーが画像生成サービスで作る）
-- `environment.model_route`: `standard`（build-fish-3d-from-views）/ `browser`（ブラウザ簡易版）/ `external`（ユーザーが望んだ外部3Dツール）
+- `environment.model_route`: `standard`（build-fish-3d-from-views）/ `external`（ユーザーが望んだ外部3Dツール）
 - `status`: `not_started` / `in_progress` / `waiting_approval` / `changes_requested` / `approved`（承認のない工程は `done`）
 
 ## 承認のルール

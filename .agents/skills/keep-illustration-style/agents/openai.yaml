@@ -1,0 +1,4 @@
+interface:
+  display_name: "提供イラストの画風を保って水槽まで作る"
+  short_description: "写真の代わりにイラストが来たとき、その画風を三面図・3D・素材・水槽まで保つ（既定のアニメ調を上書き）"
+  default_prompt: "$keep-illustration-style を使い、添付したイラストの画風を保ったまま、この魚の3D水槽を作ってください。"

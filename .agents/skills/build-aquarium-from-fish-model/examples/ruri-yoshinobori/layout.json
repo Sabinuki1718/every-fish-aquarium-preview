@@ -1,0 +1,236 @@
+{
+ "version": 4,
+ "units": "cm; tank center at origin, floor y=0, front glass +z, left -x. heading_deg: 0 = head toward -x (left), positive turns the head toward the back (-z)",
+ "tank": {
+  "w": 60,
+  "d": 30,
+  "h": 36,
+  "water": 33,
+  "background": "clear stream water: pale blue-green, brighter toward the surface, faint light shafts",
+  "substrate": "fine river sand (light grey-beige, granitic), gently uneven, slightly higher at the back; no gravel",
+  "light": "bright: daylight from above, gentle caustics (in step 5)"
+ },
+ "current": "from the left (-x); the goby faces left into it",
+ "fish": [
+  {
+   "id": "ruri-1",
+   "model": "species/rhinogobius-mizunoi/model/v6/ruri-yoshinobori.glb",
+   "length_cm": 8,
+   "pos": [
+    -7,
+    null,
+    1
+   ],
+   "heading_deg": 8,
+   "rest_on": "stone-1",
+   "note": "rests on the main stone, head into the current",
+   "path": {
+    "kind": "hops",
+    "stops": [
+     [
+      -7,
+      1,
+      "stone-1"
+     ],
+     [
+      14,
+      -4,
+      "stone-2"
+     ],
+     [
+      20,
+      11,
+      "sand"
+     ],
+     [
+      0,
+      12,
+      "sand"
+     ],
+     [
+      -21,
+      -6,
+      "stone-3"
+     ]
+    ],
+    "note": "stops on a stone or the gravel, then a short dash to the next stop"
+   }
+  }
+ ],
+ "objects": [
+  {
+   "id": "stone-1",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands), flatter top where the goby rests",
+   "pos": [
+    -7,
+    0,
+    1
+   ],
+   "size": [
+    24,
+    8.5,
+    16
+   ],
+   "rot_deg": 12,
+   "color": "blueblack",
+   "bands": 2
+  },
+  {
+   "id": "stone-2",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    14,
+    0,
+    -4
+   ],
+   "size": [
+    17,
+    12,
+    13
+   ],
+   "rot_deg": -25,
+   "color": "blueblack",
+   "bands": 1
+  },
+  {
+   "id": "stone-3",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    -21,
+    0,
+    -6
+   ],
+   "size": [
+    15,
+    11,
+    12
+   ],
+   "rot_deg": 40,
+   "color": "blueblack",
+   "bands": 2
+  },
+  {
+   "id": "stone-4",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    0,
+    0,
+    -10.5
+   ],
+   "size": [
+    20,
+    15,
+    9
+   ],
+   "rot_deg": 5,
+   "color": "blueblack",
+   "bands": 3
+  },
+  {
+   "id": "stone-5",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    25.5,
+    0,
+    5
+   ],
+   "size": [
+    8,
+    6,
+    8
+   ],
+   "rot_deg": 70,
+   "color": "blueblack",
+   "bands": 1
+  },
+  {
+   "id": "stone-6",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    10,
+    0,
+    10
+   ],
+   "size": [
+    7,
+    5,
+    6
+   ],
+   "rot_deg": -10,
+   "color": "blueblack",
+   "bands": 0
+  },
+  {
+   "id": "stone-7",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    -22,
+    0,
+    9
+   ],
+   "size": [
+    10,
+    6,
+    8
+   ],
+   "rot_deg": 20,
+   "color": "blueblack",
+   "bands": 1
+  },
+  {
+   "id": "stone-8",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    23.5,
+    0,
+    -9
+   ],
+   "size": [
+    11,
+    13,
+    10
+   ],
+   "rot_deg": -50,
+   "color": "blueblack",
+   "bands": 2
+  },
+  {
+   "id": "stone-9",
+   "kind": "stone",
+   "material": "angular upstream boulder: dark blue-black rock (slate/chert-like) with white quartz veins (bands)",
+   "pos": [
+    -24.5,
+    0,
+    -11
+   ],
+   "size": [
+    10,
+    12,
+    8
+   ],
+   "rot_deg": 30,
+   "color": "blueblack",
+   "bands": 1
+  }
+ ],
+ "stone_colours": {
+  "blueblack": "dark blue-black with white quartz bands (initial, user request)",
+  "greyblack": "dark grey with white bands (alternative)"
+ },
+ "assumptions": [
+  "tank 60 x 30 x 36 cm (standard 60 cm tank)",
+  "no plants (fast upstream riffle); sand and stones only",
+  "current from the left",
+  "white bands: 0-3 quartz veins per stone, random direction"
+ ],
+ "change_from_v1": "user: 上流域のもっとゴツゴツした石／濃青黒色に白いバンドが入る石 -> angular boulders, all dark blue-black with white quartz bands; gravel darker and coarser",
+ "change_from_v3": "user: 石のサイズを全体的に大きくし、数を減らす -> 9 stones, about 1.3-1.5x larger; the two sand stops moved forward to stay clear of the larger main stone"
+}

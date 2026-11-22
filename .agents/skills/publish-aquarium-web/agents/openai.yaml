@@ -1,0 +1,4 @@
+interface:
+  display_name: "3Dモデル・水槽をWeb公開・共有"
+  short_description: "GLBを読める形式に変換し、スマホで開ける公開用ページと通信不要の1ファイル版を作る"
+  default_prompt: "$publish-aquarium-web を使い、この魚の3Dモデルをスマホでも開けるプレビューとして公開できる形に書き出してください。通信不要版も作ってください。"

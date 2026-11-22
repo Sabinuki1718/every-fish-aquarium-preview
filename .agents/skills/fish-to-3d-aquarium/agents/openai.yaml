@@ -1,0 +1,4 @@
+interface:
+  display_name: "魚種名から3D水槽まで"
+  short_description: "調査・三面図・3Dモデル・レイアウト案・3D水槽を、承認を取りながら通しで進める"
+  default_prompt: "$fish-to-3d-aquarium を使い、指定した魚種の3D水槽を作ってください。三面図・3Dモデル・レイアウト案はそれぞれ確認してから進めてください。"

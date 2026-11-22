@@ -1,0 +1,4 @@
+interface:
+  display_name: "魚の3D生成用三面図"
+  short_description: "魚種を調査し、識別特徴を残した3D生成用アニメ三面図と個別PNGを作成"
+  default_prompt: "$create-fish-3d-views を使い、指定した魚種を調査して3D生成用のアニメ調三面図を作成してください。"

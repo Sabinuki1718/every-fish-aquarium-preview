@@ -1,0 +1,4 @@
+interface:
+  display_name: "魚モデルから動く3D水槽を制作"
+  short_description: "魚モデルを泳ぐ水槽にし、レイアウト案確認と素材生成・個別配色まで進める"
+  default_prompt: "$build-aquarium-from-fish-model を使い、添付の魚モデルが泳ぐ水槽を作ってください。背景の希望を確認し、レイアウト案の画像を見せてOKを待ってから制作してください。"

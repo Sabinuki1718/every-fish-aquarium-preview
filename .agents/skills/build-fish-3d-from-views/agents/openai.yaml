@@ -1,0 +1,4 @@
+interface:
+  display_name: "魚の三面図から3Dモデル制作"
+  short_description: "魚の三面図から形状に合うテクスチャとWeb配置用GLBを制作する"
+  default_prompt: "$build-fish-3d-from-views を使い、添付した魚の三面図から、形状に合わせてテクスチャを加工したWeb配置用GLBモデルを作成してください。"

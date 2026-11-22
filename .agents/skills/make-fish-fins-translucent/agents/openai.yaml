@@ -1,0 +1,4 @@
+interface:
+  display_name: "魚の鰭の半透明化"
+  short_description: "魚の3Dモデルの鰭を半透明にし、放射状の鰭条と開閉を調整する"
+  default_prompt: "$make-fish-fins-translucent を使って、魚モデルの鰭を半透明化し、基部からの鰭条と胴体へのめり込みを修正してください。"

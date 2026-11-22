@@ -1,0 +1,16 @@
+{
+  "name": "every-fish-aquarium-generator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "fish-to-3d-aquarium の開発用（ブラウザ簡易版ビューアのビルドとテスト）。スキルの利用には不要。",
+  "type": "module",
+  "scripts": {
+    "build": "node build-runtime.mjs",
+    "test": "node --test \"test/*.test.mjs\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.170.0"
+  }
+}

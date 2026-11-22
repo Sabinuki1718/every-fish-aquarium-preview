@@ -19,7 +19,7 @@ Claude には画像生成が内蔵されていない。この作例でも、画�
 | ④レイアウト案 | Claude（承認済みの3Dモデルを並べた簡易レンダー） | 画像生成は使っていない |
 | ⑤石・砂・背景の素材4枚 | ユーザー（4枚をまとめて生成できる AI） | プロンプトを英語・日本語で用意し、届いた画像を継ぎ目なしに加工して貼った |
 
-Codex など画像生成を内蔵した AI なら、これらの画像も AI 自身が作る（[画像生成](../../.agents/skills/fish-to-3d-aquarium/references/image-generation.md)）。
+画像生成を内蔵した Codex なら、これらの画像も AI 自身が作る（[画像生成](../../.agents/skills/fish-to-3d-aquarium/references/image-generation.md)）。
 
 ### 3Dモデルの調整は、それなりの回数がかかることがある
 

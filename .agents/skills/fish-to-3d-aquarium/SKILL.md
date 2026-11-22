@@ -79,7 +79,7 @@ Python・NumPy・Pillow が使えるときはこのスキルに従い、GLB と�
 
 ### Python・NumPy・Pillow が無いとき
 
-③は Python・NumPy・Pillow が前提。無いときは[環境の確認](references/environment-check.md)に従い、何を入れるか・なぜ必要か・どこから入れるかを添えて導入を提案し、同意を得てから入れる。コマンドを実行できない AI では③以降に進めないので、②までの成果を `project.json` に残し、Codex・Claude Code などコマンドを実行できる AI で続きから再開するよう案内する。
+③は Python・NumPy・Pillow が前提。無いときは[環境の確認](references/environment-check.md)に従い、何を入れるか・なぜ必要か・どこから入れるかを添えて導入を提案し、同意を得てから入れる。同意が無ければ、②までの成果を `project.json` に残して止める。
 
 ### すべてのモデルルートで共通
 

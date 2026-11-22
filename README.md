@@ -4,14 +4,13 @@
 >
 > - 3Dモデルは承認まで何度か作り直すことがあり、資料の少ない魚種ほど回数が増えます。
 > - 作例の水槽は PC の Chromium で表示を確認しています。スマホ実機ではまだ確認していません。
-> - 作例のうち、外部サイトで公開している完成ページの一部は所有者のログインが必要です。
 
 **ユーザーが明示的に依頼した部分修正は、修正とその確認・再修正を主担当だけで行う。確認のためにサブエージェントを作成・再開・呼び出さない。ユーザーがサブエージェントも合わせた確認を明示的に希望した場合だけ、指定された範囲で共同検品する。** 以下の「共同検品」「全員OKまで反復」は共同検品の場合の規則であり、通常の部分修正には適用しない。初回の魚種調査・画像作成・3Dモデル検品は従来どおり共同検品する。
 
 魚の種名と写真から、**実在魚種を再現した3Dモデルと3D水槽**を作るためのスキル集。
 観賞魚を含む淡水魚・海水魚・深海魚を、回転や拡大ができる水槽で観察する。対象は実在魚種。
 
-Codex を標準とし、Claude・Gemini など、ファイルを読み書きできる AI ならどれでも同じ手順で動く。
+Codex または Claude Code で使う。どちらも同じ手順書に従って進める。
 **追加のソフトは原則いらない。** AI と、すでに入っているものだけで進め、どうしても必要なときだけ AI が理由を添えて導入を提案する。
 
 ## 流れ
@@ -47,10 +46,10 @@ Codex を標準とし、Claude・Gemini など、ファイルを読み書きで�
 
 | 環境 | ②三面図の画像 | ③3Dモデル |
 |---|---|---|
-| Codex など画像生成を内蔵した AI | AI が作る | — |
-| Claude など内蔵していない AI | AI がプロンプトを用意し、ユーザーが ChatGPT・Gemini などの画面で作る | — |
+| Codex（画像生成を内蔵） | AI が作る | — |
+| Claude Code（画像生成を内蔵していない） | AI がプロンプトを用意し、ユーザーが ChatGPT・Gemini などの画面で作る | — |
 | Python・NumPy・Pillow がある | — | 標準：build-fish-3d-from-views で GLB |
-| 無い | — | AI が理由を添えて Python・NumPy・Pillow の導入を提案する。コマンドを実行できない AI では③以降に進めない |
+| 無い | — | AI が理由を添えて Python・NumPy・Pillow の導入を提案する |
 
 高品質モデルを望む場合だけ、Tripo などの外部3Dツールへの道もある（[external-3d.md](.agents/skills/fish-to-3d-aquarium/references/external-3d.md)）。
 
@@ -60,9 +59,8 @@ Fish Kitのファイルをユーザーが提示する必要はありません。
 
 - **Codex**：このフォルダで「オイカワとドジョウの水槽を作りたい。写真はこれ」のように頼む。`.agents/skills/` のスキルが使われる。
 - **Claude Code**：同じように頼む。`CLAUDE.md` の指示で、Claude がスキルのファイルを読んで進める。
-- **Gemini CLI**：同じように頼む。`GEMINI.md` から `AGENTS.md` とスキルを読む。
 
-進み具合と承認の記録は、作業フォルダ（既定は `projects/<水槽名>/`）の `project.json` に残る。会話が途切れても、別の AI に替えても続きから進められる。
+進み具合と承認の記録は、作業フォルダ（既定は `projects/<水槽名>/`）の `project.json` に残る。会話が途切れても、Codex と Claude Code を替えても続きから進められる。
 
 ## 作例
 
@@ -74,7 +72,7 @@ Fish Kitのファイルをユーザーが提示する必要はありません。
 
 提供写真から三面図・GLBモデル・レイアウト案を順に確認し、観察と石の配置編集ができる水槽を制作した。Codex内蔵の画像生成で三面図と素材を作り、モデルはv5、レイアウトはv2で承認された。
 
-[作例と簡潔なワークフロー](docs/examples/mongara-codex.md)に、工程ごとの確認・形状修正の要点・検証範囲をまとめている。[完成ページ](https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site/)は所有者のログインが必要な非公開ページ。
+[作例と簡潔なワークフロー](docs/examples/mongara-codex.md)に、工程ごとの確認・形状修正の要点・検証範囲をまとめている。[完成ページ](https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site/)は公開中。
 
 ### Claude Code での標準作例：ルリヨシノボリの水槽
 
@@ -107,7 +105,7 @@ Claude Code で①〜⑤を通しで進めた作例の一つ。ルリヨシノ�
   build-fish-3d-from-views/
   build-aquarium-from-fish-model/
   make-fish-fins-translucent/
-AGENTS.md / CLAUDE.md / GEMINI.md   各 AI への入口
+AGENTS.md / CLAUDE.md         Codex・Claude Code への入口
 projects/                  作業フォルダの置き場所（使うと作られる。公開版には含めない）
 docs/examples/             作例のまとめ
 dev/                       開発用（three.js オフライン版のビルドとテスト。利用者は不要）

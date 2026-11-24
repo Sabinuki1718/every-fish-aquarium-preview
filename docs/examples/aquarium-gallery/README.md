@@ -4,20 +4,6 @@
 
 ## 作例一覧
 
-### Museによる作例
-
-無料で作れる選択肢。Meta AI の Muse でも、魚種調査から3D水槽まで一通り作れました。
-
-#### ハタタテハゼの水槽
-
-![ハタタテハゼの水槽の水槽全景](assets/hatatate.webp)
-
-魚種　ハタタテハゼ
-
-完成日　2026-11-24　｜　主要モデル　Muse　｜　費用　無料
-
-[3D水槽を開く ↗](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/aquariums/hatatate-haze/)（このリポジトリの [aquariums/hatatate-haze/index.html](aquariums/hatatate-haze/index.html) を GitHub Pages で公開）
-
 ### Codexによる作例
 
 #### 沖縄の海 ― 防波堤の下
@@ -89,3 +75,17 @@
 完成日　2026-10-22　｜　主要モデル　GPT-6.1 Sol
 
 [3D水槽を開く ↗](https://chousenbuna-aquarium-1022.sabinuki1718.chatgpt.site)
+
+### Museによる作例
+
+無料で作れる選択肢。Meta AI の Muse でも、魚種調査から3D水槽まで一通り作れました。
+
+#### ハタタテハゼの水槽
+
+![ハタタテハゼの水槽の水槽全景](assets/hatatate.webp)
+
+魚種　ハタタテハゼ
+
+完成日　2026-11-24　｜　主要モデル　Muse　｜　費用　無料
+
+[3D水槽を開く ↗](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/aquariums/hatatate-haze/)（このリポジトリの [aquariums/hatatate-haze/index.html](aquariums/hatatate-haze/index.html) を GitHub Pages で公開）

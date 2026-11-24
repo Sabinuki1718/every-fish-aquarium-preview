@@ -1,12 +1,12 @@
 const groups = [
   {
+    "id": "codex",
+    "title": "Codexによる作例"
+  },
+  {
     "id": "muse",
     "title": "Museによる作例",
     "note": "無料で作れる選択肢。Meta AI の Muse でも、魚種調査から3D水槽まで一通り作れました。"
-  },
-  {
-    "id": "codex",
-    "title": "Codexによる作例"
   }
 ];
 

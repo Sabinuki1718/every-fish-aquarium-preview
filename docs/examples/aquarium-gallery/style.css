@@ -93,6 +93,9 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   border-inline-start: 3px solid var(--blue);
   padding-inline-start: 9px;
 }
+.group + .group { margin-top: 32px; }
+.group-note { margin: -4px 0 12px; font-size: .8rem; line-height: 1.7; }
+.badge { display: inline-block; vertical-align: .15em; margin-left: 8px; padding: 2px 7px; border-radius: 4px; background: var(--blue); color: var(--white); font-size: .7rem; font-weight: 700; }
 .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .card {
   background: var(--white);

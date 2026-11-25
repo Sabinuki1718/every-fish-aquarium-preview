@@ -163,7 +163,7 @@
   },
   "aquarium": {
     "status": "in_progress",
-    "version": 1,
+    "version": 2,
     "files": [
       "aquarium/index.html",
       "aquarium/aquarium-offline.html",
@@ -172,14 +172,19 @@
       "aquarium/build_aquarium.py"
     ],
     "renderer": "aquarium/lib/nihonga-shader.js（拡張：nihongaDynamic / nihongaContourFaces / maxStrokeVertices / nihongaLineScale / 静止メッシュの筆線キャッシュ / 非表示メッシュの線を省く）",
-    "pending": [
-      "石（藍鼠・赤土色）と白砂のテクスチャ：ユーザーの画像生成待ち。届くまでは手続き生成の仮素材"
-    ],
+    "pending": [],
     "notes": [
       "水面・ガラス・枠は描かない（承認レイアウト：絵巻のように和紙の余白に浮かべる）",
       "鰭は不透明（シェーダーが不透明描画）",
       "魚の鰭・口・鰓は GLB と同じ式でCPU反映、速度・旋回で鰭の速さが上がる"
-    ]
+    ],
+    "textures": {
+      "stone-ai": "aquarium/textures/stone-ai.jpg",
+      "stone-midori": "aquarium/textures/stone-midori.jpg",
+      "sand": "aquarium/textures/sand.jpg",
+      "washi": "aquarium/textures/washi.jpg",
+      "sources": "aquarium/textures/source/"
+    }
   },
   "history": [
     {
@@ -324,6 +329,13 @@
       "stage": "aquarium",
       "event": "built",
       "note": "v1（素材テクスチャは仮）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "aquarium",
+      "event": "textures",
+      "quote": "石のサブカラーは緑にします／バックスクリーンはこれ使ってください",
+      "note": "v2: ユーザー生成の石（藍鼠・苔緑）・白砂・和紙を適用。石の色の選択肢を藍鼠／苔緑に。和紙は画面全体の地（シェーダーに paperMap 拡張）"
     }
   ],
   "renderer": {

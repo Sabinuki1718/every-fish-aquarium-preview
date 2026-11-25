@@ -117,8 +117,9 @@ async function stoneTexture(colorId) {
   for (let k = 0; k < 14; k++) { x.beginPath(); let px = 512 * r(), py = 512 * r(); x.moveTo(px, py); for (let j = 0; j < 6; j++) { px += (r() - .5) * 80; py += 20 + r() * 40; x.lineTo(px, py); } x.stroke(); }
   const tex = canvasTex(c); tex.wrapS = tex.wrapT = T.RepeatWrapping; return tex;
 }
-const stoneTex = { ai: await stoneTexture('ai'), beni: await stoneTexture('beni') };
+const stoneTex = { ai: await stoneTexture('ai'), midori: await stoneTexture('midori') };
 const sandImg = A.textures.sand ? await loadImage(A.textures.sand).catch(() => null) : null;
+if (A.textures.washi) { const w = await new T.TextureLoader().loadAsync(A.textures.washi).catch(() => null); if (w) nihonga.setPaper(w, 640); }   // the user's washi as the ground behind everything
 
 // ---------- raked sand: base texture + ripples drawn around the stones' current positions ----------
 const sandCanvas = document.createElement('canvas'); sandCanvas.width = 2048; sandCanvas.height = 1024;
@@ -212,8 +213,8 @@ L.plants.forEach((def, pi) => {
 // ---------- layout state (approved version is the default; edits are saved per browser) ----------
 const objects = [...stones.map(s => ({ id: s.id, kind: 'stone', position: s.def.pos.map(v => v * CM), rotation: [0, s.def.rot_y * Math.PI / 180, 0], colorId: s.def.color })),
                  ...plants.map(p => ({ id: p.id, kind: 'plant', position: p.def.pos.map(v => v * CM), rotation: [0, 0, 0] }))];
-const state = Lib.createAquariumState(objects, { palette: ['ai', 'beni'], revision: 'layout-' + L.version + (L.revision ? '-' + L.revision.slice(0, 3) : '') });
-const SKEY = 'seibungyo-nihonga:layout:' + L.version;
+const state = Lib.createAquariumState(objects, { palette: ['ai', 'midori'], revision: 'layout-' + L.version + (L.revision ? '-' + L.revision.slice(0, 3) : '') });
+const SKEY = 'seibungyo-nihonga:layout:' + L.version + ':ai-midori';
 try { const saved = store.get(SKEY); if (saved) state.load(JSON.parse(saved)); } catch {}
 const byId = id => stones.find(s => s.id === id) || plants.find(p => p.id === id);
 function applyState() {

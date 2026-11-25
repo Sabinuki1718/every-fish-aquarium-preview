@@ -72,7 +72,7 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
 
   /* 仕上げ：和紙・にじみ */
   const COMP = `
-  uniform sampler2D tCol,tInf; uniform vec2 uRes; uniform float uPx;
+  uniform sampler2D tCol,tInf,tPaper; uniform vec2 uRes; uniform float uPx,uPaperOn,uPaperScale;
   varying vec2 vUv;
   float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
   float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
@@ -84,7 +84,7 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
   }
   void main(){
     vec2 px=gl_FragCoord.xy/uPx;
-    vec3 paper=vec3(.925,.893,.82);
+    vec3 paper=uPaperOn>.5? texture2D(tPaper,gl_FragCoord.xy/(uPaperScale*uPx)).rgb : vec3(.925,.893,.82);   // [拡張] 和紙の画像を地に使う
     float wa=washi(px);
     vec4 c0=texture2D(tInf,vUv);
     vec3 col;
@@ -94,7 +94,7 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
         if(texture2D(tInf,vUv+o).w>.01){acc+=texture2D(tCol,vUv+o).rgb;w+=1.;}}
       col=paper;
       if(w>0.) col=mix(paper,paper*acc/w*1.08,.2*(w/8.)*(.5+n2(px*.08)));
-      col*=wa;
+      if(uPaperOn<.5) col*=wa;
     } else col=texture2D(tCol,vUv).rgb*wa;
     gl_FragColor=vec4(col,1.);
   }`;
@@ -329,7 +329,8 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
   }
 
   const compMat = new T.ShaderMaterial({
-    uniforms: { tCol: { value: null }, tInf: { value: null }, uRes: { value: new T.Vector2() }, uPx: { value: DPR } },
+    uniforms: { tCol: { value: null }, tInf: { value: null }, uRes: { value: new T.Vector2() }, uPx: { value: DPR },
+      tPaper: { value: null }, uPaperOn: { value: 0 }, uPaperScale: { value: opts.paperScale ?? 512 } },
     vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
     fragmentShader: COMP, depthTest: false, depthWrite: false });
   const quadScene = new T.Scene(), quadCam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -394,6 +395,13 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
     renderer.setRenderTarget(null); renderer.clear(); renderer.render(quadScene, quadCam);
     use('orig'); renderer.autoClear = ac;
   }
+  /* [拡張] 地の和紙を画像にする（画面に固定してタイル状に並べる）。tex は継ぎ目なしの画像（RepeatWrapping）。null で既定の紙に戻す */
+  function setPaper(tex, scale) {
+    if (tex) { tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.NoColorSpace; tex.needsUpdate = true; }
+    compMat.uniforms.tPaper.value = tex || null; compMat.uniforms.uPaperOn.value = tex ? 1 : 0;
+    if (scale) compMat.uniforms.uPaperScale.value = scale;
+  }
+  if (opts.paperMap) setPaper(opts.paperMap);
   function dispose() {
     remove({ traverse: f => meshes.slice().forEach(f) });
     rtCol?.dispose(); rtInf?.dispose(); sGeo.dispose(); sMat.dispose(); compMat.dispose();
@@ -401,5 +409,5 @@ window.createNihonga = function createNihonga(T, renderer, opts = {}) {
 
   /* 実行中に変更できる設定 */
   const params = { lineWidth: opts.lineWidth ?? 12, ink: opts.ink ?? true, brush: opts.brush ?? 1, bands: opts.bands ?? 3 };
-  return { add, remove, render, setSize, dispose, params };
+  return { add, remove, render, setSize, dispose, params, setPaper };
 }

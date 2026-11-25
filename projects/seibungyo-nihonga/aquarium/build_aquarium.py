@@ -46,7 +46,7 @@ def main():
     big.save(AQ / 'models/seibungyo-2048.jpg', quality=88)
     big.resize((1024, 1024), Image.LANCZOS).save(AQ / 'models/seibungyo-1024.jpg', quality=84)
     models = {f['id']: {'geometry': 'models/seibungyo.json', 'standard': 'models/seibungyo-2048.jpg', 'light': 'models/seibungyo-1024.jpg'} for f in L['fish']}
-    textures = {n: f'textures/{n}.jpg' for n in ['stone-ai', 'stone-beni', 'sand'] if (AQ / f'textures/{n}.jpg').exists()}
+    textures = {n: f'textures/{n}.jpg' for n in ['stone-ai', 'stone-midori', 'sand', 'washi'] if (AQ / f'textures/{n}.jpg').exists()}
 
     (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')
     (AQ / 'nihonga-shader.js').write_text((AQ / 'lib/nihonga-shader.js').read_text(encoding='utf8')

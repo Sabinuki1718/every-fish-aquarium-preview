@@ -84,3 +84,4 @@ nihonga.params.bands = 2;
 - `mesh.userData.nihongaLineScale`（既定 1）：そのメッシュの墨線の太さの倍率。細かな水草は細い線にする、などに使います。
 - 動かないメッシュ（`nihongaDynamic` のないもの）は、視点・メッシュの位置・線の太さが前のフレームと同じとき、前の筆線を使い回します（魚だけが泳いでいる間、石や水草の輪郭を計算し直さない）。描画結果は変わりません。
 - 非表示（`visible = false`、親を含む）のメッシュには墨線を引きません。
+- `paperMap`（設定）／`nihonga.setPaper(texture, scale)`：地の和紙を画像にします。画面に固定してタイル状に並べます（`paperScale`＝1枚の大きさ、CSS px、既定512）。継ぎ目なしの画像を使います。

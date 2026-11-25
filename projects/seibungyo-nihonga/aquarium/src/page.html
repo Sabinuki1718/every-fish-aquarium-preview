@@ -7,7 +7,7 @@
    scroll's inscription, controls float along the bottom edge; editor and fish notes open as small sheets above them.
    Single look by design: the paper and sumi stay the same in light and dark themes. */
 :root{
-  --paper:#ece4d1; --paper-2:#e3d9c3; --sheet:#f4eee0; --ink:#26262d; --ink-soft:#5f5b55; --ai:#3e5a73; --line:#c9bea6;
+  --paper:#ded1b0; --paper-2:#d3c49f; --sheet:#f1e9d6; --ink:#26262d; --ink-soft:#5f5b55; --ai:#3e5a73; --line:#c9bea6;
   --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
   color-scheme:light;
 }
@@ -61,9 +61,9 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--ai)}
         <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-27" max="27" step="0.5"></div>
         <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-13" max="13" step="0.5"></div>
         <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
-        <div class="row" id="stone-color"><label>この石の色</label><button type="button" data-color="ai">藍鼠</button><button type="button" data-color="beni">赤土色</button></div>
+        <div class="row" id="stone-color"><label>この石の色</label><button type="button" data-color="ai">藍鼠</button><button type="button" data-color="midori">苔緑</button></div>
       </div>
-      <div class="row"><label>石をすべて</label><button type="button" data-all-color="ai">藍鼠にする</button><button type="button" data-all-color="beni">赤土色にする</button></div>
+      <div class="row"><label>石をすべて</label><button type="button" data-all-color="ai">藍鼠にする</button><button type="button" data-all-color="midori">苔緑にする</button></div>
       <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
       <p class="note">配置と色はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置と色に戻ります。砂紋は石の位置に合わせて引き直されます。</p>
     </div>

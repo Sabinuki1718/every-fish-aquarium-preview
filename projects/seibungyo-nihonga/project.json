@@ -162,7 +162,24 @@
     "approval_quote": "ok"
   },
   "aquarium": {
-    "status": "in_progress"
+    "status": "in_progress",
+    "version": 1,
+    "files": [
+      "aquarium/index.html",
+      "aquarium/aquarium-offline.html",
+      "aquarium/src/app.js",
+      "aquarium/src/page.html",
+      "aquarium/build_aquarium.py"
+    ],
+    "renderer": "aquarium/lib/nihonga-shader.js（拡張：nihongaDynamic / nihongaContourFaces / maxStrokeVertices / nihongaLineScale / 静止メッシュの筆線キャッシュ / 非表示メッシュの線を省く）",
+    "pending": [
+      "石（藍鼠・赤土色）と白砂のテクスチャ：ユーザーの画像生成待ち。届くまでは手続き生成の仮素材"
+    ],
+    "notes": [
+      "水面・ガラス・枠は描かない（承認レイアウト：絵巻のように和紙の余白に浮かべる）",
+      "鰭は不透明（シェーダーが不透明描画）",
+      "魚の鰭・口・鰓は GLB と同じ式でCPU反映、速度・旋回で鰭の速さが上がる"
+    ]
   },
   "history": [
     {
@@ -301,6 +318,12 @@
       "event": "approved",
       "quote": "ok",
       "note": "v1c"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "aquarium",
+      "event": "built",
+      "note": "v1（素材テクスチャは仮）"
     }
   ],
   "renderer": {

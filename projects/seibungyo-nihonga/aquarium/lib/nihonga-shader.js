@@ -306,12 +306,23 @@ export function createNihonga(T, renderer, opts = {}) {
   }
   function buildStrokes() {
     nv = 0; camera.updateMatrixWorld();
+    const camKey = camera.matrixWorld.elements.join(',') + '|' + camera.projectionMatrix.elements.join(',') + '|' + BW + 'x' + BH + '|' + params.lineWidth;
     for (const S of strokeSrc) {
-      if (S.mesh.userData.nihongaDynamic) refreshStroke(S);
+      let shown = true; for (let o = S.mesh; o; o = o.parent) if (!o.visible) { shown = false; break; }
+      if (!shown) continue;                                          // [拡張] 非表示のメッシュには線を引かない
+      const dyn = S.mesh.userData.nihongaDynamic;
+      if (dyn) refreshStroke(S);
       W0 = params.lineWidth * DPR * (S.mesh.userData.nihongaLineScale ?? 1);   // [拡張] メッシュごとの線の太さの倍率
+      // [拡張] 動かないメッシュは、視点とメッシュの位置が前のフレームと同じなら、前の筆線をそのまま使う
+      const key = dyn ? null : camKey + '|' + S.mesh.matrixWorld.elements.join(',') + '|' + (S.mesh.userData.nihongaLineScale ?? 1);
+      if (key && S.cacheKey === key && nv + S.cache.n <= MAXV) {
+        sPos.set(S.cache.p, nv * 3); sS.set(S.cache.s, nv * 2); sC.set(S.cache.c, nv * 3); nv += S.cache.n; continue;
+      }
+      const start = nv;
       const camL = S.mesh.worldToLocal(camera.position.clone());
       const chains = contourChains(S, camL);
       for (const c of chains) strokesFromChain(c.pts.map(p => project(S.mesh, p)), c.closed);
+      if (key) { S.cacheKey = key; S.cache = { n: nv - start, p: sPos.slice(start * 3, nv * 3), s: sS.slice(start * 2, nv * 2), c: sC.slice(start * 3, nv * 3) }; }
     }
     for (const k of ['position', 'aS', 'aC']) sGeo.attributes[k].needsUpdate = true;
     sGeo.setDrawRange(0, nv);

@@ -90,17 +90,18 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-seibungyo/model/v1/seibungyo.glb",
-            "species/carassius-auratus-seibungyo/model/v1/web/preview.html",
-            "species/carassius-auratus-seibungyo/model/v1/web/preview-offline.html"
+            "species/carassius-auratus-seibungyo/model/v2/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v2/web/preview.html",
+            "species/carassius-auratus-seibungyo/model/v2/web/preview-offline.html"
           ],
-          "glb_sha256": "8b5ec30073396f8ddb6f10985d8ed88a412631163b12470e8e36bd5c2cdfe3e5",
-          "spec": "species/carassius-auratus-seibungyo/model/v1/model-spec.json",
+          "glb_sha256": "caf885a2a6946793d1e025c2c93e6a20c9d422ebec7f7f5d6300c17a18ed5eeb",
+          "spec": "species/carassius-auratus-seibungyo/model/v2/model-spec.json",
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正。サブ確認の明示希望なし",
             "status": "passed",
             "verdicts": {
               "main": "OK"
@@ -155,6 +156,18 @@
       "stage": "model",
       "event": "built",
       "note": "v1: 日本画シェーダー表示、鰭・口・鰓の動きをGLBに保存。シェーダーに nihongaDynamic 拡張を追加"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "model",
+      "event": "changes_requested",
+      "quote": "肉瘤を別パーツにしたい"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "model",
+      "event": "revised",
+      "note": "v2: 肉瘤を独立パーツ wen に"
     }
   ],
   "renderer": {
@@ -171,5 +184,27 @@
       "輪郭抽出はCPU毎フレーム→頂点数を抑える（スマホ）",
       "WebGL2必須、シーンのライトは使わない"
     ]
-  }
+  },
+  "model_history": [
+    {
+      "status": "superseded",
+      "version": 1,
+      "files": [
+        "species/carassius-auratus-seibungyo/model/v1/seibungyo.glb",
+        "species/carassius-auratus-seibungyo/model/v1/web/preview.html",
+        "species/carassius-auratus-seibungyo/model/v1/web/preview-offline.html"
+      ],
+      "glb_sha256": "8b5ec30073396f8ddb6f10985d8ed88a412631163b12470e8e36bd5c2cdfe3e5",
+      "spec": "species/carassius-auratus-seibungyo/model/v1/model-spec.json",
+      "review": {
+        "version": 1,
+        "mode": "main_only",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        },
+        "record": "species/carassius-auratus-seibungyo/reviews.md"
+      }
+    }
+  ]
 }

@@ -446,6 +446,67 @@ def ellipsoid(name, center, radii, uv_fn, nu=12, nv=24):
 
 meshes.append(ellipsoid('mouth_cavity', (X0 + 13, -(MCY - 3), 0), (11, 6, 8), lambda a, b: dark_uv))
 
+# wen (hood): a separate bumpy shell over the head, from the snout top back to the neck and down to the
+# approved side's lower edge of the bumps (above the eye, behind it down to the gill cover).
+# Its outer face sits 0.6 px proud of the body, so the head outline keeps the approved silhouette apart from
+# the bumps; the inner face dives 6 px into the head. UVs reuse the body bake under each point.
+WL = np.asarray(S['wen_lower'], float)
+WX0, WX1 = WL[0, 0], WL[-1, 0]
+
+
+def body_point(xp, tp):
+    c_, r1, r2 = np.interp(xp, xs, cy), np.interp(xp, xs, hh), np.interp(xp, xs, hw)
+    cc_, sn_ = np.cos(tp), np.sin(tp)
+    return np.stack([np.broadcast_to(xp, np.shape(tp)), c_ + np.sign(cc_) * np.abs(cc_) ** (2 / POW) * r1,
+                     np.sign(sn_) * np.abs(sn_) ** (2 / POW) * r2], -1)
+
+
+def wen_t(xp):
+    """Angle from the top (t=0) down to the wen's lower edge at side-px x (near side, +Z)."""
+    c_, r1 = np.interp(xp, xs, cy), np.interp(xp, xs, hh)
+    val = np.clip((-np.interp(xp, WL[:, 0], WL[:, 1]) - c_) / r1, -.95, .999)
+    return np.arccos(np.sign(val) * np.abs(val) ** (POW / 2))
+
+
+NU_W, NV_W = 46, 40
+uu = np.linspace(0, 1, NU_W); vv = np.linspace(0, 1, NV_W)
+wx = WX0 + (WX1 - WX0) * (1 - np.cos(uu * math.pi)) / 2
+TU, TV = np.meshgrid(wx, vv, indexing='ij')
+tb = wen_t(TU)
+tw = tb * (1 - 2 * TV)                                       # +tb near side .. 0 top .. -tb far side
+base = body_point(TU, tw)
+eps = .5
+nrm = np.cross(body_point(TU + eps, tw) - body_point(TU - eps, tw), body_point(TU, tw + .01) - body_point(TU, tw - .01))
+nrm /= np.linalg.norm(nrm, axis=-1, keepdims=True)
+cen = np.stack([TU, np.interp(TU, xs, cy), np.zeros_like(TU)], -1)
+nrm *= np.sign(((base - cen) * nrm).sum(-1, keepdims=True))   # outward
+# lumpy bumps (fixed seed): clusters of small knobs like the painting, fading out at the wen edge
+rng = np.random.default_rng(7)
+arc_u = TU; arc_v = tw * np.interp(TU, xs, hh)                # rough surface coords in side px
+bump = np.zeros_like(TU)
+for _ in range(80):
+    bu = rng.uniform(WX0 + 4, WX1 - 6); bv = rng.uniform(-1, 1) * wen_t(bu) * np.interp(bu, xs, hh); rr = rng.uniform(9, 16)
+    bump = np.maximum(bump, np.clip(1 - ((arc_u - bu) ** 2 + (arc_v - bv) ** 2) / rr ** 2, 0, 1) ** 1.5 * rng.uniform(.6, 1))
+edge = np.clip(np.minimum.reduce([TV, 1 - TV, uu[:, None] + 0 * TV, (1 - uu[:, None]) + 0 * TV]) / .12, 0, 1)
+outer = base + nrm * (0.6 + 9.5 * bump * edge ** .7)[..., None]
+inner = base - nrm * 6.0
+s_body = np.interp(TU, xs, np.linspace(0, 1, NS))
+uvw = np.stack(body_uv(s_body, np.abs(tw)), -1)            # mirror: no UV seam on the crown
+idx = lambda i, j, layer: layer * NU_W * NV_W + i * NV_W + j
+PW = np.concatenate([outer.reshape(-1, 3), inner.reshape(-1, 3)])
+UW = np.concatenate([uvw.reshape(-1, 2), uvw.reshape(-1, 2)])
+FW = []
+for i in range(NU_W - 1):
+    for j in range(NV_W - 1):
+        for L_, flip in ((0, False), (1, True)):
+            q = [[idx(i, j, L_), idx(i + 1, j, L_), idx(i, j + 1, L_)], [idx(i + 1, j, L_), idx(i + 1, j + 1, L_), idx(i, j + 1, L_)]]
+            FW += [f[::-1] for f in q] if flip else q
+ring = [(i, 0) for i in range(NU_W)] + [(NU_W - 1, j) for j in range(1, NV_W)] + [(i, NV_W - 1) for i in range(NU_W - 2, -1, -1)] + [(0, j) for j in range(NV_W - 2, 0, -1)]
+for k in range(len(ring)):
+    a, b = ring[k], ring[(k + 1) % len(ring)]
+    FW += [[idx(*a, 0), idx(*a, 1), idx(*b, 0)], [idx(*b, 0), idx(*a, 1), idx(*b, 1)]]
+meshes.append(Mesh('wen', PW, UW, orient_closed(PW, FW)))
+
 # eyes: low domes in the wen-framed sockets, the inked painted eye projected on them
 ex, ey, er = S['eye']
 for sign, name in [(1, 'eye_near'), (-1, 'eye_far')]:

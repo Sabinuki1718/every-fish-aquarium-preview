@@ -121,7 +121,7 @@ export function createNihonga(T, renderer, opts = {}) {
     float dry=n2(vec2(vS.x/uPx*.03,vS.y*3.2+5.));  // 飛白：筆の進む向きに沿ったかすれ
     gl_FragColor=vec4(uInkColor,edge*(1.-.55*smoothstep(.62,.86,dry)));
   }`;
-  const MAXV = 120000;
+  const MAXV = opts.maxStrokeVertices ?? 120000;   // [拡張] 墨線の頂点数の上限（水草など線の多い場面で増やす）
   const sPos = new Float32Array(MAXV * 3), sS = new Float32Array(MAXV * 2), sC = new Float32Array(MAXV * 3);
   const sGeo = new T.BufferGeometry();
   sGeo.setAttribute('position', new T.BufferAttribute(sPos, 3).setUsage(T.DynamicDrawUsage));
@@ -308,6 +308,7 @@ export function createNihonga(T, renderer, opts = {}) {
     nv = 0; camera.updateMatrixWorld();
     for (const S of strokeSrc) {
       if (S.mesh.userData.nihongaDynamic) refreshStroke(S);
+      W0 = params.lineWidth * DPR * (S.mesh.userData.nihongaLineScale ?? 1);   // [拡張] メッシュごとの線の太さの倍率
       const camL = S.mesh.worldToLocal(camera.position.clone());
       const chains = contourChains(S, camL);
       for (const c of chains) strokesFromChain(c.pts.map(p => project(S.mesh, p)), c.closed);

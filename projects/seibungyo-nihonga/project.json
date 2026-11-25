@@ -132,7 +132,19 @@
     }
   ],
   "layout": {
-    "status": "not_started"
+    "status": "waiting_approval",
+    "version": 1,
+    "files": [
+      "layout/v1/layout.json",
+      "layout/v1/layout-v1-draft.png",
+      "layout/v1/draft-front.png",
+      "layout/v1/draft-top.png",
+      "layout/v1/draft-oblique.png",
+      "layout/v1/draft.html"
+    ],
+    "request_quote": "絵巻風のカボンバと、枯山水風の配置の石　ひとまず1匹　あとで別の金魚を足します",
+    "prompts": "layout/v1/prompts.md",
+    "note": "下書きは承認済みモデルv5と日本画シェーダーで描いた簡易シーン（石・カボンバ・砂は仮の形）"
   },
   "aquarium": {
     "status": "not_started"
@@ -236,6 +248,12 @@
       "event": "approved",
       "quote": "これでOK",
       "note": "top-v2 と 3Dモデル v5（スマホ表示のスクリーンショット付き）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "layout",
+      "event": "draft",
+      "quote": "絵巻風のカボンバと、枯山水風の配置の石　ひとまず1匹　あとで別の金魚を足します"
     }
   ],
   "renderer": {

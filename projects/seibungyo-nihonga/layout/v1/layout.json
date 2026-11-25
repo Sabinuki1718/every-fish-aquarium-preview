@@ -1,0 +1,23 @@
+{
+ "version": 1,
+ "title": "絵巻風の青文魚水槽",
+ "units": "cm（水槽の床の中央が原点、x 右、y 上、z 手前）",
+ "tank": {"width": 60, "depth": 30, "height": 36, "water_level": 33, "note": "60 cm 規格水槽相当。枠・ガラスは描かず、和紙の余白に見せる"},
+ "style": "日本画（ユーザー提供の nihonga-shader.js で全体を描画）。絵巻のように余白を広く取る",
+ "background": {"type": "和紙の地（シェーダーの紙）", "color": "#ece4d1"},
+ "substrate": {"type": "枯山水の白砂", "color": "#e6e1d4", "pattern": "石組の周りに同心円の砂紋、ほかは横方向の平行な砂紋"},
+ "fish": [{"id": "seibungyo-1", "model": "species/carassius-auratus-seibungyo/model/v5/seibungyo.glb", "species": "青文魚 Carassius auratus", "count": 1, "total_length_cm": 15, "start": [3, 15, 2], "note": "後で別の金魚を追加予定（構成データに追加できる形にする）"}],
+ "stones": [
+  {"id": "stone-main", "role": "主石（三尊石組の中央）", "material": "黒っぽい山石", "pos": [-15, 0, -5], "size": [8, 13, 6], "rot_y": 10, "color": "ai"},
+  {"id": "stone-side-1", "role": "脇石", "material": "山石", "pos": [-8.5, 0, -2.5], "size": [6, 7, 5], "rot_y": -25, "color": "ai"},
+  {"id": "stone-side-2", "role": "脇石", "material": "山石", "pos": [-21, 0, -1], "size": [5, 4.5, 4], "rot_y": 40, "color": "ai"},
+  {"id": "stone-pair-1", "role": "二石組", "material": "山石", "pos": [16, 0, -7], "size": [7, 6.5, 5], "rot_y": 15, "color": "ai"},
+  {"id": "stone-pair-2", "role": "二石組", "material": "山石", "pos": [21.5, 0, -4], "size": [4.5, 3.5, 4], "rot_y": -30, "color": "ai"}
+ ],
+ "stone_colors": {"ai": {"name": "藍鼠（青系）", "hex": "#5d6670"}, "beni": {"name": "赤土色（赤系）", "hex": "#7a6156"}},
+ "plants": [
+  {"id": "cabomba-left", "type": "カボンバ", "pos": [-24, 0, -11], "stems": 6, "height": [20, 30]},
+  {"id": "cabomba-right", "type": "カボンバ", "pos": [23, 0, -11], "stems": 4, "height": [14, 21]}
+ ],
+ "assumptions": ["水槽の大きさは60 cm規格（おまかせ）", "石は5個（三石組＋二石組）", "照明は日本画シェーダーの固定光（左上から）", "鰭の半透明は使わない（シェーダーは不透明描画）"]
+}

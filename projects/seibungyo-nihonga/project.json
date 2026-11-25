@@ -132,7 +132,7 @@
     }
   ],
   "layout": {
-    "status": "waiting_approval",
+    "status": "approved",
     "version": 1,
     "files": [
       "layout/v1/layout.json",
@@ -157,10 +157,12 @@
         "image": "layout/v1/layout-v1b-draft.png",
         "status": "changes_requested"
       }
-    ]
+    ],
+    "approved_at": "2026-11-26",
+    "approval_quote": "ok"
   },
   "aquarium": {
-    "status": "not_started"
+    "status": "in_progress"
   },
   "history": [
     {
@@ -292,6 +294,13 @@
       "stage": "layout",
       "event": "revised",
       "note": "v1c: カボンバにも墨線（扇の縁と茎）、株ごとの傾き。シェーダーに maxStrokeVertices・nihongaLineScale 拡張"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "layout",
+      "event": "approved",
+      "quote": "ok",
+      "note": "v1c"
     }
   ],
   "renderer": {

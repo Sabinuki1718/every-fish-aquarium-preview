@@ -371,11 +371,25 @@ env = np.asarray(T['tail_env_left'], float)
 env_x = from_view_x('top', env[:, 0]); env_z = np.abs(env[:, 1] - TC) * K['top']
 o = np.argsort(env_x)
 zmax = lambda xp: np.interp(xp, env_x[o], np.maximum.accumulate(env_z[o]))
+# v4: spread taken from the top view's tail silhouette. Outer envelope = half-width of the painted tail in the
+# top view (held at its maximum behind the outer-lobe tips, where the side's lower lobe still continues);
+# inner envelope = the long inner lobes near the midline (~110 px). Upper side lobes follow the inner
+# envelope, lower lobes the outer one, blended by height in the side view.
+_tm = np.abs(top_img - 255).max(axis=2) > 18
+_ex = np.arange(840, 1261, 4.0); _eo = []
+for _x in _ex:
+    _c = np.nonzero(_tm[:, int(round(to_view_x('top', _x)))])[0]
+    _eo.append((TC - _c.min()) * K['top'] if len(_c) else 0.0)
+_eo = np.maximum.accumulate(np.asarray(_eo))
+OUTER = lambda xp: np.interp(xp, _ex, _eo)
+INNER = lambda xp: np.interp(xp, [840, 900, 1000, 1160, 1260], [8, 70, 125, 125, 95])
 for sign, name in [(1, 'caudal_near'), (-1, 'caudal_far')]:
     def pt(a, b, l, sign=sign):
         tq = np.clip((b - TAIL_Y0) / (TAIL_Y1 - TAIL_Y0), 0, 1)
-        root = np.clip((a - X1 + 15) / 60.0, 0, 1) ** 0.8
-        zz = 2.5 + zmax(a) * root * min(1.0, 1.15 * tq ** 1.6)
+        root = np.clip((a - X1 + 15) / 40.0, 0, 1) ** 0.8
+        g = np.clip((tq - .3) / .55, 0, 1); g = g * g * (3 - 2 * g)
+        h = np.clip(tq / .42, 0, 1); h = h * (2 - h)          # inner lobes open from the dorsal midline toward the notch
+        zz = 2.5 + root * (INNER(a) * h + (OUTER(a) - INNER(a)) * g)
         return (a, -b, sign * (zz + l * TH))
     m, prm = fin2(name, CAUDAL, pt, side_uv, subdivisions=1)
     meshes.append(m)

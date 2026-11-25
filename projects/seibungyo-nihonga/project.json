@@ -57,7 +57,7 @@
           "approval_quote": "ok"
         },
         "views": {
-          "status": "waiting_approval",
+          "status": "approved",
           "based_on": {
             "file": "species/carassius-auratus-seibungyo/views/source/side-v1.png",
             "version": 1,
@@ -86,8 +86,8 @@
             },
             "record": "species/carassius-auratus-seibungyo/reviews.md"
           },
-          "approved_at": null,
-          "approval_quote": null,
+          "approved_at": "2026-11-26",
+          "approval_quote": "これでOK",
           "history": [
             {
               "version": 1,
@@ -104,7 +104,7 @@
           "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 5,
           "files": [
             "species/carassius-auratus-seibungyo/model/v5/seibungyo.glb",
@@ -123,7 +123,10 @@
               "main": "OK"
             },
             "record": "species/carassius-auratus-seibungyo/reviews.md"
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "これでOK",
+          "user_check": "species/carassius-auratus-seibungyo/model/v5/user-phone-check.png（スマホ実機で表示）"
         }
       }
     }
@@ -226,6 +229,13 @@
       "stage": "model",
       "event": "revised",
       "note": "v5: 腹鰭を下向きに、尾鰭の上葉を分離"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "views+model",
+      "event": "approved",
+      "quote": "これでOK",
+      "note": "top-v2 と 3Dモデル v5（スマホ表示のスクリーンショット付き）"
     }
   ],
   "renderer": {

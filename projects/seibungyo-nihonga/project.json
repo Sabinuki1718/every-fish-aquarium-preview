@@ -136,7 +136,7 @@
     "version": 1,
     "files": [
       "layout/v1/layout.json",
-      "layout/v1/layout-v1-draft.png",
+      "layout/v1/layout-v1b-draft.png",
       "layout/v1/draft-front.png",
       "layout/v1/draft-top.png",
       "layout/v1/draft-oblique.png",
@@ -144,7 +144,15 @@
     ],
     "request_quote": "絵巻風のカボンバと、枯山水風の配置の石　ひとまず1匹　あとで別の金魚を足します",
     "prompts": "layout/v1/prompts.md",
-    "note": "下書きは承認済みモデルv5と日本画シェーダーで描いた簡易シーン（石・カボンバ・砂は仮の形）"
+    "note": "下書きは承認済みモデルv5と日本画シェーダーで描いた簡易シーン（石・カボンバ・砂は仮の形）",
+    "revision": "v1b",
+    "history": [
+      {
+        "revision": "v1",
+        "image": "layout/v1/layout-v1-draft.png",
+        "status": "changes_requested"
+      }
+    ]
   },
   "aquarium": {
     "status": "not_started"
@@ -254,6 +262,19 @@
       "stage": "layout",
       "event": "draft",
       "quote": "絵巻風のカボンバと、枯山水風の配置の石　ひとまず1匹　あとで別の金魚を足します"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "layout",
+      "event": "changes_requested",
+      "quote": "カボンバの形状　もう少し実物に寄せて、左右により多く植え込んでください",
+      "note": "ユーザーのカボンバ写真あり"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "layout",
+      "event": "revised",
+      "note": "v1b: カボンバを写真に合わせた形（節ごとに向かい合う扇、細裂した葉）に、本数を左14・右11本に"
     }
   ],
   "renderer": {

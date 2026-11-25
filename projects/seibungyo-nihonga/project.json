@@ -33,11 +33,26 @@
       ],
       "stages": {
         "research": {
-          "status": "in_progress",
-          "note": "鰭の縁の扱いと側面図の扱いをユーザーに確認中"
+          "status": "done",
+          "note": "墨線・白抜きは絵の表現、四つ尾として扱う（ユーザー確認済み）"
         },
         "side_view": {
-          "status": "not_started"
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-seibungyo/views/source/side-v1.png"
+          ],
+          "sha256": "69cdcbaea1d606761f1d1c3853fdb306d2bc53cc49bc363272be6f7e387e05ff",
+          "note": "ユーザーのイラストの背景を白へ補正しただけ",
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-seibungyo/reviews.md"
+          }
         },
         "views": {
           "status": "not_started"
@@ -67,6 +82,13 @@
       "stage": "start",
       "event": "renderer_chosen",
       "quote": "今回はこのシェーダーを使ってください。アート性を重視します"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "research",
+      "event": "user_confirmed",
+      "quote": "1ok 2ok 3ok",
+      "note": "イラストを側面に使用／墨線・白抜きは絵の表現／承認後に線なし彩色版・上面・下面を追加"
     }
   ],
   "renderer": {

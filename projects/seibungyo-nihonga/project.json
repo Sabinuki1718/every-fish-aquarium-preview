@@ -129,6 +129,56 @@
           "user_check": "species/carassius-auratus-seibungyo/model/v5/user-phone-check.png（スマホ実機で表示）"
         }
       }
+    },
+    {
+      "id": "carassius-auratus-gin-suihogan",
+      "name_ja": "銀水泡眼",
+      "scientific_name": "Carassius auratus",
+      "variant": "水泡眼の青（銀）系、成魚",
+      "photos": [
+        "species/carassius-auratus-gin-suihogan/photos/01-user-illustration-ink.jpg",
+        "species/carassius-auratus-gin-suihogan/photos/02-user-illustration-wash.jpg"
+      ],
+      "stages": {
+        "research": {
+          "status": "in_progress",
+          "note": "イラストの扱い・体色をユーザーに確認中"
+        },
+        "side_view": {
+          "status": "not_started"
+        },
+        "views": {
+          "status": "not_started"
+        },
+        "model": {
+          "status": "not_started"
+        }
+      }
+    },
+    {
+      "id": "carassius-auratus-horyu",
+      "name_ja": "穂竜",
+      "scientific_name": "Carassius auratus",
+      "variant": "穂竜（竜眼×高頭パール）、成魚",
+      "photos": [
+        "species/carassius-auratus-horyu/photos/01-user-illustration-ink.jpg",
+        "species/carassius-auratus-horyu/photos/02-user-illustration-wash.jpg"
+      ],
+      "stages": {
+        "research": {
+          "status": "in_progress",
+          "note": "イラストの扱い・体色をユーザーに確認中"
+        },
+        "side_view": {
+          "status": "not_started"
+        },
+        "views": {
+          "status": "not_started"
+        },
+        "model": {
+          "status": "not_started"
+        }
+      }
     }
   ],
   "layout": {
@@ -343,6 +393,13 @@
       "event": "revised",
       "quote": "水槽の枠がないので、水槽にはしてください 砂の下から石がはみ出ています。下側にはみ出た石は描写しない。",
       "note": "v3: 黒い枠（底・上縁・四隅の柱）と水面の線を追加。石の底を砂の板の中で平らに切り、下へはみ出さない"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "species",
+      "event": "added",
+      "quote": "銀水泡眼と穂竜を追加します",
+      "note": "日本画イラスト各2枚（墨線版・淡彩版）"
     }
   ],
   "renderer": {

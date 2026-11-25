@@ -57,12 +57,33 @@
           "approval_quote": "ok"
         },
         "views": {
-          "status": "in_progress",
-          "note": "線なし彩色の側面・上面・下面をユーザーが画像生成サービスで作成中",
+          "status": "waiting_approval",
           "based_on": {
             "file": "species/carassius-auratus-seibungyo/views/source/side-v1.png",
             "version": 1,
             "sha256": "69cdcbaea1d606761f1d1c3853fdb306d2bc53cc49bc363272be6f7e387e05ff"
+          },
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-seibungyo/views/source/side-v1.png",
+            "species/carassius-auratus-seibungyo/views/source/side-color-v1.png",
+            "species/carassius-auratus-seibungyo/views/source/top-v1.png",
+            "species/carassius-auratus-seibungyo/views/source/bottom-v1.png"
+          ],
+          "sheet": "species/carassius-auratus-seibungyo/views/views-v1-sheet.png",
+          "sha256": {
+            "side-color-v1.png": "d6a7fa455431baffe6639cd4a660d2a1fef68f892b8bb98a4475ef8506aa8137",
+            "top-v1.png": "838bd83c4274ca92a34b0cd59e4477ba0715b5c6c4f9da78d43ccd49cbf52a08",
+            "bottom-v1.png": "75615853d16ba3259d16720558862802463ce2bed8f8731f56b193ad3140cd4f"
+          },
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-seibungyo/reviews.md"
           }
         },
         "model": {

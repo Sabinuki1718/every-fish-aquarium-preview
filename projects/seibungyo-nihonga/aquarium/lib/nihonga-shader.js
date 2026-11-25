@@ -167,7 +167,9 @@ export function createNihonga(T, renderer, opts = {}) {
     }
     const n = wp.length / 3;
     for (let i = 0; i < n; i++) { const l = Math.hypot(wn[3 * i], wn[3 * i + 1], wn[3 * i + 2]) || 1; wn[3 * i] /= l; wn[3 * i + 1] /= l; wn[3 * i + 2] /= l; }
-    const F = []; for (let f = 0; f < I.length; f += 3) { const a = wid[I[f]], b = wid[I[f + 1]], c = wid[I[f + 2]]; if (a !== b && b !== c && a !== c) F.push(a, b, c); }
+    // [拡張] mesh.userData.nihongaContourFaces（三角形ごとに 1=線を取る / 0=取らない）で、輪郭を取る面を限る（薄い鰭は縁だけ）
+    const cmask = mesh.userData.nihongaContourFaces;
+    const F = []; for (let f = 0; f < I.length; f += 3) { if (cmask && !cmask[f / 3]) continue; const a = wid[I[f]], b = wid[I[f + 1]], c = wid[I[f + 2]]; if (a !== b && b !== c && a !== c) F.push(a, b, c); }
     // contourFilter(mesh, a, b, c) で、輪郭線を引かない面を除外できる（a,b,c は [x,y,z]）
     const filt = opts.contourFilter, F2 = [];
     for (let f = 0; f < F.length; f += 3) { const q = k => [wp[3 * F[k]], wp[3 * F[k] + 1], wp[3 * F[k] + 2]];

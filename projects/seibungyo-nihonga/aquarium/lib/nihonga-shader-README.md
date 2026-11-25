@@ -79,3 +79,4 @@ nihonga.params.bands = 2;
 - `mesh.userData.nihongaDynamic = true` を付けたメッシュは、`geometry.attributes.position` を毎フレーム読み直して墨線を取ります。鰭・口・鰓をCPUで動かす（モーフの重みを頂点に足して position を書き換える）ときに使います。付けないメッシュは従来どおり登録時の形で線を取ります。
 - 彩色の材質はモーフ・スキンを扱わないため、動きはCPUで頂点に反映してから描きます。
 - 元のファイルは `nihonga-shader.original.js` に残しています。
+- `mesh.userData.nihongaContourFaces`（三角形の数と同じ長さの配列。1=輪郭を取る、0=取らない）で、輪郭を探す面を限れます。薄い鰭を縁の帯だけにすると、鰭が動いたときに面の内側へ短い線が出たり消えたりする（チカチカ）のを防げます。

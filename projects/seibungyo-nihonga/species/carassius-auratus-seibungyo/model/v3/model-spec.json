@@ -1,0 +1,87 @@
+{
+ "model_id": "carassius-auratus-seibungyo",
+ "version": "v3",
+ "name_ja": "青文魚",
+ "scientific_name": "Carassius auratus（改良品種）",
+ "stage": "成魚・肉瘤あり",
+ "source_views": {
+  "side": "views/source/side-v1.png (sha 69cdcbae…, 眼の絵のみ)",
+  "side_color": "views/source/side-color-v1.png (sha d6a7fa45…)",
+  "top": "views/source/top-v2.png (sha 307f9fbd…, top-v1 の胴幅を0.82倍に補正。尾の付け根で1.0へ戻す)",
+  "bottom": "views/source/bottom-v1.png (sha 75615853…)"
+ },
+ "files": {
+  "glb": "model/v3/seibungyo.glb (sha 2e222363b18d…)",
+  "preview": "model/v3/web/preview.html",
+  "preview_offline": "model/v3/web/preview-offline.html",
+  "build": "model/work/build.py",
+  "renders": "model/v3/nihonga/*.png, model/v3/render-*.png, compare-illustration-3d.png"
+ },
+ "axes": {
+  "units": "meters",
+  "up": "+Y",
+  "forward": "-X (頭が-X、尾が+X)",
+  "total_length": "0.15 m（尾鰭含む・仮スケール）",
+  "root": "Fish_root（変換なし）"
+ },
+ "renderer": {
+  "shader": "aquarium/lib/nihonga-shader.js（ユーザー提供＋nihongaDynamic拡張）",
+  "sha": "d24a80785a49",
+  "notes": [
+   "テクスチャに墨線なし。墨線は実行時に3D輪郭から描く",
+   "nihongaContourFaces: 鰭・鰓蓋は縁の帯だけから線を取る。尾鰭の付け根(x<862px)と鰓蓋の前55%は線なし",
+   "鰭は表裏の法線を固定（±N）。肉瘤はこぶ前のなめらかな法線",
+   "renderer.setClearColor(0,0) が必要（背景判定がアルファ0）"
+  ]
+ },
+ "features": {
+  "fins": {
+   "status": "実装済み",
+   "where": "GLB（モーフ wave_s/wave_c ×各鰭、クリップ idle 4.8 s・97キー）／プレビュー（同じ式でCPU反映）",
+   "detail": {
+    "dorsal": "正中・左右のなびき（先端ほど大）",
+    "caudal_near/far": "四つ尾を左右2枚で。上葉は正中寄り、下葉は外へ開く。左右なびきの進行波",
+    "pectoral_near/far": "側面の輪郭を保ち25°傾けた扇。上下の羽ばたき",
+    "pelvic_near/far": "外下方45°。開閉",
+    "anal_near/far": "左右一対・小。なびき"
+   },
+   "base": "各鰭の付け根は胴体へ差し込み、付け根の変形量0から先端へ増加"
+  },
+  "mouth": {
+   "status": "実装済み",
+   "where": "GLB（body の mouth_open）／プレビュー",
+   "detail": "唇の線で胴体を実際に分割し、口角を支点に下顎を17°回転。奥は暗色の口腔（mouth_cavity）で塞ぐ"
+  },
+  "gills": {
+   "status": "実装済み",
+   "where": "GLB（gill_near/far の open）／プレビュー",
+   "detail": "前縁を蝶番に後縁が18°外へ開く鰓蓋。下に暗い鰓の帯。口と位相差-1.3 rad"
+  },
+  "gaze": {
+   "status": "該当しない",
+   "detail": "日本画（その他の画風）のため視線移動は付けない（仕様どおり）"
+  },
+  "swim": {
+   "status": "未実装（水槽側で行う）"
+  },
+  "translucency": {
+   "status": "未実装",
+   "detail": "日本画シェーダーは不透明描画。鰭は絵の淡い色で表す。半透明化は⑤で検討"
+  },
+  "wen": {
+   "status": "実装済み（v2で別パーツ化）",
+   "mesh": "wen",
+   "detail": "頭頂〜吻の上〜眼の上〜鰓蓋の上を覆う閉じた殻。外面は胴体より0.6 px外＋こぶ（最大約10 px、80個、縁で0へ）、内面は頭へ6 px沈める。UVは下の胴体のベイクを左右対称に参照（新しい画像なし）。縁と輪郭に墨線。動きなし（頭に固定）",
+   "boundary": "landmarks.json side.wen_lower（承認側面のこぶの下端）"
+  }
+ },
+ "limits": [
+  "プレビューの彩色シェーダーはモーフを直接扱わないため、CPUで頂点に反映して描く",
+  "GLB単体（標準ビューアー）では、墨線なしの通常描画でモーフアニメーションが再生される"
+ ],
+ "changes_from_v2": [
+  "①墨線のチカチカ：鰭・鰓蓋は縁だけから線を取り、鰭の法線を表裏で固定、鰭の輪郭のギザギザをなめらかに（シェーダーに nihongaContourFaces 拡張）",
+  "②体型：上面図を補正（top-v2、胴幅0.82倍、胴幅/体高 0.85→0.71）",
+  "③尾鰭：尻鰭の範囲を差し引いていたのをやめ、下葉の切り欠きを解消"
+ ]
+}

@@ -41,8 +41,8 @@ for i, m in enumerate(doc['meshes']):
     if pr.get('targets'):
         e['targets'] = [{'name': nm, 'd': [round(float(x), 6) for x in arr(t['POSITION'])]} for nm, t in zip(m['extras']['targetNames'], pr['targets'])]
         e['driver'] = node['extras']['nihongaDriver']
-    if node.get('extras', {}).get('nihongaInk'):
-        e['ink'] = node['extras']['nihongaInk']
+    if node.get('extras', {}).get('nihongaContour'):
+        e['contour'] = node['extras']['nihongaContour']
     meshes.append(e)
 (OUT / 'models/seibungyo.json').write_text(json.dumps({'units': 'meters', 'up': '+Y', 'forward': '-X', 'meshes': meshes}, separators=(',', ':')), encoding='utf8')
 tv = doc['bufferViews'][doc['images'][0]['bufferView']]
@@ -107,20 +107,7 @@ document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', (
 const toggle = (id, on) => { const b = document.getElementById(id); b.addEventListener('click', () => { const v = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', v); on(v); }); };
 toggle('spin', v => controls.autoRotate = v);
 let moving = true; toggle('move', v => moving = v);
-// parts that dive into the body get no stroke there (gill flap front, tail root)
-function inkFilter(mesh, a, b, c) {
-  const r = mesh.userData.ink; if (!r) return true;
-  const x = (a[0] + b[0] + c[0]) / 3, y = (a[1] + b[1] + c[1]) / 3;
-  if (r.skip_x_below !== undefined) return x >= r.skip_x_below;
-  if (r.gill) {
-    const g = r.gill; let i = 0; while (i < g.length - 2 && g[i + 1][0] > y) i++;
-    const u = Math.min(1, Math.max(0, (g[i][0] - y) / (g[i][0] - g[i + 1][0] || 1)));
-    const hx = g[i][1] + (g[i + 1][1] - g[i][1]) * u, ex = g[i][2] + (g[i + 1][2] - g[i][2]) * u;
-    return (x - hx) / Math.max(ex - hx, 1e-6) >= r.keep_from;
-  }
-  return true;
-}
-const nihonga = createNihonga(THREE, renderer, { lineWidth: 7, occlusionEps: .0008, contourFilter: inkFilter });
+const nihonga = createNihonga(THREE, renderer, { lineWidth: 7, occlusionEps: .0008 });
 toggle('ink', v => nihonga.params.ink = v);
 document.getElementById('lw').addEventListener('input', e => nihonga.params.lineWidth = +e.target.value);
 function resize() { const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 46 : 30; camera.updateProjectionMatrix(); nihonga.setSize(); }
@@ -146,7 +133,8 @@ try {
     g.setAttribute('uv', new THREE.Float32BufferAttribute(m.uv, 2));
     g.setIndex(m.i);
     const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map, side: THREE.DoubleSide }));
-    mesh.name = m.name; if (m.ink) mesh.userData.ink = m.ink;
+    mesh.name = m.name;
+    if (m.contour) { const k = new Uint8Array(m.i.length / 3); for (const f of m.contour) k[f] = 1; mesh.userData.nihongaContourFaces = k; }
     if (m.targets) { mesh.userData.nihongaDynamic = true; animated.push({ mesh, base: Float32Array.from(m.p), d: m.targets.map(t => Float32Array.from(t.d)), dv: m.driver }); }
     fish.add(mesh);
   }

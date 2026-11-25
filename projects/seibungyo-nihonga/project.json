@@ -57,24 +57,25 @@
           "approval_quote": "ok"
         },
         "views": {
-          "status": "approved",
+          "status": "waiting_approval",
           "based_on": {
             "file": "species/carassius-auratus-seibungyo/views/source/side-v1.png",
             "version": 1,
             "sha256": "69cdcbaea1d606761f1d1c3853fdb306d2bc53cc49bc363272be6f7e387e05ff"
           },
-          "version": 1,
+          "version": 2,
           "files": [
             "species/carassius-auratus-seibungyo/views/source/side-v1.png",
             "species/carassius-auratus-seibungyo/views/source/side-color-v1.png",
-            "species/carassius-auratus-seibungyo/views/source/top-v1.png",
+            "species/carassius-auratus-seibungyo/views/source/top-v2.png",
             "species/carassius-auratus-seibungyo/views/source/bottom-v1.png"
           ],
           "sheet": "species/carassius-auratus-seibungyo/views/views-v1-sheet.png",
           "sha256": {
             "side-color-v1.png": "d6a7fa455431baffe6639cd4a660d2a1fef68f892b8bb98a4475ef8506aa8137",
             "top-v1.png": "838bd83c4274ca92a34b0cd59e4477ba0715b5c6c4f9da78d43ccd49cbf52a08",
-            "bottom-v1.png": "75615853d16ba3259d16720558862802463ce2bed8f8731f56b193ad3140cd4f"
+            "bottom-v1.png": "75615853d16ba3259d16720558862802463ce2bed8f8731f56b193ad3140cd4f",
+            "top-v2.png": "307f9fbd9eb522231519753b2f6bfbcca9d3cd798da224fd87e2893728005635"
           },
           "review": {
             "version": 1,
@@ -85,21 +86,36 @@
             },
             "record": "species/carassius-auratus-seibungyo/reviews.md"
           },
-          "approved_at": "2026-11-25",
-          "approval_quote": "ok"
+          "approved_at": null,
+          "approval_quote": null,
+          "history": [
+            {
+              "version": 1,
+              "files": [
+                "species/carassius-auratus-seibungyo/views/source/side-v1.png",
+                "species/carassius-auratus-seibungyo/views/source/side-color-v1.png",
+                "species/carassius-auratus-seibungyo/views/source/top-v1.png",
+                "species/carassius-auratus-seibungyo/views/source/bottom-v1.png"
+              ],
+              "approved_at": "2026-11-25",
+              "approval_quote": "ok"
+            }
+          ],
+          "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
           "status": "waiting_approval",
-          "version": 2,
+          "version": 3,
           "files": [
-            "species/carassius-auratus-seibungyo/model/v2/seibungyo.glb",
-            "species/carassius-auratus-seibungyo/model/v2/web/preview.html",
-            "species/carassius-auratus-seibungyo/model/v2/web/preview-offline.html"
+            "species/carassius-auratus-seibungyo/model/v3/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v3/web/preview.html",
+            "species/carassius-auratus-seibungyo/model/v3/web/preview-offline.html"
           ],
-          "glb_sha256": "caf885a2a6946793d1e025c2c93e6a20c9d422ebec7f7f5d6300c17a18ed5eeb",
-          "spec": "species/carassius-auratus-seibungyo/model/v2/model-spec.json",
+          "glb_sha256": "2e222363b18d0c4c3c21f2006ad3b28ea79a1b3b924d6249f547876f8269c842",
+          "spec": "species/carassius-auratus-seibungyo/model/v3/model-spec.json",
+          "depends_on_views_version": 2,
           "review": {
-            "version": 2,
+            "version": 3,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正。サブ確認の明示希望なし",
             "status": "passed",
@@ -168,6 +184,24 @@
       "stage": "model",
       "event": "revised",
       "note": "v2: 肉瘤を独立パーツ wen に"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "model",
+      "event": "changes_requested",
+      "quote": "①輪郭線がチカチカしているので修正 ②体型、やはり少し太すぎるかもしれません ③尾鰭の形状、尻鰭分くり抜かれてしまっています 補正した上面図を作ると解決しそうに見えます"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "views",
+      "event": "revised",
+      "note": "top-v2（胴幅0.82倍の補正）を作成、承認待ち"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "model",
+      "event": "revised",
+      "note": "v3: チカチカ対策・細身化・尾鰭の切り欠き解消"
     }
   ],
   "renderer": {
@@ -199,6 +233,27 @@
       "review": {
         "version": 1,
         "mode": "main_only",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        },
+        "record": "species/carassius-auratus-seibungyo/reviews.md"
+      }
+    },
+    {
+      "status": "superseded",
+      "version": 2,
+      "files": [
+        "species/carassius-auratus-seibungyo/model/v2/seibungyo.glb",
+        "species/carassius-auratus-seibungyo/model/v2/web/preview.html",
+        "species/carassius-auratus-seibungyo/model/v2/web/preview-offline.html"
+      ],
+      "glb_sha256": "caf885a2a6946793d1e025c2c93e6a20c9d422ebec7f7f5d6300c17a18ed5eeb",
+      "spec": "species/carassius-auratus-seibungyo/model/v2/model-spec.json",
+      "review": {
+        "version": 2,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正。サブ確認の明示希望なし",
         "status": "passed",
         "verdicts": {
           "main": "OK"

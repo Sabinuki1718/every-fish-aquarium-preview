@@ -217,6 +217,9 @@ check_atlas_islands(ATLAS_W, ATLAS_H, [('body', BODY), ('side_source', (0, 1024,
 
 
 # ---------- parts ----------
+RIM_START = {}
+
+
 def fin2(name, outline, point_fn, uv_fn, subdivisions=2):
     """fish_mesh.fin, also returning each vertex's outline coords and layer (for morph targets)."""
     pts = [tuple(v) for v in outline]; faces = triangulate(pts)
@@ -244,7 +247,17 @@ def fin2(name, outline, point_fn, uv_fn, subdivisions=2):
     for e in edges.values():
         if e is not None:
             a, b = e; out.extend([[b, a, a + n], [b, a + n, b + n]])
-    return Mesh(name, p, uv, orient_closed(p, out)), np.asarray(prm, float)
+    RIM_START[name] = 2 * len(faces)                 # faces after this index are the rim band
+    # explicit membrane normals: +N on one layer, -N on the other (rim vertices included). The ink contour then
+    # always falls inside the rim band, so the fin outline does not break up or change weight while it waves.
+    P_ = np.asarray(p, float); fu = np.asarray(faces)
+    fn = np.cross(P_[n:][fu[:, 1]] - P_[n:][fu[:, 0]], P_[n:][fu[:, 2]] - P_[n:][fu[:, 0]])
+    vn = np.zeros((n, 3))
+    for k in range(3): np.add.at(vn, fu[:, k], fn)
+    vn /= np.maximum(np.linalg.norm(vn, axis=1, keepdims=True), 1e-12)
+    if (vn * (P_[n:] - P_[:n])).sum() < 0: vn = -vn            # +N points from the -1 layer to the +1 layer
+    NV = np.concatenate([-vn, vn])
+    return Mesh(name, p, uv, orient_closed(p, out), NV), np.asarray(prm, float)
 
 
 meshes = [body]
@@ -317,6 +330,22 @@ def traced(poly, grow=18, minus=(), eps=2.2):
     c = (c + np.roll(c, 1, 0) + np.roll(c, -1, 0)) / 3
     k = len(c) // 2
     out = np.vstack([_rdp(c[:k + 1], eps)[:-1], _rdp(np.vstack([c[k:], c[:1]]), eps)[:-1]])
+    # v3: soften the feathered brush edge (Chaikin x2) so the ink pass does not find a corner at every tooth;
+    # corners sharper than ~70 deg (lobe tips, notches) are kept as they are
+    for _ in range(2):
+        prv, nxt = np.roll(out, 1, 0), np.roll(out, -1, 0)
+        a1, a2 = prv - out, nxt - out
+        cosang = (a1 * a2).sum(1) / np.maximum(np.linalg.norm(a1, axis=1) * np.linalg.norm(a2, axis=1), 1e-9)
+        sharp = cosang > -0.35
+        q = .75 * out + .25 * nxt; r = .25 * out + .75 * nxt
+        pts = []
+        for i in range(len(out)):
+            if sharp[i]: pts.append(out[i])
+            else: pts.append(.5 * out[i] + .25 * prv[i] + .25 * nxt[i])
+            pts += [q[i], r[i]] if not (sharp[i] or sharp[(i + 1) % len(out)]) else [ (out[i] + nxt[i]) / 2 ]
+        out = np.asarray(pts)
+    k = len(out) // 2
+    out = np.vstack([_rdp(out[:k + 1], 1.2)[:-1], _rdp(np.vstack([out[k:], out[:1]]), 1.2)[:-1]])
     try:
         triangulate([tuple(p) for p in out]); return out.tolist()
     except ValueError:
@@ -324,7 +353,7 @@ def traced(poly, grow=18, minus=(), eps=2.2):
 
 
 DORSAL = traced(S['dorsal'])
-CAUDAL = traced(S['caudal'], minus=[S['anal']])
+CAUDAL = traced(S['caudal'])          # v3: the anal fin is no longer cut out of the lower lobe
 PELVIC = traced(S['pelvic'])
 print('traced points', len(DORSAL), len(CAUDAL), len(PELVIC))
 
@@ -505,7 +534,8 @@ ring = [(i, 0) for i in range(NU_W)] + [(NU_W - 1, j) for j in range(1, NV_W)] +
 for k in range(len(ring)):
     a, b = ring[k], ring[(k + 1) % len(ring)]
     FW += [[idx(*a, 0), idx(*a, 1), idx(*b, 0)], [idx(*b, 0), idx(*a, 1), idx(*b, 1)]]
-meshes.append(Mesh('wen', PW, UW, orient_closed(PW, FW)))
+NW = np.concatenate([nrm.reshape(-1, 3), -nrm.reshape(-1, 3)])   # smooth (pre-bump) normals: no tiny ink loops on each knob
+meshes.append(Mesh('wen', PW, UW, orient_closed(PW, FW), NW))
 
 # eyes: low domes in the wen-framed sockets, the inked painted eye projected on them
 ex, ey, er = S['eye']
@@ -528,6 +558,21 @@ for sign, name in [(1, 'eye_near'), (-1, 'eye_far')]:
     rim = 1 + (nu - 1) * nv; cen = len(PP) - 1
     FF += [[rim + j, cen, rim + (j + 1) % nv] for j in range(nv)]
     meshes.append(Mesh(name, PP, UU, orient_closed(np.asarray(PP), FF)))
+
+# ---------- ink: which faces the shader may take contours from ----------
+# Thin parts give strokes only from their rim band (a waving membrane seen near edge-on otherwise pops short
+# strokes on and off = flicker). Tail root and the front of the gill flaps dive into the body: no stroke there.
+contour = {}
+for m_ in meshes:
+    if m_.name not in RIM_START: continue
+    P_ = m_.positions.astype(float); Fc = P_[m_.faces].mean(axis=1)
+    keep = np.arange(len(m_.faces)) >= RIM_START[m_.name]
+    if m_.name.startswith('caudal'):
+        keep &= Fc[:, 0] >= 862
+    if m_.name.startswith('gill'):
+        fy = -Fc[:, 1]; fr = (Fc[:, 0] - hinge_x(fy)) / np.maximum(gedge_x(fy) - hinge_x(fy), 1)
+        keep &= fr >= 0.55
+    contour[m_.name] = np.nonzero(keep)[0].tolist()
 
 # ---------- scale to metres ----------
 allp = np.concatenate([m_.positions for m_ in meshes]).astype(float)
@@ -603,7 +648,7 @@ def export_glb_morph(meshes_, texture, path, metadata):
     material = {'name': 'Baked_atlas_nihonga', 'pbrMetallicRoughness': {'baseColorTexture': {'index': 0}, 'metallicFactor': 0, 'roughnessFactor': .8}, 'doubleSided': True, 'alphaMode': 'OPAQUE'}
     doc = {'asset': {'version': '2.0', 'generator': 'Local fish mesh toolkit + morph export (seibungyo-nihonga)'}, 'scene': 0, 'scenes': [{'nodes': [0]}],
            'nodes': [{'name': 'Fish_root', 'children': list(range(1, len(meshes_) + 1)), 'extras': metadata}] +
-                    [{'name': m_.name, 'mesh': i, **({'extras': {k: v for k, v in (('nihongaDriver', drivers.get(m_.name)), ('nihongaInk', ink.get(m_.name))) if v}} if (m_.name in drivers or m_.name in ink) else {})} for i, m_ in enumerate(meshes_)],
+                    [{'name': m_.name, 'mesh': i, **({'extras': {k: v for k, v in (('nihongaDriver', drivers.get(m_.name)), ('nihongaContour', contour.get(m_.name))) if v}} if (m_.name in drivers or m_.name in contour) else {})} for i, m_ in enumerate(meshes_)],
            'meshes': gm, 'materials': [material], 'textures': [{'source': 0, 'sampler': 0}],
            'samplers': [{'magFilter': 9729, 'minFilter': 9987, 'wrapS': 33071, 'wrapT': 33071}],
            'images': [{'bufferView': iv, 'mimeType': 'image/png'}], 'animations': [{'name': 'idle', 'samplers': samplers, 'channels': channels}],

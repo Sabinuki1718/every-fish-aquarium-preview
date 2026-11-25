@@ -1,0 +1,75 @@
+{
+ "model_id": "carassius-auratus-seibungyo",
+ "version": "v1",
+ "name_ja": "青文魚",
+ "scientific_name": "Carassius auratus（改良品種）",
+ "stage": "成魚・肉瘤あり",
+ "source_views": {
+  "side": "views/source/side-v1.png (sha 69cdcbae…, 眼の絵のみ)",
+  "side_color": "views/source/side-color-v1.png (sha d6a7fa45…)",
+  "top": "views/source/top-v1.png (sha 838bd83c…)",
+  "bottom": "views/source/bottom-v1.png (sha 75615853…)"
+ },
+ "files": {
+  "glb": "model/v1/seibungyo.glb (sha 8b5ec3007339…)",
+  "preview": "model/v1/web/preview.html",
+  "preview_offline": "model/v1/web/preview-offline.html",
+  "build": "model/work/build.py",
+  "renders": "model/v1/nihonga/*.png, model/v1/render-*.png, compare-illustration-3d.png"
+ },
+ "axes": {
+  "units": "meters",
+  "up": "+Y",
+  "forward": "-X (頭が-X、尾が+X)",
+  "total_length": "0.15 m（尾鰭含む・仮スケール）",
+  "root": "Fish_root（変換なし）"
+ },
+ "renderer": {
+  "shader": "aquarium/lib/nihonga-shader.js（ユーザー提供＋nihongaDynamic拡張）",
+  "sha": "d24a80785a49",
+  "notes": [
+   "テクスチャに墨線なし。墨線は実行時に3D輪郭から描く",
+   "contourFilter: 鰓蓋の前55%と尾鰭の付け根(x<862px)には線を引かない",
+   "renderer.setClearColor(0,0) が必要（背景判定がアルファ0）"
+  ]
+ },
+ "features": {
+  "fins": {
+   "status": "実装済み",
+   "where": "GLB（モーフ wave_s/wave_c ×各鰭、クリップ idle 4.8 s・97キー）／プレビュー（同じ式でCPU反映）",
+   "detail": {
+    "dorsal": "正中・左右のなびき（先端ほど大）",
+    "caudal_near/far": "四つ尾を左右2枚で。上葉は正中寄り、下葉は外へ開く。左右なびきの進行波",
+    "pectoral_near/far": "側面の輪郭を保ち25°傾けた扇。上下の羽ばたき",
+    "pelvic_near/far": "外下方45°。開閉",
+    "anal_near/far": "左右一対・小。なびき"
+   },
+   "base": "各鰭の付け根は胴体へ差し込み、付け根の変形量0から先端へ増加"
+  },
+  "mouth": {
+   "status": "実装済み",
+   "where": "GLB（body の mouth_open）／プレビュー",
+   "detail": "唇の線で胴体を実際に分割し、口角を支点に下顎を17°回転。奥は暗色の口腔（mouth_cavity）で塞ぐ"
+  },
+  "gills": {
+   "status": "実装済み",
+   "where": "GLB（gill_near/far の open）／プレビュー",
+   "detail": "前縁を蝶番に後縁が18°外へ開く鰓蓋。下に暗い鰓の帯。口と位相差-1.3 rad"
+  },
+  "gaze": {
+   "status": "該当しない",
+   "detail": "日本画（その他の画風）のため視線移動は付けない（仕様どおり）"
+  },
+  "swim": {
+   "status": "未実装（水槽側で行う）"
+  },
+  "translucency": {
+   "status": "未実装",
+   "detail": "日本画シェーダーは不透明描画。鰭は絵の淡い色で表す。半透明化は⑤で検討"
+  }
+ },
+ "limits": [
+  "プレビューの彩色シェーダーはモーフを直接扱わないため、CPUで頂点に反映して描く",
+  "GLB単体（標準ビューアー）では、墨線なしの通常描画でモーフアニメーションが再生される"
+ ]
+}

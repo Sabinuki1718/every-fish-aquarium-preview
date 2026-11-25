@@ -73,3 +73,9 @@ nihonga.params.bands = 2;
 - 光の向きは画面基準（左上から）で固定です。シーンのライトは使いません。
 - WebGL2 が必要です。
 - three.js r170 で動作を確認しています。
+
+## 追加した拡張（2026-11-25、青文魚の水槽用）
+
+- `mesh.userData.nihongaDynamic = true` を付けたメッシュは、`geometry.attributes.position` を毎フレーム読み直して墨線を取ります。鰭・口・鰓をCPUで動かす（モーフの重みを頂点に足して position を書き換える）ときに使います。付けないメッシュは従来どおり登録時の形で線を取ります。
+- 彩色の材質はモーフ・スキンを扱わないため、動きはCPUで頂点に反映してから描きます。
+- 元のファイルは `nihonga-shader.original.js` に残しています。

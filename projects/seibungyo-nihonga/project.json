@@ -57,7 +57,7 @@
           "approval_quote": "ok"
         },
         "views": {
-          "status": "waiting_approval",
+          "status": "approved",
           "based_on": {
             "file": "species/carassius-auratus-seibungyo/views/source/side-v1.png",
             "version": 1,
@@ -84,10 +84,29 @@
               "main": "OK"
             },
             "record": "species/carassius-auratus-seibungyo/reviews.md"
-          }
+          },
+          "approved_at": "2026-11-25",
+          "approval_quote": "ok"
         },
         "model": {
-          "status": "not_started"
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-seibungyo/model/v1/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v1/web/preview.html",
+            "species/carassius-auratus-seibungyo/model/v1/web/preview-offline.html"
+          ],
+          "glb_sha256": "8b5ec30073396f8ddb6f10985d8ed88a412631163b12470e8e36bd5c2cdfe3e5",
+          "spec": "species/carassius-auratus-seibungyo/model/v1/model-spec.json",
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-seibungyo/reviews.md"
+          }
         }
       }
     }
@@ -124,6 +143,18 @@
       "stage": "side_view",
       "event": "approved",
       "quote": "ok"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "views",
+      "event": "approved",
+      "quote": "ok"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "model",
+      "event": "built",
+      "note": "v1: 日本画シェーダー表示、鰭・口・鰓の動きをGLBに保存。シェーダーに nihongaDynamic 拡張を追加"
     }
   ],
   "renderer": {

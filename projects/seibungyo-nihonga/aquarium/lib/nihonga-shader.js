@@ -5,6 +5,8 @@
  *  墨線  : 3Dから毎フレーム輪郭を抽出し、画面上の運筆方向で 留め・跳ね・払い を付ける
  *  仕上げ: 和紙（画面に固定）・輪郭外へのにじみ
  *
+ *  [拡張 2026-11-25] mesh.userData.nihongaDynamic = true で、CPUで動かした頂点に墨線を追従させる（青文魚の鰭・口・鰓の動き用）。
+ *
  *  使い方:
  *    import { createNihonga } from './nihonga-shader.js';
  *    const nihonga = createNihonga(THREE, renderer, { lineWidth: 12 });
@@ -170,7 +172,8 @@ export function createNihonga(T, renderer, opts = {}) {
     const filt = opts.contourFilter, F2 = [];
     for (let f = 0; f < F.length; f += 3) { const q = k => [wp[3 * F[k]], wp[3 * F[k] + 1], wp[3 * F[k] + 2]];
       if (!filt || filt(mesh, q(f), q(f + 1), q(f + 2))) F2.push(F[f], F[f + 1], F[f + 2]); }
-    return { mesh, wp: new Float32Array(wp), wn: new Float32Array(wn), F: new Int32Array(F2), n, gv: new Float32Array(n) };
+    const cnt = new Float32Array(n); for (let v = 0; v < wid.length; v++) cnt[wid[v]]++;   // [拡張] 動く形の線を追うための対応表
+    return { mesh, wp: new Float32Array(wp), wn: new Float32Array(wn), F: new Int32Array(F2), n, gv: new Float32Array(n), wid, cnt };
   }
   /* 毎フレーム：頂点法線と視線の内積が0になる所＝なめらかな輪郭線 */
   function contourChains(S, camL) {
@@ -292,9 +295,17 @@ export function createNihonga(T, renderer, opts = {}) {
     if (startT === 'press') cap(R[0]);
   }
   let strokeSrc = [];
+  /* [拡張] mesh.userData.nihongaDynamic = true のメッシュは、頂点位置（モーフ等で書き換えた position）を毎フレーム読み直して輪郭を取る */
+  function refreshStroke(S) {
+    const P = S.mesh.geometry.attributes.position.array, { wid, cnt, wp } = S;
+    wp.fill(0);
+    for (let v = 0; v < wid.length; v++) { const i = wid[v]; wp[3 * i] += P[3 * v]; wp[3 * i + 1] += P[3 * v + 1]; wp[3 * i + 2] += P[3 * v + 2]; }
+    for (let i = 0; i < cnt.length; i++) { const c = cnt[i]; wp[3 * i] /= c; wp[3 * i + 1] /= c; wp[3 * i + 2] /= c; }
+  }
   function buildStrokes() {
     nv = 0; camera.updateMatrixWorld();
     for (const S of strokeSrc) {
+      if (S.mesh.userData.nihongaDynamic) refreshStroke(S);
       const camL = S.mesh.worldToLocal(camera.position.clone());
       const chains = contourChains(S, camL);
       for (const c of chains) strokesFromChain(c.pts.map(p => project(S.mesh, p)), c.closed);

@@ -37,7 +37,7 @@
           "note": "墨線・白抜きは絵の表現、四つ尾として扱う（ユーザー確認済み）"
         },
         "side_view": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 1,
           "files": [
             "species/carassius-auratus-seibungyo/views/source/side-v1.png"
@@ -52,10 +52,18 @@
               "main": "OK"
             },
             "record": "species/carassius-auratus-seibungyo/reviews.md"
-          }
+          },
+          "approved_at": "2026-11-25",
+          "approval_quote": "ok"
         },
         "views": {
-          "status": "not_started"
+          "status": "in_progress",
+          "note": "線なし彩色の側面・上面・下面をユーザーが画像生成サービスで作成中",
+          "based_on": {
+            "file": "species/carassius-auratus-seibungyo/views/source/side-v1.png",
+            "version": 1,
+            "sha256": "69cdcbaea1d606761f1d1c3853fdb306d2bc53cc49bc363272be6f7e387e05ff"
+          }
         },
         "model": {
           "status": "not_started"
@@ -89,6 +97,12 @@
       "event": "user_confirmed",
       "quote": "1ok 2ok 3ok",
       "note": "イラストを側面に使用／墨線・白抜きは絵の表現／承認後に線なし彩色版・上面・下面を追加"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "side_view",
+      "event": "approved",
+      "quote": "ok"
     }
   ],
   "renderer": {

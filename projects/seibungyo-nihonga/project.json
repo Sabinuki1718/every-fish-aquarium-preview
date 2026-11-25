@@ -163,7 +163,7 @@
   },
   "aquarium": {
     "status": "in_progress",
-    "version": 2,
+    "version": 3,
     "files": [
       "aquarium/index.html",
       "aquarium/aquarium-offline.html",
@@ -336,6 +336,13 @@
       "event": "textures",
       "quote": "石のサブカラーは緑にします／バックスクリーンはこれ使ってください",
       "note": "v2: ユーザー生成の石（藍鼠・苔緑）・白砂・和紙を適用。石の色の選択肢を藍鼠／苔緑に。和紙は画面全体の地（シェーダーに paperMap 拡張）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "aquarium",
+      "event": "revised",
+      "quote": "水槽の枠がないので、水槽にはしてください 砂の下から石がはみ出ています。下側にはみ出た石は描写しない。",
+      "note": "v3: 黒い枠（底・上縁・四隅の柱）と水面の線を追加。石の底を砂の板の中で平らに切り、下へはみ出さない"
     }
   ],
   "renderer": {

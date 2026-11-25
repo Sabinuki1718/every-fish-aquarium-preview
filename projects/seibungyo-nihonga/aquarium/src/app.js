@@ -32,10 +32,10 @@ controls.enableDamping = true; controls.minDistance = .18; controls.maxDistance 
 const TANK = L.tank, TW = TANK.width * CM, TD = TANK.depth * CM;
 
 // ---------- views ----------
-const VIEWS = { front: { dir: [0, .12, 1], target: [0, .15, 0] }, oblique: { dir: [-.48, .36, .8], target: [0, .14, 0] }, top: { dir: [0, 1, .001], target: [0, .05, 0] } };
+const VIEWS = { front: { dir: [0, .12, 1], target: [0, .18, 0] }, oblique: { dir: [-.48, .36, .8], target: [0, .17, 0] }, top: { dir: [0, 1, .001], target: [0, .05, 0] } };
 function fitDistance(dirName) {
   const vf = camera.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
-  const w = .66, h = dirName === 'top' ? .36 : .40;
+  const w = .66, h = dirName === "top" ? .36 : .44;
   return Math.max((w / 2) / Math.tan(hf / 2), (h / 2) / Math.tan(vf / 2)) * (camera.aspect < 1 ? 1.04 : 1.32);
 }
 function setView(name) {
@@ -153,7 +153,8 @@ function stoneGeometry(def, i) {
   const r = seeded(11 + i * 7), geo = new T.IcosahedronGeometry(1, 4), p = geo.attributes.position, k = [r(), r(), r(), r()].map(v => v * 6);
   for (let j = 0; j < p.count; j++) { const x = p.getX(j), y = p.getY(j), z = p.getZ(j);
     const n = 1 + .11 * Math.sin(3.1 * x + k[0]) * Math.cos(2.7 * z + k[1]) + .07 * Math.sin(5.3 * y + k[2]) + .035 * Math.sin(9 * x + 7 * z + k[3]);
-    p.setXYZ(j, x * n * def.size[0] / 2 * CM, (y > 0 ? y * n * def.size[1] : y * .35 * n * def.size[1]) * CM, z * n * def.size[2] / 2 * CM); }
+    // the part under the sand is cut flat inside the sand slab (never below it), so nothing pokes out of the floor
+    p.setXYZ(j, x * n * def.size[0] / 2 * CM, Math.max(-.003, (y > 0 ? y * n * def.size[1] : y * .35 * n * def.size[1]) * CM), z * n * def.size[2] / 2 * CM); }
   const g = weld(geo);
   const uv = new Float32Array(g.attributes.position.count * 2), P = g.attributes.position;
   for (let j = 0; j < P.count; j++) { const x = P.getX(j), y = P.getY(j), z = P.getZ(j);
@@ -229,6 +230,21 @@ try {
   for (const [i, f] of L.fish.entries()) await loadFish(f, i);
 } catch (e) { console.error(e); fail('魚のモデルを読み込めませんでした。再読み込みしてください。'); return; }
 scene.add(sand); nihonga.add(sand);
+// tank frame: lacquered rails along the twelve edges (thicker at the base and the rim) and a fine water line.
+// The glass itself stays unpainted (the nihonga shader draws opaque colour only), so the frame says "tank".
+{
+  const frameMat = new T.MeshBasicMaterial({ color: '#2b2a2e' }), waterMat = new T.MeshBasicMaterial({ color: '#8fa3b0' });
+  const H = TANK.height * CM, WL = TANK.water_level * CM, t = .006, base = .016, rim = .01;
+  const rail = (w, h, d, x, y, z, mat = frameMat, scale = 1) => { const m = solid(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.userData.nihongaLineScale = scale; scene.add(m); nihonga.add(m); };
+  const X = TW / 2 + t / 2, Z = TD / 2 + t / 2;
+  for (const z of [-Z, Z]) { rail(TW + 2 * t, base, t, 0, -.014 + base / 2 + .001, z); rail(TW + 2 * t, rim, t, 0, H - rim / 2, z); }
+  for (const x of [-X, X]) { rail(t, base, TD, x, -.014 + base / 2 + .001, 0); rail(t, rim, TD, x, H - rim / 2, 0); }
+  for (const x of [-X, X]) for (const z of [-Z, Z]) rail(t, H + .018, t, x, (H - .018) / 2, z);
+  // water line just inside the glass
+  const w = .0012;
+  for (const z of [-TD / 2 + w, TD / 2 - w]) rail(TW - .002, w, w, 0, WL, z, waterMat, .35);
+  for (const x of [-TW / 2 + w, TW / 2 - w]) rail(w, w, TD - .002, x, WL, 0, waterMat, .35);
+}
 for (const s of stones) { scene.add(s.root); nihonga.add(s.root); }
 for (const p of plants) { scene.add(p.root); nihonga.add(p.root); }
 applyState();

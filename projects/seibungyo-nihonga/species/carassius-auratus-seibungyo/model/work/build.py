@@ -382,14 +382,17 @@ for _x in _ex:
     _eo.append((TC - _c.min()) * K['top'] if len(_c) else 0.0)
 _eo = np.maximum.accumulate(np.asarray(_eo))
 OUTER = lambda xp: np.interp(xp, _ex, _eo)
-INNER = lambda xp: np.interp(xp, [840, 900, 1000, 1160, 1260], [8, 70, 125, 125, 95])
+INNER = lambda xp: np.interp(xp, [840, 900, 1000, 1100, 1160, 1200, 1260], [8, 70, 125, 118, 88, 45, 35])
+# v5: the two upper (inner) lobes are not joined along the dorsal edge: the top view shows them touching near
+# the root and parting toward the tips (half-gap ~17 px at x 1117 -> ~46 px at x 1203)
+GAP = lambda xp: np.interp(xp, [840, 1090, 1117, 1146, 1174, 1203, 1260], [1.5, 3, 17, 23, 34, 46, 58])
 for sign, name in [(1, 'caudal_near'), (-1, 'caudal_far')]:
     def pt(a, b, l, sign=sign):
         tq = np.clip((b - TAIL_Y0) / (TAIL_Y1 - TAIL_Y0), 0, 1)
         root = np.clip((a - X1 + 15) / 40.0, 0, 1) ** 0.8
         g = np.clip((tq - .3) / .55, 0, 1); g = g * g * (3 - 2 * g)
         h = np.clip(tq / .42, 0, 1); h = h * (2 - h)          # inner lobes open from the dorsal midline toward the notch
-        zz = 2.5 + root * (INNER(a) * h + (OUTER(a) - INNER(a)) * g)
+        zz = 1.0 + GAP(a) + root * (INNER(a) * h + (OUTER(a) - INNER(a) - GAP(a)) * g)
         return (a, -b, sign * (zz + l * TH))
     m, prm = fin2(name, CAUDAL, pt, side_uv, subdivisions=1)
     meshes.append(m)
@@ -415,11 +418,11 @@ for sign, name, ph in [(1, 'pectoral_near', 0.0), (-1, 'pectoral_far', 0.5)]:
     d = np.zeros((len(prm), 3)); d[:, 1] = 16 * r ** 1.3; d[:, 2] = sign * 8 * r ** 1.3
     targets[name] = wave_targets(prm, d, r, 1.2); wave(name, 3, ph, whim=.3, whim_phase=.5)
 
-# pelvic pair: hanging down and outward ~45 deg; opens and closes
+# pelvic pair: v5 hangs mostly downward (~16 deg outward, user request); opens and closes
 for sign, name in [(1, 'pelvic_near'), (-1, 'pelvic_far')]:
     def pt(a, b, l, sign=sign):
         drop = max(b - interp(S['body_bottom'], a), 0)
-        return (a, -b, sign * (36 + drop * math.tan(math.radians(45)) + l * TH))
+        return (a, -b, sign * (30 + drop * math.tan(math.radians(16)) + l * TH))
     m, prm = fin2(name, PELVIC, pt, side_uv, subdivisions=1)
     meshes.append(m)
     r = np.clip((prm[:, 1] - interp(S['body_bottom'], prm[:, 0])) / 160, 0, 1)

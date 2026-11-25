@@ -1,0 +1,87 @@
+{
+  "title": "日本画風の青文魚",
+  "environment": {
+    "ai": "claude-code",
+    "image_generation": "manual",
+    "model_route": "standard",
+    "checked_at": "2026-11-25",
+    "notes": "Linux / Python3・NumPy 2.5.3・Pillow 13.0 あり"
+  },
+  "style": {
+    "source": "user_illustration",
+    "name": "日本画風（墨の線描・淡彩・筆のかすれ・紙の白のハイライト）",
+    "files": [
+      "species/carassius-auratus-seibungyo/photos/01-user-illustration-nihonga.jpg"
+    ],
+    "quote": "日本画風の青文魚",
+    "role": "画風見本と同じ個体の形・模様の資料を兼ねる"
+  },
+  "review_policy": {
+    "mode": "main_only",
+    "chosen_at": "2026-11-25",
+    "answer_quote": null,
+    "reason": "希望なしのため既定"
+  },
+  "species": [
+    {
+      "id": "carassius-auratus-seibungyo",
+      "name_ja": "青文魚",
+      "scientific_name": "Carassius auratus",
+      "variant": "改良品種・青文魚、成魚、肉瘤あり",
+      "photos": [
+        "species/carassius-auratus-seibungyo/photos/01-user-illustration-nihonga.jpg"
+      ],
+      "stages": {
+        "research": {
+          "status": "in_progress",
+          "note": "鰭の縁の扱いと側面図の扱いをユーザーに確認中"
+        },
+        "side_view": {
+          "status": "not_started"
+        },
+        "views": {
+          "status": "not_started"
+        },
+        "model": {
+          "status": "not_started"
+        }
+      }
+    }
+  ],
+  "layout": {
+    "status": "not_started"
+  },
+  "aquarium": {
+    "status": "not_started"
+  },
+  "history": [
+    {
+      "at": "2026-11-25",
+      "stage": "start",
+      "event": "style_chosen",
+      "quote": "日本画風の青文魚",
+      "note": "イラスト添付。検品体制は希望なしのため主担当のみ"
+    },
+    {
+      "at": "2026-11-25",
+      "stage": "start",
+      "event": "renderer_chosen",
+      "quote": "今回はこのシェーダーを使ってください。アート性を重視します"
+    }
+  ],
+  "renderer": {
+    "shader": "aquarium/lib/nihonga-shader.js",
+    "readme": "aquarium/lib/nihonga-shader-README.md",
+    "source": "ユーザー提供 nihonga-shader.zip（自作シェーダー、three.js r170用）",
+    "quote": "今回はこのシェーダーを使ってください。アート性を重視します",
+    "priority": "アート性重視",
+    "constraints": [
+      "墨線はシェーダーが3Dの輪郭から描く→テクスチャに墨の輪郭線を焼き込まない（二重線になる）",
+      "影もシェーダーが藍寄りの段階影で付ける→テクスチャの陰影は控えめに",
+      "筆跡はモデルX軸方向→頭尾をX軸に",
+      "閉じた形が前提（鰭も閉じた薄板に）",
+      "輪郭抽出はCPU毎フレーム→頂点数を抑える（スマホ）",
+      "WebGL2必須、シーンのライトは使わない"
+    ]
+  }
+}

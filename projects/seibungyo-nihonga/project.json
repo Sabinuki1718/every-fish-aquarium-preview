@@ -145,7 +145,7 @@
           "note": "墨線版を承認用側面、淡彩版を色だけの元に。高解像度の画像待ち"
         },
         "side_view": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 1,
           "files": [
             "species/carassius-auratus-gin-suihogan/views/source/side-v1.png"
@@ -162,12 +162,16 @@
               "main": "OK"
             },
             "note": "体色の濃さが上面・下面と食い違う（要決定）"
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "1,2ok　3添付します"
         },
         "views": {
-          "status": "in_progress",
+          "status": "approved",
           "version": 2,
           "files": [
+            "species/carassius-auratus-gin-suihogan/views/source/side-v1.png",
+            "species/carassius-auratus-gin-suihogan/views/source/side-color-v1.png",
             "species/carassius-auratus-gin-suihogan/views/source/top-v2.png",
             "species/carassius-auratus-gin-suihogan/views/source/bottom-v2.png",
             "species/carassius-auratus-gin-suihogan/views/source/front-v1.png",
@@ -176,22 +180,29 @@
             "species/carassius-auratus-gin-suihogan/views/source/top-nosac-v1.png"
           ],
           "review": {
-            "version": 2,
             "mode": "main_only",
-            "status": "changes_requested",
+            "status": "passed",
             "verdicts": {
-              "main": "NG（軽微）"
-            },
-            "ng": [
-              "下面 v2 で水泡の上に眼がうっすら残る（3Dの貼り込み時に消す案をユーザーに提案）"
-            ]
+              "main": "OK"
+            }
           },
-          "missing": [
-            "側面の淡彩（色だけ）版の大きい画像"
-          ]
+          "note": "下面v2の水泡上の眼は3Dの貼り込み時に消す（ユーザー了承）",
+          "sha256": {
+            "side-v1.png": "d92acce78d77264c0b0cca711d659db73ba9be26dadbe3f1be54387ed2dde1f6",
+            "side-color-v1.png": "463a5dd33f4b4faa9a74e4d7e6a3e87ced2f95fba29bff24bc1809d8513edc50",
+            "top-v2.png": "52139d2207fcaf5fe01da1f5300e422bcfde77a03002da4f6f5f48b5fba943b4",
+            "bottom-v2.png": "58b3ba7ae025133e4662ed9f66df1589f2f374926dc292d3ba2b762705a723d7",
+            "front-v1.png": "7deedbdb1dc274fe67e81a35cecd0e76884af144961b2d08fe16587ef27fd3cc",
+            "front-nosac-v1.png": "02c8d1f14721a918e68b45796b002895144cbb7daff0bdd36a0be10926b03c31",
+            "side-nosac-v1.png": "e6c0e370137f020da3fb549246da91201e6deb2fb90fe4772af744f7edd77aa3",
+            "top-nosac-v1.png": "81376ab980f33785783943fdef786c9540dae558d04ac2018c6a9146dd9efc92"
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "not_started"
+          "status": "in_progress",
+          "version": 1
         }
       }
     },
@@ -210,7 +221,7 @@
           "note": "墨線版を承認用側面、淡彩版を色だけの元に。体色は青灰（個体差の範囲）。パール鱗の盛り上がりを立体で再現。高解像度の画像待ち"
         },
         "side_view": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 1,
           "files": [
             "species/carassius-auratus-horyu/views/source/side-v1.png",
@@ -228,27 +239,40 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "1,2ok　3添付します"
         },
         "views": {
-          "status": "in_progress",
+          "status": "approved",
           "version": 2,
           "files": [
+            "species/carassius-auratus-horyu/views/source/side-v1.png",
+            "species/carassius-auratus-horyu/views/source/side-color-v1.png",
             "species/carassius-auratus-horyu/views/source/top-v1.png",
             "species/carassius-auratus-horyu/views/source/bottom-v1.png",
             "species/carassius-auratus-horyu/views/source/front-v2.png"
           ],
           "review": {
-            "version": 2,
             "mode": "main_only",
             "status": "passed",
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "sha256": {
+            "side-v1.png": "e9efc933b13d7be3224ece3a6d3c4e445c28c9a11b4785ee327176b6d23ae46e",
+            "side-color-v1.png": "0d11d3d3575a8f4deb8c2dd5f819662e7771c079a00b363a55c0290941c25ebd",
+            "top-v1.png": "cfec764680b69aefaa0545b5e9e6e38df51bee9cc38c49fff72061e234dc723b",
+            "bottom-v1.png": "e3b435a5678f2315aef131c611f3a06260b8cdb89e2f2e9c9d92866b595a1a19",
+            "front-v2.png": "f6d5471e30fecdd0eaef178e56e7536de93ef4dfc76c8fa525372f3af0428cb1"
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "not_started"
+          "status": "in_progress",
+          "version": 1
         }
       }
     }
@@ -500,6 +524,13 @@
       "stage": "views",
       "event": "received",
       "note": "穂竜 正面v2、銀水泡眼 水泡なし側面・上面"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "side_view+views",
+      "species": "horyu, gin-suihogan",
+      "event": "approved",
+      "quote": "1,2ok　3添付します"
     }
   ],
   "renderer": {

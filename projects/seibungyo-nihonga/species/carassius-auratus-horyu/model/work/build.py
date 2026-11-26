@@ -542,8 +542,7 @@ for _ in range(80):
     bu = rng.uniform(WX0 + 4, WX1 - 6); bv = rng.uniform(-1, 1) * wen_t(bu) * np.interp(bu, xs, hh); rr = rng.uniform(9, 16)
     bump = np.maximum(bump, np.clip(1 - ((arc_u - bu) ** 2 + (arc_v - bv) ** 2) / rr ** 2, 0, 1) ** 1.5 * rng.uniform(.6, 1))
 edge = np.clip(np.minimum.reduce([TV, 1 - TV, uu[:, None] + 0 * TV, (1 - uu[:, None]) + 0 * TV]) / .12, 0, 1)
-lift = 1 + 1.4 * np.clip((tb - np.abs(tw)) / np.maximum(tb, 1e-6), 0, 1)              # high head (koutou): tallest along the crown
-outer = base + nrm * (0.6 + 11.0 * bump * lift * edge ** .7)[..., None]
+outer = base + nrm * (0.6 + 9.5 * bump * edge ** .7)[..., None]          # v3: same wen as the Seibungyo (user request)
 inner = base - nrm * 6.0
 s_body = np.interp(TU, xs, np.linspace(0, 1, NS))
 uvw = np.stack(body_uv(s_body, np.abs(tw)), -1)            # mirror: no UV seam on the crown
@@ -605,7 +604,7 @@ for sign, name in [(1, 'eye_near'), (-1, 'eye_far')]:
 PR, PH = 11.0, 5.0
 pp, puv, pf = [], [], []
 rng_p = np.random.default_rng(3)
-xrow = np.arange(470, 782, 25.0)
+xrow = np.arange(510, 782, 25.0)                     # v3: pearls start behind the gill cover, none on the head
 for ix, xp in enumerate(xrow):
     c_, r1, r2 = np.interp(xp, xs, cy), np.interp(xp, xs, hh), np.interp(xp, xs, hw)
     if min(r1, r2) < 40: continue

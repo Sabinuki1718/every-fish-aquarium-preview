@@ -1,0 +1,27 @@
+{
+ "model_id": "carassius-auratus-horyu",
+ "version": "v3",
+ "name_ja": "穂竜",
+ "base": "青文魚 v5 の組み立て（胴・鰭・肉瘤・口・鰓の構造と動き）を共用し、形と色は穂竜の図面から読み直し",
+ "added": [
+  "出目（竜眼）：頭から出る短い柄＋描かれた眼のドーム。上面図の突き出し量に合わせる",
+  "パール鱗：胴の側面と背に低いドーム（約500個、墨線なし）",
+  "肉瘤：青文魚と同じ表現（ユーザー指定）"
+ ],
+ "fins": {
+  "pectoral": "上面図に合わせ広く開く",
+  "pelvic": "外へ約42°（上面・正面図）",
+  "caudal": "上面図の外周と中央の隙間から"
+ },
+ "files": {
+  "glb": "model/v3/horyu.glb (sha d8704cc8fef3…)",
+  "preview": "model/v3/web/preview.html",
+  "offline": "model/v3/web/preview-offline.html"
+ },
+ "animation": "idle 4.8 s（鰭・口・鰓、青文魚と同じ方式）",
+ "scale": "全長15 cmの仮スケール",
+ "changes_from_v2": [
+  "肉瘤を青文魚と同じ高さ・こぶに戻した",
+  "パール鱗を鰓蓋より後ろだけに（頭には付けない）"
+ ]
+}

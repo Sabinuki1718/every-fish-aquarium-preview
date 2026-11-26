@@ -272,16 +272,16 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 2,
+          "version": 3,
           "files": [
-            "species/carassius-auratus-horyu/model/v2/horyu.glb",
-            "species/carassius-auratus-horyu/model/v2/web/preview.html"
+            "species/carassius-auratus-horyu/model/v3/horyu.glb",
+            "species/carassius-auratus-horyu/model/v3/web/preview.html"
           ],
-          "glb_sha256": "711418d295643f957ecd08ab9d5936440a9f898ade560f38f3a972ffc5a5c5da",
-          "spec": "species/carassius-auratus-horyu/model/v2/model-spec.json",
+          "glb_sha256": "d8704cc8fef36585c4767b9de037c2c4caffe811ac664f8daba20e308ab5bc65",
+          "spec": "species/carassius-auratus-horyu/model/v3/model-spec.json",
           "base": "seibungyo v5",
           "review": {
-            "version": 2,
+            "version": 3,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
@@ -568,6 +568,20 @@
       "species": "horyu",
       "event": "revised",
       "note": "v2: 胴を丸く"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu",
+      "event": "changes_requested",
+      "quote": "穂竜、頭にまでパール鱗が適用されているのか、肉瘤がギザギザして見えます 肉瘤は青文と同等表現でおk"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu",
+      "event": "revised",
+      "note": "v3: 肉瘤を青文魚と同じに、パール鱗は鰓蓋より後ろのみ"
     }
   ],
   "renderer": {
@@ -684,6 +698,27 @@
       "review": {
         "version": 1,
         "mode": "main_only",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "horyu"
+    },
+    {
+      "status": "superseded",
+      "version": 2,
+      "files": [
+        "species/carassius-auratus-horyu/model/v2/horyu.glb",
+        "species/carassius-auratus-horyu/model/v2/web/preview.html"
+      ],
+      "glb_sha256": "711418d295643f957ecd08ab9d5936440a9f898ade560f38f3a972ffc5a5c5da",
+      "spec": "species/carassius-auratus-horyu/model/v2/model-spec.json",
+      "base": "seibungyo v5",
+      "review": {
+        "version": 2,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
         "status": "passed",
         "verdicts": {
           "main": "OK"

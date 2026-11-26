@@ -120,7 +120,8 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち"
         }
       }
     },
@@ -195,8 +196,22 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "in_progress",
-          "version": 1
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-gin-suihogan/model/v1/gin-suihogan.glb",
+            "species/carassius-auratus-gin-suihogan/model/v1/web/preview.html"
+          ],
+          "glb_sha256": "66ea4610aa76c6cb99b18c97fa7ab6d1886e250da13074b8d125efc1ed9833c7",
+          "base": "seibungyo v8 の組み立て（背鰭・肉瘤なし）",
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            }
+          }
         }
       }
     },
@@ -281,7 +296,8 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち"
         }
       }
     }
@@ -632,6 +648,14 @@
       "species": "horyu v7, seibungyo v8",
       "event": "revised",
       "note": "開口部の縁に墨線（シェーダーに nihongaNoWeld 拡張）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "gin-suihogan",
+      "event": "built",
+      "quote": "銀水泡眼　モデル作成に進めてください",
+      "note": "v1"
     }
   ],
   "renderer": {

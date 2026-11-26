@@ -1,0 +1,663 @@
+{
+ "tone_gamma": 1.0,
+ "lum_ink": 128.34839612810825,
+ "lum_colour": 128.34839612810825,
+ "scale": 0.00013732071505560494,
+ "center_px": [
+  710.1666870117188,
+  -453.85699462890625,
+  0.0
+ ],
+ "meshes": {
+  "body": {
+   "vertices": 4725,
+   "triangles": 9216,
+   "targets": [
+    "mouth_open"
+   ]
+  },
+  "caudal_near": {
+   "vertices": 588,
+   "triangles": 1172,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "caudal_far": {
+   "vertices": 588,
+   "triangles": 1172,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "pectoral_near": {
+   "vertices": 110,
+   "triangles": 216,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "pectoral_far": {
+   "vertices": 110,
+   "triangles": 216,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "pelvic_near": {
+   "vertices": 162,
+   "triangles": 320,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "pelvic_far": {
+   "vertices": 162,
+   "triangles": 320,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "anal_near": {
+   "vertices": 110,
+   "triangles": 216,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "anal_far": {
+   "vertices": 110,
+   "triangles": 216,
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ]
+  },
+  "gill_near": {
+   "vertices": 190,
+   "triangles": 376,
+   "targets": [
+    "open"
+   ]
+  },
+  "gill_far": {
+   "vertices": 190,
+   "triangles": 376,
+   "targets": [
+    "open"
+   ]
+  },
+  "mouth_lining": {
+   "vertices": 56,
+   "triangles": 54,
+   "targets": [
+    "mouth_open"
+   ]
+  },
+  "mouth_cavity": {
+   "vertices": 266,
+   "triangles": 528,
+   "targets": [
+    "mouth_open"
+   ]
+  },
+  "eye_near": {
+   "vertices": 322,
+   "triangles": 640,
+   "targets": []
+  },
+  "eye_far": {
+   "vertices": 322,
+   "triangles": 640,
+   "targets": []
+  },
+  "sac_near": {
+   "vertices": 1129,
+   "triangles": 2208,
+   "targets": [
+    "open"
+   ]
+  },
+  "sac_far": {
+   "vertices": 1129,
+   "triangles": 2208,
+   "targets": [
+    "open"
+   ]
+  }
+ },
+ "drivers": {
+  "caudal_near": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 0.0,
+   "whim": 0.25,
+   "whim_phase": 2.0,
+   "duration": 4.8
+  },
+  "caudal_far": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 0.0,
+   "whim": 0.25,
+   "whim_phase": 2.0,
+   "duration": 4.8
+  },
+  "pectoral_near": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 3,
+   "phase": 0.0,
+   "whim": 0.3,
+   "whim_phase": 0.5,
+   "duration": 4.8
+  },
+  "pectoral_far": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 3,
+   "phase": 0.5,
+   "whim": 0.3,
+   "whim_phase": 0.5,
+   "duration": 4.8
+  },
+  "pelvic_near": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 1.3,
+   "whim": 0.25,
+   "whim_phase": 3.0,
+   "duration": 4.8
+  },
+  "pelvic_far": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 1.3,
+   "whim": 0.25,
+   "whim_phase": 3.0,
+   "duration": 4.8
+  },
+  "anal_near": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 2.0,
+   "whim": 0.25,
+   "whim_phase": 4.0,
+   "duration": 4.8
+  },
+  "anal_far": {
+   "kind": "wave",
+   "targets": [
+    "wave_s",
+    "wave_c"
+   ],
+   "cycles": 2,
+   "phase": 2.0,
+   "whim": 0.25,
+   "whim_phase": 4.0,
+   "duration": 4.8
+  },
+  "gill_near": {
+   "kind": "pulse",
+   "targets": [
+    "open"
+   ],
+   "cycles": 4,
+   "phase": -1.0,
+   "duration": 4.8
+  },
+  "gill_far": {
+   "kind": "pulse",
+   "targets": [
+    "open"
+   ],
+   "cycles": 4,
+   "phase": -1.0,
+   "duration": 4.8
+  },
+  "body": {
+   "kind": "paku",
+   "targets": [
+    "mouth_open"
+   ],
+   "cycles": 4,
+   "phase": 0.0,
+   "duration": 4.8
+  },
+  "mouth_cavity": {
+   "kind": "paku",
+   "targets": [
+    "mouth_open"
+   ],
+   "cycles": 4,
+   "phase": 0.0,
+   "duration": 4.8
+  },
+  "mouth_lining": {
+   "kind": "paku",
+   "targets": [
+    "mouth_open"
+   ],
+   "cycles": 4,
+   "phase": 0.0,
+   "duration": 4.8
+  },
+  "sac_near": {
+   "kind": "pulse",
+   "targets": [
+    "open"
+   ],
+   "cycles": 2,
+   "phase": 0.5,
+   "duration": 4.8
+  },
+  "sac_far": {
+   "kind": "pulse",
+   "targets": [
+    "open"
+   ],
+   "cycles": 2,
+   "phase": 0.5,
+   "duration": 4.8
+  }
+ },
+ "uv_collapse": [
+  {
+   "mesh": "body",
+   "line": {
+    "count": 128,
+    "bounds": [
+     [
+      -0.0692325308918953,
+      0.005466066766530275,
+      -0.004574267193675041
+     ],
+     [
+      0.01892736926674843,
+      0.022500960156321526,
+      0.004574267193675041
+     ]
+    ],
+    "example_faces": [
+     9088,
+     9089,
+     9090,
+     9091,
+     9092,
+     9093,
+     9094,
+     9095
+    ]
+   }
+  },
+  {
+   "mesh": "caudal_near",
+   "line": {
+    "count": 396,
+    "bounds": [
+     [
+      0.013205669820308685,
+      -0.0319695919752121,
+      0.00015105279453564435
+     ],
+     [
+      0.07500000298023224,
+      0.03495137020945549,
+      0.044131647795438766
+     ]
+    ],
+    "example_faces": [
+     776,
+     777,
+     778,
+     779,
+     780,
+     781,
+     782,
+     783
+    ]
+   }
+  },
+  {
+   "mesh": "caudal_far",
+   "line": {
+    "count": 396,
+    "bounds": [
+     [
+      0.013205669820308685,
+      -0.0319695919752121,
+      -0.044131647795438766
+     ],
+     [
+      0.07500000298023224,
+      0.03495137020945549,
+      -0.00015105279453564435
+     ]
+    ],
+    "example_faces": [
+     776,
+     777,
+     778,
+     779,
+     780,
+     781,
+     782,
+     783
+    ]
+   }
+  },
+  {
+   "mesh": "pectoral_near",
+   "line": {
+    "count": 56,
+    "bounds": [
+     [
+      -0.031606655567884445,
+      -0.013120037503540516,
+      0.010270989499986172
+     ],
+     [
+      -0.009635339491069317,
+      -0.005457538645714521,
+      0.02712056040763855
+     ]
+    ],
+    "example_faces": [
+     160,
+     161,
+     162,
+     163,
+     164,
+     165,
+     166,
+     167
+    ]
+   }
+  },
+  {
+   "mesh": "pectoral_far",
+   "line": {
+    "count": 56,
+    "bounds": [
+     [
+      -0.031606655567884445,
+      -0.013120037503540516,
+      -0.02712056040763855
+     ],
+     [
+      -0.009635339491069317,
+      -0.005457538645714521,
+      -0.010270989499986172
+     ]
+    ],
+    "example_faces": [
+     160,
+     161,
+     162,
+     163,
+     164,
+     165,
+     166,
+     167
+    ]
+   }
+  },
+  {
+   "mesh": "pelvic_near",
+   "line": {
+    "count": 112,
+    "bounds": [
+     [
+      -0.01750839129090309,
+      -0.035768795758485794,
+      0.003927372395992279
+     ],
+     [
+      0.011826746165752411,
+      -0.012315565720200539,
+      0.015507803298532963
+     ]
+    ],
+    "example_faces": [
+     208,
+     209,
+     210,
+     211,
+     212,
+     213,
+     214,
+     215
+    ]
+   }
+  },
+  {
+   "mesh": "pelvic_far",
+   "line": {
+    "count": 112,
+    "bounds": [
+     [
+      -0.01750839129090309,
+      -0.035768795758485794,
+      -0.015507803298532963
+     ],
+     [
+      0.011826746165752411,
+      -0.012315565720200539,
+      -0.003927372395992279
+     ]
+    ],
+    "example_faces": [
+     208,
+     209,
+     210,
+     211,
+     212,
+     213,
+     214,
+     215
+    ]
+   }
+  },
+  {
+   "mesh": "anal_near",
+   "line": {
+    "count": 56,
+    "bounds": [
+     [
+      0.007529749535024166,
+      -0.009769408032298088,
+      0.0007689960184507072
+     ],
+     [
+      0.021948425099253654,
+      0.006709077395498753,
+      0.006953860633075237
+     ]
+    ],
+    "example_faces": [
+     160,
+     161,
+     162,
+     163,
+     164,
+     165,
+     166,
+     167
+    ]
+   }
+  },
+  {
+   "mesh": "anal_far",
+   "line": {
+    "count": 56,
+    "bounds": [
+     [
+      0.007529749535024166,
+      -0.009769408032298088,
+      -0.006953860633075237
+     ],
+     [
+      0.021948425099253654,
+      0.006709077395498753,
+      -0.0007689960184507072
+     ]
+    ],
+    "example_faces": [
+     160,
+     161,
+     162,
+     163,
+     164,
+     165,
+     166,
+     167
+    ]
+   }
+  },
+  {
+   "mesh": "gill_near",
+   "line": {
+    "count": 88,
+    "bounds": [
+     [
+      -0.04369087517261505,
+      -0.007984238676726818,
+      0.009158546105027199
+     ],
+     [
+      -0.03050808794796467,
+      0.01865598000586033,
+      0.01481318287551403
+     ]
+    ],
+    "example_faces": [
+     288,
+     289,
+     290,
+     291,
+     292,
+     293,
+     294,
+     295
+    ]
+   }
+  },
+  {
+   "mesh": "gill_far",
+   "line": {
+    "count": 88,
+    "bounds": [
+     [
+      -0.04369087517261505,
+      -0.007984238676726818,
+      -0.01481318287551403
+     ],
+     [
+      -0.03050808794796467,
+      0.01865598000586033,
+      -0.009158546105027199
+     ]
+    ],
+    "example_faces": [
+     288,
+     289,
+     290,
+     291,
+     292,
+     293,
+     294,
+     295
+    ]
+   }
+  },
+  {
+   "mesh": "mouth_lining",
+   "point": {
+    "count": 54,
+    "bounds": [
+     [
+      -0.0692325308918953,
+      0.0008175292750820518,
+      -0.008001494221389294
+     ],
+     [
+      -0.06213882938027382,
+      0.005879810079932213,
+      0.008001494221389294
+     ]
+    ],
+    "example_faces": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "mesh": "mouth_cavity",
+   "point": {
+    "count": 528,
+    "bounds": [
+     [
+      -0.06840860843658447,
+      0.0017933034105226398,
+      -0.0037105984520167112
+     ],
+     [
+      -0.06593683362007141,
+      0.005809502676129341,
+      0.0037105984520167112
+     ]
+    ],
+    "example_faces": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  }
+ ]
+}

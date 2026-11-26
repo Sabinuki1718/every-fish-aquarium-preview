@@ -41,7 +41,7 @@ def lib_js():
 
 def main():
     pj = json.load(open(ROOT / 'project.json'))
-    assert pj['layout']['status'] == 'approved' and all(x['stages']['model']['status'] in ('approved', 'waiting_approval') for x in pj['species'])
+    assert pj['layout']['status'] == 'approved' and all(x['stages']['model']['status'] == 'approved' for x in pj['species'])
     L = json.load(open(ROOT / f"layout/v{pj['layout']['version']}/layout.json"))
     (AQ / 'models').mkdir(exist_ok=True)
     models = {}

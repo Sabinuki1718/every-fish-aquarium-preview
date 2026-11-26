@@ -104,7 +104,7 @@
           "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 9,
           "files": [
             "species/carassius-auratus-seibungyo/model/v9/seibungyo.glb",
@@ -120,7 +120,9 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "ok"
         }
       }
     },
@@ -282,7 +284,7 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 8,
           "files": [
             "species/carassius-auratus-horyu/model/v8/horyu.glb",
@@ -298,7 +300,9 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "ok"
         }
       }
     }
@@ -723,6 +727,13 @@
       "stage": "model",
       "species": "seibungyo v9, horyu v8",
       "event": "revised"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "seibungyo v9, horyu v8",
+      "event": "approved",
+      "quote": "ok"
     }
   ],
   "renderer": {

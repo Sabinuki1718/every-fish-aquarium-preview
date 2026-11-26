@@ -199,16 +199,17 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-gin-suihogan/model/v1/gin-suihogan.glb",
-            "species/carassius-auratus-gin-suihogan/model/v1/web/preview.html"
+            "species/carassius-auratus-gin-suihogan/model/v2/gin-suihogan.glb",
+            "species/carassius-auratus-gin-suihogan/model/v2/web/preview.html"
           ],
-          "glb_sha256": "66ea4610aa76c6cb99b18c97fa7ab6d1886e250da13074b8d125efc1ed9833c7",
-          "base": "seibungyo v8 の組み立て（背鰭・肉瘤なし）",
+          "glb_sha256": "a0d87a2d6b9900e8b1fd3834820855a42c0f0a3cf359bcb4888d7f2b0488746b",
+          "change": "口の中央の三角形の突起を解消（吻先の細い輪で唇の分割位置が低すぎ、上唇がくさび状に残っていた。吻先ほど分割を横へ）。水泡を上面図の青灰色で均一に（陰影は弱く残す）",
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
@@ -667,6 +668,20 @@
       "species": "seibungyo v8, horyu v7",
       "event": "approved",
       "quote": "青文魚と穂竜はok"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "gin-suihogan",
+      "event": "changes_requested",
+      "quote": "①口の中央に三角形の突起が生えているので修正 ②水泡の色　上と下とで違うように見えました 下側が白く見えます 均一な青灰色になるよう調整"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "gin-suihogan",
+      "event": "revised",
+      "note": "v2"
     }
   ],
   "renderer": {
@@ -960,6 +975,25 @@
       },
       "species": "carassius-auratus-seibungyo",
       "user_note": "動きはok"
+    },
+    {
+      "status": "superseded",
+      "version": 1,
+      "files": [
+        "species/carassius-auratus-gin-suihogan/model/v1/gin-suihogan.glb",
+        "species/carassius-auratus-gin-suihogan/model/v1/web/preview.html"
+      ],
+      "glb_sha256": "66ea4610aa76c6cb99b18c97fa7ab6d1886e250da13074b8d125efc1ed9833c7",
+      "base": "seibungyo v8 の組み立て（背鰭・肉瘤なし）",
+      "review": {
+        "version": 1,
+        "mode": "main_only",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "gin-suihogan"
     }
   ]
 }

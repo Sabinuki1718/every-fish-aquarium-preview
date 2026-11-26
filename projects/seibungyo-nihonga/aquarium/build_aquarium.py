@@ -17,11 +17,16 @@ SK = ROOT.parents[1] / '.agents/skills'
 sys.path.insert(0, str(SK / 'publish-aquarium-web/scripts'))
 from web_bundle import online_three_loader, offline_document, data_uri
 
-MODEL_WEB = ROOT / 'species/carassius-auratus-seibungyo/model/v8/web/models'
 INFO = {'seibungyo': {
     'name': '青文魚（せいぶんぎょ）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
     'text': '中国で作られた金魚の品種で、昭和30年代に日本へ入りました。オランダ獅子頭に近い体型で、頭にこぶ状の肉瘤があり、'
-            '体は青みがかった灰色、背鰭と長い四つ尾をもちます。肉瘤の大きさには個体差があります。'}}
+            '体は青みがかった灰色、背鰭と長い四つ尾をもちます。肉瘤の大きさには個体差があります。'},
+    'horyu': {'name': '穂竜（ほりゅう）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
+              'text': '兵庫県赤穂市の愛好家が、青の竜眼に高頭パールを掛け合わせて作った日本の品種です。左右に突き出た出目、'
+                      '頭の肉瘤、真珠のように盛り上がるパール鱗、丸い体が特徴です。流通は少なく、愛好家の間で守られています。'},
+    'gin-suihogan': {'name': '銀水泡眼（ぎんすいほうがん）', 'scientific': 'Carassius auratus（キンギョの改良品種・水泡眼）',
+                     'text': '眼の下に液体の入った大きな袋（水泡）をもつ中国の品種、水泡眼の青〜銀系の個体です。背鰭がなく、'
+                             '眼は上を向きます。水泡は破れやすいので、とがった物のない水槽で飼われます。'}}
 
 
 def lib_js():
@@ -36,16 +41,17 @@ def lib_js():
 
 def main():
     pj = json.load(open(ROOT / 'project.json'))
-    assert pj['layout']['status'] == 'approved' and pj['species'][0]['stages']['model']['status'] in ('approved', 'waiting_approval')
+    assert pj['layout']['status'] == 'approved' and all(x['stages']['model']['status'] == 'approved' for x in pj['species'])
     L = json.load(open(ROOT / f"layout/v{pj['layout']['version']}/layout.json"))
-    for f in L['fish']:
-        f.setdefault('species_key', 'seibungyo')
     (AQ / 'models').mkdir(exist_ok=True)
-    shutil.copy(MODEL_WEB / 'seibungyo.json', AQ / 'models/seibungyo.json')
-    big = Image.open(MODEL_WEB / 'seibungyo-2048.jpg').convert('RGB')
-    big.save(AQ / 'models/seibungyo-2048.jpg', quality=88)
-    big.resize((1024, 1024), Image.LANCZOS).save(AQ / 'models/seibungyo-1024.jpg', quality=84)
-    models = {f['id']: {'geometry': 'models/seibungyo.json', 'standard': 'models/seibungyo-2048.jpg', 'light': 'models/seibungyo-1024.jpg'} for f in L['fish']}
+    models = {}
+    for f in L['fish']:
+        k = f['species_key']; src = ROOT / Path(f['model']).parent / 'web/models'
+        shutil.copy(src / f'{k}.json', AQ / f'models/{k}.json')
+        big = Image.open(src / f'{k}-2048.jpg').convert('RGB')
+        big.save(AQ / f'models/{k}-2048.jpg', quality=88)
+        big.resize((1024, 1024), Image.LANCZOS).save(AQ / f'models/{k}-1024.jpg', quality=84)
+        models[f['id']] = {'geometry': f'models/{k}.json', 'standard': f'models/{k}-2048.jpg', 'light': f'models/{k}-1024.jpg'}
     textures = {n: f'textures/{n}.jpg' for n in ['stone-ai', 'stone-midori', 'sand', 'washi'] if (AQ / f'textures/{n}.jpg').exists()}
 
     (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')

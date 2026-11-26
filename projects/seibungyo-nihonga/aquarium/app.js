@@ -80,7 +80,7 @@ async function loadFish(f, i) {
   scene.add(root); nihonga.add(root);
   const rnd = seeded(97 + i * 31);
   fishes.push({ id: f.id, info: f, root, body, animated, t: rnd() * 40, finT: rnd() * 5, stopped: false,
-    path: { cx: 0, cy: 19, cz: 3, ax: 19, ay: 4.5, az: 4, w: [2 * Math.PI / 41, 2 * Math.PI / 23, 2 * Math.PI / 29].map(w => w * (.9 + .2 * rnd())), ph: [rnd() * 6, rnd() * 6, rnd() * 6] },
+    path: { ...(f.path || { cx: 0, cy: 19, cz: 3, ax: 19, ay: 4.5, az: 4 }), w: [2 * Math.PI / 41, 2 * Math.PI / 23, 2 * Math.PI / 29].map(w => w * (.9 + .2 * rnd())), ph: [rnd() * 6, rnd() * 6, rnd() * 6] },
     yaw: 0, pitch: 0, prev: new T.Vector3() });
 }
 function driverWeights(dv, t) {

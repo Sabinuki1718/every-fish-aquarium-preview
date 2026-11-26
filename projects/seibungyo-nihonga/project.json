@@ -198,7 +198,7 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 3,
           "files": [
             "species/carassius-auratus-gin-suihogan/model/v3/gin-suihogan.glb",
@@ -214,7 +214,9 @@
             "verdicts": {
               "main": "OK"
             }
-          }
+          },
+          "approved_at": "2026-11-26",
+          "approval_quote": "ok"
         }
       }
     },
@@ -339,7 +341,7 @@
   },
   "aquarium": {
     "status": "in_progress",
-    "version": 3,
+    "version": 4,
     "files": [
       "aquarium/index.html",
       "aquarium/aquarium-offline.html",
@@ -361,7 +363,12 @@
       "washi": "aquarium/textures/washi.jpg",
       "sources": "aquarium/textures/source/"
     },
-    "note_model": "青文魚は v8 を使用（承認待ち）"
+    "note_model": "青文魚は v8 を使用（承認待ち）",
+    "fish": [
+      "seibungyo v8",
+      "horyu v7",
+      "gin-suihogan v3"
+    ]
   },
   "history": [
     {
@@ -696,6 +703,19 @@
       "species": "gin-suihogan",
       "event": "revised",
       "note": "v3"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "gin-suihogan v3",
+      "event": "approved",
+      "quote": "ok"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "aquarium",
+      "event": "revised",
+      "note": "v4: 穂竜・銀水泡眼を追加して3匹（泳ぐ高さを分ける）、観察の解説を3品種分"
     }
   ],
   "renderer": {

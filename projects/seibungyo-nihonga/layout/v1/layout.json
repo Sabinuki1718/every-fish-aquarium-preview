@@ -22,7 +22,8 @@
  "fish": [
   {
    "id": "seibungyo-1",
-   "model": "species/carassius-auratus-seibungyo/model/v5/seibungyo.glb",
+   "species_key": "seibungyo",
+   "model": "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
    "species": "青文魚 Carassius auratus",
    "count": 1,
    "total_length_cm": 15,
@@ -31,7 +32,46 @@
     15,
     2
    ],
-   "note": "後で別の金魚を追加予定（構成データに追加できる形にする）"
+   "path": {
+    "cx": 0,
+    "cy": 19,
+    "cz": 3,
+    "ax": 19,
+    "ay": 4.5,
+    "az": 4
+   }
+  },
+  {
+   "id": "horyu-1",
+   "species_key": "horyu",
+   "model": "species/carassius-auratus-horyu/model/v7/horyu.glb",
+   "species": "穂竜 Carassius auratus",
+   "count": 1,
+   "total_length_cm": 13,
+   "path": {
+    "cx": -2,
+    "cy": 13,
+    "cz": 0,
+    "ax": 16,
+    "ay": 3.5,
+    "az": 5
+   }
+  },
+  {
+   "id": "gin-suihogan-1",
+   "species_key": "gin-suihogan",
+   "model": "species/carassius-auratus-gin-suihogan/model/v3/gin-suihogan.glb",
+   "species": "銀水泡眼 Carassius auratus",
+   "count": 1,
+   "total_length_cm": 13,
+   "path": {
+    "cx": 2,
+    "cy": 24,
+    "cz": -1,
+    "ax": 15,
+    "ay": 3.0,
+    "az": 4
+   }
   }
  ],
  "stones": [
@@ -177,5 +217,6 @@
  ],
  "plants_note": "ユーザーの写真に合わせた形：節ごとに向かい合う2枚の細裂した半円形の扇が上向きに開き、節ごとに90°回る。上ほど小さく密。葉は墨の輪郭なし（没骨）で、細い葉脈を筆致として描く。v1c：葉の扇の先の縁と茎に細い墨線（線の太さ0.4〜0.45倍）。2〜3本の株ごとに8〜20°傾け、株の中で少しずつ開く",
  "revision": "v1c（カボンバに日本画シェーダーの墨線、株ごとの傾き）",
- "stone_colors_note": "2026-11-26 ユーザー指定：石のサブカラーを赤系から緑にする（「石のサブカラーは緑にします」）"
+ "stone_colors_note": "2026-11-26 ユーザー指定：石のサブカラーを赤系から緑にする（「石のサブカラーは緑にします」）",
+ "fish_note": "2026-11-26 ユーザー依頼（「銀水泡眼と穂竜を追加します」）で3匹に。泳ぐ高さを分ける：銀水泡眼は上層、青文魚は中層、穂竜は低層"
 }

@@ -102,7 +102,8 @@ renderer.setClearColor(0x000000, 0);          // the shader finds the background
 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 1, .005, 5);
 const controls = new THREE.OrbitControls(camera, canvas); controls.enableDamping = true; controls.autoRotateSpeed = 1.0;
 const D = .36, V = { side: [0, 0, D], front: [-D, 0, 1e-4], top: [0, D, 1e-4], bottom: [0, -D, 1e-4], oblique: [-.2, .1, .27] };
-const setView = n => { camera.position.set(...V[n]); controls.target.set(0, 0, 0); controls.update(); };
+const QZ = new URLSearchParams(location.search), Z = +(QZ.get('zoom') || 1), TX = +(QZ.get('tx') || 0), TY = +(QZ.get('ty') || 0);
+const setView = n => { camera.position.set(...V[n].map((v, i) => v / Z + (i === 0 ? TX : i === 1 ? TY : 0))); controls.target.set(TX, TY, 0); controls.update(); };
 document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
 const toggle = (id, on) => { const b = document.getElementById(id); b.addEventListener('click', () => { const v = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', v); on(v); }); };
 toggle('spin', v => controls.autoRotate = v);
@@ -116,6 +117,8 @@ addEventListener('resize', resize); resize(); setView(new URLSearchParams(locati
 // morph drivers: the same formulas as the GLB clip 'idle'
 function weights(dv, t) {
   const ph = 2 * Math.PI * dv.cycles * t / dv.duration + dv.phase;
+  if (dv.kind === 'paku') { let p = ((dv.cycles * t / dv.duration + dv.phase / (2 * Math.PI)) % 1 + 1) % 1, q;
+    if (p < .16) { q = p / .16; return [1 - (1 - q) * (1 - q)]; } if (p < .30) return [1]; if (p < .42) { q = (p - .30) / .12; return [1 - q * q]; } return [0]; }
   if (dv.kind === 'wave') { const m = 1 + dv.whim * Math.sin(2 * Math.PI * t / dv.duration + dv.whim_phase); return [Math.sin(ph) * m, Math.cos(ph) * m]; }
   return [0.5 - 0.5 * Math.cos(ph)];
 }
@@ -144,7 +147,7 @@ const q = new URLSearchParams(location.search), fixedT = q.has('t') ? +q.get('t'
 let t = 0, last = performance.now();
 function pose(time) {
   for (const a of animated) {
-    const w = q.get('state') === 'open' ? (a.dv.kind === 'pulse' ? [1] : [0, 0]) : weights(a.dv, time % a.dv.duration);
+    const w = q.get('state') === 'open' ? (a.dv.kind !== 'wave' ? [1] : [0, 0]) : weights(a.dv, time % a.dv.duration);
     const p = a.mesh.geometry.attributes.position, arr = p.array;
     arr.set(a.base);
     for (let k = 0; k < a.d.length; k++) { const wk = w[k], dk = a.d[k]; if (!wk) continue; for (let i = 0; i < arr.length; i++) arr[i] += wk * dk[i]; }

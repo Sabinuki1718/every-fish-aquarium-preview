@@ -84,6 +84,8 @@ async function loadFish(f, i) {
 }
 function driverWeights(dv, t) {
   const ph = 2 * Math.PI * dv.cycles * t / dv.duration + dv.phase;
+  if (dv.kind === 'paku') { let p = ((dv.cycles * t / dv.duration + dv.phase / (2 * Math.PI)) % 1 + 1) % 1, q;
+    if (p < .16) { q = p / .16; return [1 - (1 - q) * (1 - q)]; } if (p < .30) return [1]; if (p < .42) { q = (p - .30) / .12; return [1 - q * q]; } return [0]; }
   if (dv.kind === 'wave') { const m = 1 + dv.whim * Math.sin(2 * Math.PI * t / dv.duration + dv.whim_phase); return [Math.sin(ph) * m, Math.cos(ph) * m]; }
   return [.5 - .5 * Math.cos(ph)];
 }

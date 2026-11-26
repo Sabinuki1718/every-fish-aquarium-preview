@@ -104,29 +104,23 @@
           "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
-          "status": "approved",
-          "version": 5,
+          "status": "waiting_approval",
+          "version": 6,
           "files": [
-            "species/carassius-auratus-seibungyo/model/v5/seibungyo.glb",
-            "species/carassius-auratus-seibungyo/model/v5/web/preview.html",
-            "species/carassius-auratus-seibungyo/model/v5/web/preview-offline.html"
+            "species/carassius-auratus-seibungyo/model/v6/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v6/web/preview.html"
           ],
-          "glb_sha256": "16c390e936a53af1c750ffcce47854637e13de20c2f9efa09be1be374279f113",
-          "spec": "species/carassius-auratus-seibungyo/model/v5/model-spec.json",
-          "depends_on_views_version": 2,
+          "glb_sha256": "46464ed38f17dc998cffa3858fd5475129a62e5c3a5a89bc932c3f50676ccf37",
+          "change": "口：吻先に丸く開く唇（lips）と暗い口（mouth_disc）を追加、閉→細い切れ目／開→丸いO字で前へ。動きを「パクッ」と速く開き、少し保って素早く閉じ、休む波形（paku、1.2秒周期）に。下顎は16°の小さなあご落ちのみ",
           "review": {
-            "version": 5,
+            "version": 6,
             "mode": "main_only",
-            "reason": "ユーザーが明示した部分修正。サブ確認の明示希望なし",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
-            },
-            "record": "species/carassius-auratus-seibungyo/reviews.md"
-          },
-          "approved_at": "2026-11-26",
-          "approval_quote": "これでOK",
-          "user_check": "species/carassius-auratus-seibungyo/model/v5/user-phone-check.png（スマホ実機で表示）"
+            }
+          }
         }
       }
     },
@@ -272,16 +266,15 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 4,
+          "version": 5,
           "files": [
-            "species/carassius-auratus-horyu/model/v4/horyu.glb",
-            "species/carassius-auratus-horyu/model/v4/web/preview.html"
+            "species/carassius-auratus-horyu/model/v5/horyu.glb",
+            "species/carassius-auratus-horyu/model/v5/web/preview.html"
           ],
-          "glb_sha256": "cfe708b81f3501203fc8b5fc4de11ddc7cd7e72d5477ed512f90033a766cb7c4",
-          "spec": "species/carassius-auratus-horyu/model/v4/model-spec.json",
-          "base": "seibungyo v5",
+          "glb_sha256": "dd832fdac46a58249b3580cd92aedf90bf77ccb31518e7f75d5d7a3055642433",
+          "change": "口：吻先に丸く開く唇（lips）と暗い口（mouth_disc）を追加、閉→細い切れ目／開→丸いO字で前へ。動きを「パクッ」と速く開き、少し保って素早く閉じ、休む波形（paku、1.2秒周期）に。下顎は16°の小さなあご落ちのみ",
           "review": {
-            "version": 4,
+            "version": 5,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
@@ -346,7 +339,8 @@
       "sand": "aquarium/textures/sand.jpg",
       "washi": "aquarium/textures/washi.jpg",
       "sources": "aquarium/textures/source/"
-    }
+    },
+    "note_model": "青文魚は v6（口の修正）を使用。v6 は承認待ち"
   },
   "history": [
     {
@@ -596,6 +590,20 @@
       "species": "horyu",
       "event": "revised",
       "note": "v4: 口の開きを大きく、口腔を見えるように"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu, seibungyo",
+      "event": "changes_requested",
+      "quote": "まだ、パクパク　というよりモゴモゴしてる感じに見えます　青文も同じなら修正で"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu v5, seibungyo v6",
+      "event": "revised",
+      "note": "O字に開く唇とパクッとした開閉の波形"
     }
   ],
   "renderer": {
@@ -760,6 +768,53 @@
         }
       },
       "species": "horyu"
+    },
+    {
+      "status": "superseded",
+      "version": 4,
+      "files": [
+        "species/carassius-auratus-horyu/model/v4/horyu.glb",
+        "species/carassius-auratus-horyu/model/v4/web/preview.html"
+      ],
+      "glb_sha256": "cfe708b81f3501203fc8b5fc4de11ddc7cd7e72d5477ed512f90033a766cb7c4",
+      "spec": "species/carassius-auratus-horyu/model/v4/model-spec.json",
+      "base": "seibungyo v5",
+      "review": {
+        "version": 4,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "carassius-auratus-horyu"
+    },
+    {
+      "status": "approved (superseded by v6)",
+      "version": 5,
+      "files": [
+        "species/carassius-auratus-seibungyo/model/v5/seibungyo.glb",
+        "species/carassius-auratus-seibungyo/model/v5/web/preview.html",
+        "species/carassius-auratus-seibungyo/model/v5/web/preview-offline.html"
+      ],
+      "glb_sha256": "16c390e936a53af1c750ffcce47854637e13de20c2f9efa09be1be374279f113",
+      "spec": "species/carassius-auratus-seibungyo/model/v5/model-spec.json",
+      "depends_on_views_version": 2,
+      "review": {
+        "version": 5,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正。サブ確認の明示希望なし",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        },
+        "record": "species/carassius-auratus-seibungyo/reviews.md"
+      },
+      "approved_at": "2026-11-26",
+      "approval_quote": "これでOK",
+      "user_check": "species/carassius-auratus-seibungyo/model/v5/user-phone-check.png（スマホ実機で表示）",
+      "species": "carassius-auratus-seibungyo"
     }
   ]
 }

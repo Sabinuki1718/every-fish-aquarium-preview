@@ -455,20 +455,41 @@ for sign, name in [(1, 'gill_near'), (-1, 'gill_far')]:
     dd = np.maximum(prm[:, 0] - hinge_x(prm[:, 1]), 0)
     d = np.zeros((len(prm), 3)); d[:, 2] = sign * dd * math.sin(GILL_ANGLE); d[:, 0] = -dd * (1 - math.cos(GILL_ANGLE))
     targets[name] = [('open', d)]
-    drivers[name] = {'kind': 'pulse', 'targets': ['open'], 'cycles': 3, 'phase': -1.3}
+    drivers[name] = {'kind': 'pulse', 'targets': ['open'], 'cycles': 4, 'phase': -1.0}
 
 # lower jaw: rotates down about the mouth corner; the dark cavity behind the lips shows through
-alpha = math.radians(17)
+alpha, beta = math.radians(16), 0.0                   # lower jaw 48 deg down (lifting the upper lip tore the snout)
 pb = body.positions.astype(float)
 d = np.zeros_like(pb)
-for v in jaw_ids:
-    px, py = pb[v, 0] - MCX, pb[v, 1] + MCY
-    w = float(np.clip((MCX - pb[v, 0]) / 10, 0, 1))
-    a = alpha * w
-    d[v, 0] = px * math.cos(a) + py * math.sin(a) - px
-    d[v, 1] = -px * math.sin(a) + py * math.cos(a) - py
+jaw_set = set(jaw_ids)
+upper_ids = [j * NT + k for j in range(JC) for k in list(range(KM - 7, KM + 1)) + list(range(KF, KF + 8))]   # only the upper lip band
+for v, ang in [(v, -alpha) for v in jaw_ids] + [(v, beta) for v in upper_ids if v not in jaw_set]:
+    px, py = pb[v, 0] - (MCX + 10), pb[v, 1] + MCY        # hinge a little behind the painted mouth corner: a deeper gape
+    w = float(np.clip((MCX + 10 - pb[v, 0]) / 14, 0, 1))
+    a = ang * w
+    # rotate about the mouth corner (a<0: down for the jaw, a>0: up for the upper lip), then protrude forward
+    d[v, 0] = px * math.cos(a) - py * math.sin(a) - px - 4.0 * w
+    d[v, 1] = px * math.sin(a) + py * math.cos(a) - py
 targets['body'] = [('mouth_open', d)]
-drivers['body'] = {'kind': 'pulse', 'targets': ['mouth_open'], 'cycles': 3, 'phase': 0.0}
+# gape lining: a thin dark strip along the lip line from the near mouth corner round the snout to the far corner.
+# Its upper edge rides with the upper lip, its lower edge with the lower jaw, so the open mouth always shows a dark
+# inside (the body's own inner faces would show skin). Closed, it is a 1.6 px sliver tucked 1.2 px under the skin.
+_path = [(j * NT + KM, dup[j * NT + KM]) for j in range(JC - 1, -1, -1)] + [(j * NT + KF, dup[j * NT + KF]) for j in range(JC)]
+_lp, _ld, _lf = [], [], []
+for (vu, vl) in _path:
+    for v_, sgn in ((vu, 1), (vl, -1)):
+        q_ = pb[v_].copy(); ax = np.array([q_[0], np.interp(q_[0], xs, cy), 0.0]); r_ = q_ - ax; nr = np.linalg.norm(r_) or 1
+        q_ = q_ - r_ / nr * 1.2 + [0, .8 * sgn, 0]
+        _lp.append(q_); _ld.append(d[v_])
+n_ = len(_path)
+for i in range(n_ - 1):
+    a_, b_, c_, e_ = 2 * i, 2 * i + 1, 2 * i + 2, 2 * i + 3
+    _lf += [[a_, b_, c_], [c_, b_, e_]]
+lining = Mesh('mouth_lining', np.asarray(_lp), [dark_uv] * len(_lp), np.asarray(_lf))
+meshes.append(lining)
+targets['mouth_lining'] = [('mouth_open', np.asarray(_ld))]
+
+drivers['body'] = {'kind': 'paku', 'targets': ['mouth_open'], 'cycles': 4, 'phase': 0.0}   # quick open, short hold, snap shut, rest
 
 
 def ellipsoid(name, center, radii, uv_fn, nu=12, nv=24):
@@ -490,7 +511,55 @@ def ellipsoid(name, center, radii, uv_fn, nu=12, nv=24):
     return Mesh(name, [tuple(p) for p in P], UV, orient_closed(np.asarray(P), F))
 
 
-meshes.append(ellipsoid('mouth_cavity', (X0 + 13, -(MCY - 3), 0), (11, 6, 8), lambda a, b: dark_uv))
+_xc = X0 + 13; _hh, _hw, _cy = (float(np.interp(_xc, xs, a_)) for a_ in (hh, hw, cy))
+_ly = _cy + np.sign(math.cos(tt[KM])) * abs(math.cos(tt[KM])) ** (2 / POW) * _hh      # lip line height at _xc
+meshes.append(ellipsoid('mouth_cavity', (_xc + 3, _ly + .18 * _hh, 0), (9, .32 * _hh, .66 * _hw), lambda a, b: dark_uv))   # v4: on the lip line, just inside the skin
+# the cavity opens with the jaw: its lower half follows the lower lip down (same driver as the mouth)
+_cav = meshes[-1]; _cp = _cav.positions.astype(float); _cc = _ly + .18 * _hh
+_dc = np.zeros_like(_cp)
+_low = np.clip((_cc - _cp[:, 1]) / (.32 * _hh), 0, 1)
+_dc[:, 1] = -_low * np.clip((MCX + 20 - _cp[:, 0]), 0, None) * math.sin(alpha) * .9
+_dc[:, 0] = -7.0 * np.clip((_cp[:, 0] - (_xc - 6)) / 18, .4, 1)                     # whole cavity slides forward into the gape
+targets['mouth_cavity'] = [('mouth_open', _dc)]
+drivers['mouth_cavity'] = dict(drivers['body'])
+drivers['mouth_lining'] = dict(drivers['body'])
+
+# terminal O-mouth (v5/v6): the goldfish's mouth opens at the snout tip as a round O pushed forward.
+# A ring of lips (closed tube) around a dark disc, facing forward. Closed: a flat slit of lips; open: a round O
+# 5 px further forward. The jaw above only adds a small chin drop. Morph 'mouth_open', same 'paku' driver.
+_mx, _my = float(X0 + 5), -float(S['mouth']['tip'][1])
+_A, _B0, _B1, _R = 13.0, 1.6, 12.0, 2.8
+_lip_uv = [body_uv(.012, t_) for t_ in np.linspace(0, 2 * math.pi, 25)]
+def _ring(B, fwd):
+    pts = []
+    for i in range(24):
+        a = 2 * math.pi * i / 24; cz, cy_ = _A * math.cos(a), B * math.sin(a)
+        nz, ny = math.cos(a) / _A, math.sin(a) / max(B, 1e-3); nl = math.hypot(nz, ny); nz, ny = nz / nl, ny / nl
+        for k in range(10):
+            b = 2 * math.pi * k / 10
+            pts.append((_mx - fwd + _R * math.sin(b) * -1.0, _my + cy_ + _R * math.cos(b) * ny, cz + _R * math.cos(b) * nz))
+    return np.asarray(pts)
+_p0, _p1 = _ring(_B0, 0.0), _ring(_B1, 7.0)
+_lf = []
+for i in range(24):
+    for k in range(10):
+        a_ = i * 10 + k; b_ = i * 10 + (k + 1) % 10; c_ = ((i + 1) % 24) * 10 + k; e_ = ((i + 1) % 24) * 10 + (k + 1) % 10
+        _lf += [[a_, c_, b_], [b_, c_, e_]]
+_luv = [_lip_uv[i % 24] for i in range(24) for k in range(10)]
+meshes.append(Mesh('lips', _p0, _luv, orient_closed(_p0, _lf)))
+targets['lips'] = [('mouth_open', _p1 - _p0)]
+drivers['lips'] = dict(drivers['body'])
+# dark disc inside the ring (a thin lens so it is a closed solid)
+def _disc(B, fwd):
+    pts = [(_mx - fwd + .9, _my, 0.0), (_mx - fwd + .3, _my, 0.0)]
+    for i in range(24):
+        a = 2 * math.pi * i / 24; pts.append((_mx - fwd + .6, _my + (B - .3) * math.sin(a), (_A - .4) * math.cos(a)))
+    return np.asarray(pts)
+_d0, _d1 = _disc(_B0, 0.0), _disc(_B1, 7.0)
+_df = [[0, 2 + i, 2 + (i + 1) % 24] for i in range(24)] + [[1, 2 + (i + 1) % 24, 2 + i] for i in range(24)]
+meshes.append(Mesh('mouth_disc', _d0, [dark_uv] * len(_d0), orient_closed(_d0, _df)))
+targets['mouth_disc'] = [('mouth_open', _d1 - _d0)]
+drivers['mouth_disc'] = dict(drivers['body'])
 
 # wen (hood): a separate bumpy shell over the head, from the snout top back to the neck and down to the
 # approved side's lower edge of the bumps (above the eye, behind it down to the gill cover).
@@ -580,6 +649,7 @@ for sign, name in [(1, 'eye_near'), (-1, 'eye_far')]:
 # Thin parts give strokes only from their rim band (a waving membrane seen near edge-on otherwise pops short
 # strokes on and off = flicker). Tail root and the front of the gill flaps dive into the body: no stroke there.
 contour = {}
+NO_INK = {'mouth_lining', 'mouth_cavity', 'mouth_disc'}
 for m_ in meshes:
     if m_.name not in RIM_START: continue
     P_ = m_.positions.astype(float); Fc = P_[m_.faces].mean(axis=1)
@@ -590,6 +660,7 @@ for m_ in meshes:
         fy = -Fc[:, 1]; fr = (Fc[:, 0] - hinge_x(fy)) / np.maximum(gedge_x(fy) - hinge_x(fy), 1)
         keep &= fr >= 0.55
     contour[m_.name] = np.nonzero(keep)[0].tolist()
+for n_ in NO_INK: contour[n_] = [-1]                     # an index that matches no face: no ink at all
 
 # ---------- scale to metres ----------
 allp = np.concatenate([m_.positions for m_ in meshes]).astype(float)
@@ -609,8 +680,19 @@ for n in ('gill_near', 'gill_far'):
 DURATION = 4.8
 
 
+def paku(p):
+    """Goldfish gulp: open fast (ease-out), hold, snap shut (ease-in), rest closed. p in [0,1)."""
+    p %= 1.0
+    if p < .16: q = p / .16; return 1 - (1 - q) ** 2
+    if p < .30: return 1.0
+    if p < .42: q = (p - .30) / .12; return 1 - q * q
+    return 0.0
+
+
 def weights_at(dv, t_):
     ph = 2 * math.pi * dv['cycles'] * t_ / DURATION + dv['phase']
+    if dv['kind'] == 'paku':
+        return [paku(dv['cycles'] * t_ / DURATION + dv['phase'] / (2 * math.pi))]
     if dv['kind'] == 'wave':
         mod = 1 + dv['whim'] * math.sin(2 * math.pi * t_ / DURATION + dv['whim_phase'])
         return [math.sin(ph) * mod, math.cos(ph) * mod]
@@ -690,7 +772,7 @@ views = {'side': (0, 0), 'side_far': (math.pi, 0), 'top': (0, math.pi / 2 - 1e-3
          'front': (math.pi / 2, 0), 'oblique': (.6, .3), 'rear_oblique': (2.4, .25)}
 for n, (yaw, pitch) in views.items():
     render(meshes, atlas_u8, OUT / f'render-{n}.png', yaw=yaw, pitch=pitch)
-opened = posed(meshes, lambda name: [1.0] * len(targets[name]) if drivers[name]['kind'] == 'pulse' else [0.0, 0.0])
+opened = posed(meshes, lambda name: [1.0] * len(targets[name]) if drivers[name]['kind'] in ('pulse', 'paku') else [0.0, 0.0])
 head = np.array([X0 + 60 - center[0], -430 - center[1], 0]) * SCALE
 for n, (yaw, pitch) in {'mouth_gill_open': (.75, .1), 'mouth_gill_open_front': (1.35, .05)}.items():
     render(opened, atlas_u8, OUT / f'detail-{n}.png', yaw=yaw, pitch=pitch, target=head, radius=.035)

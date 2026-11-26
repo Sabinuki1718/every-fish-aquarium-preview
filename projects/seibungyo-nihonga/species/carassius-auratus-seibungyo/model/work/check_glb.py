@@ -61,7 +61,7 @@ print(json.dumps(summary, ensure_ascii=False))
 head_target = None
 allp = np.concatenate([b.positions for b, _, _ in parts]); L_ = np.ptp(allp[:, 0])
 head = np.array([allp[:, 0].min() + .18 * L_, allp[:, 1].mean() * 0 - .002, 0])
-states = {'closed': {}, 'open': {n: [1.0] for n in ('body', 'gill_near', 'gill_far')}}
+states = {'closed': {}, 'open': {n: [1.0] for n in ('body', 'gill_near', 'gill_far', 'mouth_cavity', 'mouth_lining', 'lips', 'mouth_disc')}}
 for st, w in states.items():
     ms = pose(w)
     for vn, (yaw, pitch) in {'head_rear': (-.9, .15), 'head_front': (1.2, .05), 'head_below': (.6, -.9)}.items():

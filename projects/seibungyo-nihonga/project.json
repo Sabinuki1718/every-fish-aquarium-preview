@@ -171,7 +171,9 @@
             "species/carassius-auratus-gin-suihogan/views/source/top-v2.png",
             "species/carassius-auratus-gin-suihogan/views/source/bottom-v2.png",
             "species/carassius-auratus-gin-suihogan/views/source/front-v1.png",
-            "species/carassius-auratus-gin-suihogan/views/source/front-nosac-v1.png"
+            "species/carassius-auratus-gin-suihogan/views/source/front-nosac-v1.png",
+            "species/carassius-auratus-gin-suihogan/views/source/side-nosac-v1.png",
+            "species/carassius-auratus-gin-suihogan/views/source/top-nosac-v1.png"
           ],
           "review": {
             "version": 2,
@@ -185,8 +187,7 @@
             ]
           },
           "missing": [
-            "側面の淡彩（色だけ）版の大きい画像",
-            "水泡を外した参照図：側面・上面"
+            "側面の淡彩（色だけ）版の大きい画像"
           ]
         },
         "model": {
@@ -230,23 +231,20 @@
           }
         },
         "views": {
-          "status": "changes_requested",
-          "version": 1,
+          "status": "in_progress",
+          "version": 2,
           "files": [
             "species/carassius-auratus-horyu/views/source/top-v1.png",
             "species/carassius-auratus-horyu/views/source/bottom-v1.png",
-            "species/carassius-auratus-horyu/views/source/front-v1-raw.jpg"
+            "species/carassius-auratus-horyu/views/source/front-v2.png"
           ],
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
-            "status": "changes_requested",
+            "status": "passed",
             "verdicts": {
-              "main": "NG"
-            },
-            "ng": [
-              "正面図に肉瘤とパール鱗がなく、穂竜に見えない"
-            ]
+              "main": "OK"
+            }
           }
         },
         "model": {
@@ -496,6 +494,12 @@
       "event": "revised",
       "quote": "銀水泡眼　濃い方にします　作り直しました",
       "note": "上面v2・下面v2（濃い墨青）、正面v1、水泡を外した正面v1を受領"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "views",
+      "event": "received",
+      "note": "穂竜 正面v2、銀水泡眼 水泡なし側面・上面"
     }
   ],
   "renderer": {

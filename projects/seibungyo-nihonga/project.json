@@ -104,7 +104,7 @@
           "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 8,
           "files": [
             "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
@@ -121,7 +121,9 @@
               "main": "OK"
             }
           },
-          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち"
+          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
+          "approved_at": "2026-11-26",
+          "approval_quote": "青文魚と穂竜はok"
         }
       }
     },
@@ -280,7 +282,7 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 7,
           "files": [
             "species/carassius-auratus-horyu/model/v7/horyu.glb",
@@ -297,7 +299,9 @@
               "main": "OK"
             }
           },
-          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち"
+          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
+          "approved_at": "2026-11-26",
+          "approval_quote": "青文魚と穂竜はok"
         }
       }
     }
@@ -656,6 +660,13 @@
       "event": "built",
       "quote": "銀水泡眼　モデル作成に進めてください",
       "note": "v1"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "seibungyo v8, horyu v7",
+      "event": "approved",
+      "quote": "青文魚と穂竜はok"
     }
   ],
   "renderer": {

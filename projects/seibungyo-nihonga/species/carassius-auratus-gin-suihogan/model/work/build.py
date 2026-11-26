@@ -344,7 +344,7 @@ def _rdp(pts, eps):
     return np.array([a, b])
 
 
-def traced(poly, grow=18, minus=(), eps=2.2):
+def traced(poly, grow=18, minus=(), eps=2.2, passes=2, keep_cos=-0.35):
     """Painted fin silhouette near `poly`; the part inside the body keeps the hand polygon (embedded base)."""
     pm = poly_mask(_paint.shape, poly)
     m = (_paint & poly_mask(_paint.shape, poly, grow) & ~_inside) | (pm & _inside)
@@ -357,11 +357,11 @@ def traced(poly, grow=18, minus=(), eps=2.2):
     out = np.vstack([_rdp(c[:k + 1], eps)[:-1], _rdp(np.vstack([c[k:], c[:1]]), eps)[:-1]])
     # v3: soften the feathered brush edge (Chaikin x2) so the ink pass does not find a corner at every tooth;
     # corners sharper than ~70 deg (lobe tips, notches) are kept as they are
-    for _ in range(2):
+    for _ in range(passes):
         prv, nxt = np.roll(out, 1, 0), np.roll(out, -1, 0)
         a1, a2 = prv - out, nxt - out
         cosang = (a1 * a2).sum(1) / np.maximum(np.linalg.norm(a1, axis=1) * np.linalg.norm(a2, axis=1), 1e-9)
-        sharp = cosang > -0.35
+        sharp = cosang > keep_cos
         q = .75 * out + .25 * nxt; r = .25 * out + .75 * nxt
         pts = []
         for i in range(len(out)):
@@ -377,7 +377,24 @@ def traced(poly, grow=18, minus=(), eps=2.2):
         print('trace fallback', len(out)); return poly
 
 
-CAUDAL = traced(S['caudal'])          # v3: the anal fin is no longer cut out of the lower lobe
+# v3: the painted lobe tips are dry-brush streaks; traced literally they look ragged (like fin rot). Use the
+# hand-placed outline (landmarks, read from the painting) smoothed with Chaikin; only the lobe points and the
+# notch between the lobes stay sharp.
+def _smooth(poly, passes=4, keep_cos=0.25):
+    out = np.asarray(poly, float)
+    for _ in range(passes):
+        prv, nxt = np.roll(out, 1, 0), np.roll(out, -1, 0)
+        a1, a2 = prv - out, nxt - out
+        cosang = (a1 * a2).sum(1) / np.maximum(np.linalg.norm(a1, axis=1) * np.linalg.norm(a2, axis=1), 1e-9)
+        sharp = cosang > keep_cos
+        pts = []
+        for i in range(len(out)):
+            j = (i + 1) % len(out)
+            pts.append(out[i] if sharp[i] else .5 * out[i] + .25 * prv[i] + .25 * nxt[i])
+            pts += [.75 * out[i] + .25 * out[j], .25 * out[i] + .75 * out[j]]
+        out = np.asarray(pts)
+    return out.tolist()
+CAUDAL = _smooth(S["caudal"], passes=2)
 PELVIC = traced(S['pelvic'])
 print('traced points', len(CAUDAL), len(PELVIC))
 

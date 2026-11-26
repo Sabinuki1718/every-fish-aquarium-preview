@@ -134,7 +134,7 @@
       "id": "carassius-auratus-gin-suihogan",
       "name_ja": "銀水泡眼",
       "scientific_name": "Carassius auratus",
-      "variant": "水泡眼の青（銀）系、成魚",
+      "variant": "水泡眼の青（銀）系、成魚、濃い墨青の体色",
       "photos": [
         "species/carassius-auratus-gin-suihogan/photos/01-user-illustration-ink.jpg",
         "species/carassius-auratus-gin-suihogan/photos/02-user-illustration-wash.jpg"
@@ -165,24 +165,29 @@
           }
         },
         "views": {
-          "status": "changes_requested",
-          "version": 1,
+          "status": "in_progress",
+          "version": 2,
           "files": [
-            "species/carassius-auratus-gin-suihogan/views/source/top-v1.png",
-            "species/carassius-auratus-gin-suihogan/views/source/bottom-v1.png"
+            "species/carassius-auratus-gin-suihogan/views/source/top-v2.png",
+            "species/carassius-auratus-gin-suihogan/views/source/bottom-v2.png",
+            "species/carassius-auratus-gin-suihogan/views/source/front-v1.png",
+            "species/carassius-auratus-gin-suihogan/views/source/front-nosac-v1.png"
           ],
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
             "status": "changes_requested",
             "verdicts": {
-              "main": "NG"
+              "main": "NG（軽微）"
             },
             "ng": [
-              "側面（濃い墨青）と上面・下面（淡い銀）の体色が違う",
-              "下面図で水泡の上に眼が見えている（眼は上向きで下からは見えない）"
+              "下面 v2 で水泡の上に眼がうっすら残る（3Dの貼り込み時に消す案をユーザーに提案）"
             ]
-          }
+          },
+          "missing": [
+            "側面の淡彩（色だけ）版の大きい画像",
+            "水泡を外した参照図：側面・上面"
+          ]
         },
         "model": {
           "status": "not_started"
@@ -483,6 +488,14 @@
       "species": "horyu, gin-suihogan",
       "event": "received",
       "note": "高解像度の側面・上面・下面・正面を受領。主担当の検品結果を提示"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "views",
+      "species": "gin-suihogan",
+      "event": "revised",
+      "quote": "銀水泡眼　濃い方にします　作り直しました",
+      "note": "上面v2・下面v2（濃い墨青）、正面v1、水泡を外した正面v1を受領"
     }
   ],
   "renderer": {

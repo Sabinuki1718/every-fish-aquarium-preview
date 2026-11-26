@@ -158,10 +158,12 @@ export function createNihonga(T, renderer, opts = {}) {
     return out.filter(c => c.ch.length > 2);
   }
   function prepStroke(mesh) {
+    const noWeld = mesh.userData.nihongaNoWeld;
     const g = mesh.geometry, P = g.attributes.position.array, N = g.attributes.normal.array, I = g.index.array;
     const map = new Map(), wid = new Int32Array(P.length / 3), wp = [], wn = [];
     for (let v = 0; v < wid.length; v++) {
-      const k = Math.round(P[3 * v] * 2e6) + ',' + Math.round(P[3 * v + 1] * 2e6) + ',' + Math.round(P[3 * v + 2] * 2e6);
+      const k = (noWeld && noWeld[v]) ? 'v' + v :          // [拡張] 溶接しない頂点（口の切れ目など、開いて縁になる所）
+        Math.round(P[3 * v] * 2e6) + ',' + Math.round(P[3 * v + 1] * 2e6) + ',' + Math.round(P[3 * v + 2] * 2e6);
       let id = map.get(k); if (id === undefined) { id = wp.length / 3; map.set(k, id); wp.push(P[3 * v], P[3 * v + 1], P[3 * v + 2]); wn.push(0, 0, 0); }
       wid[v] = id; wn[3 * id] += N[3 * v]; wn[3 * id + 1] += N[3 * v + 1]; wn[3 * id + 2] += N[3 * v + 2];
     }
@@ -175,7 +177,16 @@ export function createNihonga(T, renderer, opts = {}) {
     for (let f = 0; f < F.length; f += 3) { const q = k => [wp[3 * F[k]], wp[3 * F[k] + 1], wp[3 * F[k] + 2]];
       if (!filt || filt(mesh, q(f), q(f + 1), q(f + 2))) F2.push(F[f], F[f + 1], F[f + 2]); }
     const cnt = new Float32Array(n); for (let v = 0; v < wid.length; v++) cnt[wid[v]]++;   // [拡張] 動く形の線を追うための対応表
-    return { mesh, wp: new Float32Array(wp), wn: new Float32Array(wn), F: new Int32Array(F2), n, gv: new Float32Array(n), wid, cnt };
+    // [拡張] 溶接後に1枚の面にしか属さない辺（開いた縁）を、墨線として常に描く鎖にしておく
+    let border = [];
+    if (noWeld) {
+      const ec = new Map(), ek = (a, b) => a < b ? a + ':' + b : b + ':' + a;
+      for (let f = 0; f < F2.length; f += 3) for (const [a, b] of [[F2[f], F2[f + 1]], [F2[f + 1], F2[f + 2]], [F2[f + 2], F2[f]]]) ec.set(ek(a, b), (ec.get(ek(a, b)) || 0) + 1);
+      const badj = Array.from({ length: n }, () => []);
+      for (const [k2, c] of ec) if (c === 1) { const [a, b] = k2.split(':').map(Number); badj[a].push(b); badj[b].push(a); }
+      border = buildChains(badj).map(c => ({ closed: c.closed, ids: c.ch }));
+    }
+    return { mesh, wp: new Float32Array(wp), wn: new Float32Array(wn), F: new Int32Array(F2), n, gv: new Float32Array(n), wid, cnt, border };
   }
   /* 毎フレーム：頂点法線と視線の内積が0になる所＝なめらかな輪郭線 */
   function contourChains(S, camL) {
@@ -195,7 +206,8 @@ export function createNihonga(T, renderer, opts = {}) {
       const e = []; if (sa !== sb) e.push(ep(a, b)); if (sb !== sc) e.push(ep(b, c)); if (sc !== sa) e.push(ep(c, a));
       if (e.length === 2) { adj[e[0]].push(e[1]); adj[e[1]].push(e[0]); }
     }
-    return buildChains(adj).map(c => ({ closed: c.closed, pts: c.ch.map(i => pts[i]) }));
+    return buildChains(adj).map(c => ({ closed: c.closed, pts: c.ch.map(i => pts[i]) }))
+      .concat((S.border || []).map(c => ({ closed: c.closed, pts: c.ids.map(i => [wp[3 * i], wp[3 * i + 1], wp[3 * i + 2]]) })));
   }
 
   /* 画面上の折れ角で筆を分け、向きから終筆の形を決める */

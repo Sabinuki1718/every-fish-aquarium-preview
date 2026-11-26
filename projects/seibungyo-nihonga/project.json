@@ -105,15 +105,15 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 7,
+          "version": 8,
           "files": [
-            "species/carassius-auratus-seibungyo/model/v7/seibungyo.glb",
-            "species/carassius-auratus-seibungyo/model/v7/web/preview.html"
+            "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v8/web/preview.html"
           ],
-          "glb_sha256": "405858ffaff2936339475b04f8353fa87468d0f980b5343c4de222513832ed3c",
-          "change": "後付けのO字の唇を撤去。胴体を承認側面図に描かれた口の線（吻端→口角）に沿って分割し、口角を支点に下顎が36°開く（以前は回転の向きが逆で下顎が上へ入り込み開口が隠れていた）。口の内側に暗い裏打ち。開閉はパクッとした波形（1.2秒周期）",
+          "glb_sha256": "d3325ffb2f230801b5b892477230ee750dc3f838455145e748069ec818b12a62",
+          "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
           "review": {
-            "version": 7,
+            "version": 8,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
@@ -266,15 +266,15 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 6,
+          "version": 7,
           "files": [
-            "species/carassius-auratus-horyu/model/v6/horyu.glb",
-            "species/carassius-auratus-horyu/model/v6/web/preview.html"
+            "species/carassius-auratus-horyu/model/v7/horyu.glb",
+            "species/carassius-auratus-horyu/model/v7/web/preview.html"
           ],
-          "glb_sha256": "ec41427b4c5043e4920e6bc46cf26ebe771038d708b534a4a4e66f9981f35e5a",
-          "change": "後付けのO字の唇を撤去。胴体を承認側面図に描かれた口の線（吻端→口角）に沿って分割し、口角を支点に下顎が36°開く（以前は回転の向きが逆で下顎が上へ入り込み開口が隠れていた）。口の内側に暗い裏打ち。開閉はパクッとした波形（1.2秒周期）",
+          "glb_sha256": "aaeaddb168f3c95cef9869d93fcf88a530e269a6bb44cfe4cbdd5a6ce2732fa4",
+          "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
           "review": {
-            "version": 6,
+            "version": 7,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
@@ -340,7 +340,7 @@
       "washi": "aquarium/textures/washi.jpg",
       "sources": "aquarium/textures/source/"
     },
-    "note_model": "青文魚は v7（口の修正）を使用。v7 は承認待ち"
+    "note_model": "青文魚は v8 を使用（承認待ち）"
   },
   "history": [
     {
@@ -618,6 +618,20 @@
       "species": "horyu v6, seibungyo v7",
       "event": "revised",
       "note": "描かれた口の線に沿って開口"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu, seibungyo",
+      "event": "feedback",
+      "quote": "動きはok　開口部にも輪郭線が適用されるようにしてください"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu v7, seibungyo v8",
+      "event": "revised",
+      "note": "開口部の縁に墨線（シェーダーに nihongaNoWeld 拡張）"
     }
   ],
   "renderer": {
@@ -869,6 +883,48 @@
         }
       },
       "species": "carassius-auratus-seibungyo"
+    },
+    {
+      "status": "superseded",
+      "version": 6,
+      "files": [
+        "species/carassius-auratus-horyu/model/v6/horyu.glb",
+        "species/carassius-auratus-horyu/model/v6/web/preview.html"
+      ],
+      "glb_sha256": "ec41427b4c5043e4920e6bc46cf26ebe771038d708b534a4a4e66f9981f35e5a",
+      "change": "後付けのO字の唇を撤去。胴体を承認側面図に描かれた口の線（吻端→口角）に沿って分割し、口角を支点に下顎が36°開く（以前は回転の向きが逆で下顎が上へ入り込み開口が隠れていた）。口の内側に暗い裏打ち。開閉はパクッとした波形（1.2秒周期）",
+      "review": {
+        "version": 6,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "carassius-auratus-horyu",
+      "user_note": "動きはok"
+    },
+    {
+      "status": "superseded",
+      "version": 7,
+      "files": [
+        "species/carassius-auratus-seibungyo/model/v7/seibungyo.glb",
+        "species/carassius-auratus-seibungyo/model/v7/web/preview.html"
+      ],
+      "glb_sha256": "405858ffaff2936339475b04f8353fa87468d0f980b5343c4de222513832ed3c",
+      "change": "後付けのO字の唇を撤去。胴体を承認側面図に描かれた口の線（吻端→口角）に沿って分割し、口角を支点に下顎が36°開く（以前は回転の向きが逆で下顎が上へ入り込み開口が隠れていた）。口の内側に暗い裏打ち。開閉はパクッとした波形（1.2秒周期）",
+      "review": {
+        "version": 7,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "carassius-auratus-seibungyo",
+      "user_note": "動きはok"
     }
   ]
 }

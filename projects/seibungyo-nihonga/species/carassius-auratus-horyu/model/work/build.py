@@ -172,7 +172,7 @@ for k in range(SEG):
     F.append([C1, (NS - 1) * NT + k, (NS - 1) * NT + k + 1]); side.append(False)
 used_lo = {v for f_, sd in zip(F, side) if sd for v in f_}; used_up = {v for f_, sd in zip(F, side) if not sd for v in f_}
 dup = {}
-for v in sorted(used_lo & used_up):
+for v in sorted(v for v in used_lo & used_up if v == C0 or (v < NS * NT and v // NT < JC)):   # the hinge ring (corner) stays joined
     dup[v] = len(P); P.append(P[v]); UV.append(UV[v])
 F = [[dup.get(v, v) for v in f_] if sd else f_ for f_, sd in zip(F, side)]
 C0L = dup.get(C0, C0)
@@ -691,6 +691,9 @@ for m_ in meshes:
     contour[m_.name] = np.nonzero(keep)[0].tolist()
 for n_ in NO_INK: contour[n_] = [-1]                     # an index that matches no face: no ink at all
 
+# lip split vertices stay unwelded for the ink pass, so the open gape gets an outline
+noweld = {'body': sorted(int(v) for v in list(dup.keys()) + list(dup.values()))}
+
 # ---------- scale to metres ----------
 allp = np.concatenate([m_.positions for m_ in meshes]).astype(float)
 center = (allp.min(axis=0) + allp.max(axis=0)) / 2
@@ -776,7 +779,7 @@ def export_glb_morph(meshes_, texture, path, metadata):
     material = {'name': 'Baked_atlas_nihonga', 'pbrMetallicRoughness': {'baseColorTexture': {'index': 0}, 'metallicFactor': 0, 'roughnessFactor': .8}, 'doubleSided': True, 'alphaMode': 'OPAQUE'}
     doc = {'asset': {'version': '2.0', 'generator': 'Local fish mesh toolkit + morph export (horyu-nihonga)'}, 'scene': 0, 'scenes': [{'nodes': [0]}],
            'nodes': [{'name': 'Fish_root', 'children': list(range(1, len(meshes_) + 1)), 'extras': metadata}] +
-                    [{'name': m_.name, 'mesh': i, **({'extras': {k: v for k, v in (('nihongaDriver', drivers.get(m_.name)), ('nihongaContour', contour.get(m_.name))) if v}} if (m_.name in drivers or m_.name in contour) else {})} for i, m_ in enumerate(meshes_)],
+                    [{'name': m_.name, 'mesh': i, **({'extras': {k: v for k, v in (('nihongaDriver', drivers.get(m_.name)), ('nihongaContour', contour.get(m_.name)), ('nihongaNoWeld', noweld.get(m_.name))) if v}} if (m_.name in drivers or m_.name in contour or m_.name in noweld) else {})} for i, m_ in enumerate(meshes_)],
            'meshes': gm, 'materials': [material], 'textures': [{'source': 0, 'sampler': 0}],
            'samplers': [{'magFilter': 9729, 'minFilter': 9987, 'wrapS': 33071, 'wrapT': 33071}],
            'images': [{'bufferView': iv, 'mimeType': 'image/png'}], 'animations': [{'name': 'idle', 'samplers': samplers, 'channels': channels}],

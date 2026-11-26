@@ -17,7 +17,7 @@ SK = ROOT.parents[1] / '.agents/skills'
 sys.path.insert(0, str(SK / 'publish-aquarium-web/scripts'))
 from web_bundle import online_three_loader, offline_document, data_uri
 
-MODEL_WEB = ROOT / 'species/carassius-auratus-seibungyo/model/v7/web/models'
+MODEL_WEB = ROOT / 'species/carassius-auratus-seibungyo/model/v8/web/models'
 INFO = {'seibungyo': {
     'name': '青文魚（せいぶんぎょ）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
     'text': '中国で作られた金魚の品種で、昭和30年代に日本へ入りました。オランダ獅子頭に近い体型で、頭にこぶ状の肉瘤があり、'

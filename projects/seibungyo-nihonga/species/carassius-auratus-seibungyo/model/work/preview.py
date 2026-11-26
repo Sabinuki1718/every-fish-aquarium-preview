@@ -41,6 +41,8 @@ for i, m in enumerate(doc['meshes']):
     if pr.get('targets'):
         e['targets'] = [{'name': nm, 'd': [round(float(x), 6) for x in arr(t['POSITION'])]} for nm, t in zip(m['extras']['targetNames'], pr['targets'])]
         e['driver'] = node['extras']['nihongaDriver']
+    if node.get('extras', {}).get('nihongaNoWeld'):
+        e['noweld'] = node['extras']['nihongaNoWeld']
     if node.get('extras', {}).get('nihongaContour'):
         e['contour'] = node['extras']['nihongaContour']
     meshes.append(e)
@@ -137,6 +139,7 @@ try {
     g.setIndex(m.i);
     const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map, side: THREE.DoubleSide }));
     mesh.name = m.name;
+    if (m.noweld) { const k = new Uint8Array(m.p.length / 3); for (const v of m.noweld) k[v] = 1; mesh.userData.nihongaNoWeld = k; }
     if (m.contour) { const k = new Uint8Array(m.i.length / 3); for (const f of m.contour) k[f] = 1; mesh.userData.nihongaContourFaces = k; }
     if (m.targets) { mesh.userData.nihongaDynamic = true; animated.push({ mesh, base: Float32Array.from(m.p), d: m.targets.map(t => Float32Array.from(t.d)), dv: m.driver }); }
     fish.add(mesh);

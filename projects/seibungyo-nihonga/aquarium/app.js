@@ -71,6 +71,7 @@ async function loadFish(f, i) {
     g.setAttribute('position', new T.Float32BufferAttribute(part.p, 3)); g.setAttribute('normal', new T.Float32BufferAttribute(part.n, 3));
     g.setAttribute('uv', new T.Float32BufferAttribute(part.uv, 2)); g.setIndex(part.i); g.computeBoundingSphere(); g.boundingSphere.radius *= 1.4;
     const mesh = new T.Mesh(g, new T.MeshBasicMaterial({ map, side: T.DoubleSide })); mesh.name = part.name; mesh.userData.fishId = f.id;
+    if (part.noweld) { const k = new Uint8Array(part.p.length / 3); for (const v of part.noweld) k[v] = 1; mesh.userData.nihongaNoWeld = k; }
     if (part.contour) { const k = new Uint8Array(part.i.length / 3); for (const c of part.contour) k[c] = 1; mesh.userData.nihongaContourFaces = k; }
     if (part.targets) { mesh.userData.nihongaDynamic = true; animated.push({ mesh, base: Float32Array.from(part.p), d: part.targets.map(t => Float32Array.from(t.d)), dv: part.driver }); }
     body.add(mesh);

@@ -1,0 +1,48 @@
+<title>穂竜 3Dモデル v1（日本画）</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Paper ground and sumi text to match the nihonga rendering; one full-screen stage. */
+:root{--paper:#ece4d1;--paper-2:#e2d8c2;--ink:#26262d;--ink-soft:#5f5d5a;--accent:#3e5a73;--line:#c9bea6;
+  --body:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#ece4d1;--paper-2:#e2d8c2;--ink:#26262d;--ink-soft:#5f5d5a;--accent:#3e5a73;--line:#c9bea6;color-scheme:light}}
+:root[data-theme="dark"]{--paper:#ece4d1;--paper-2:#e2d8c2;--ink:#26262d;--ink-soft:#5f5d5a;--accent:#3e5a73;--line:#c9bea6}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);overflow:hidden}
+.stage{position:relative;height:100%;background:var(--paper)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:4px}
+h1{font-weight:600;font-size:clamp(20px,5vw,26px);margin:0;letter-spacing:.06em;text-wrap:balance}
+.sub{margin:0;color:var(--ink-soft);font-size:13px;line-height:1.6;max-width:36em}
+nav{position:absolute;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button{font:500 14px var(--body);color:var(--ink);background:color-mix(in srgb,var(--paper) 80%,transparent);border:1px solid var(--line);border-radius:4px;padding:8px 13px;min-height:40px;cursor:pointer}
+button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--paper))}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);min-height:40px}
+input[type=range]{width:96px;accent-color:var(--accent)}
+#status{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-soft);font-size:14px;pointer-events:none;padding-inline:16px;text-align:center}
+</style>
+<div class="stage">
+  <canvas id="view" aria-label="穂竜 3Dモデル v1（日本画）"></canvas>
+  <header><h1>穂竜 3Dモデル v1（日本画）</h1><p class="sub">承認済みの三面図から作成。墨線は日本画シェーダーが3Dの輪郭から描きます。全長15 cmの仮スケール。</p><p class="sub">1本指で回転・2本指で拡大と移動</p></header>
+  <div id="status">読み込み中…</div>
+  <nav>
+    <button type="button" data-v="side">側面</button><button type="button" data-v="front">正面</button>
+    <button type="button" data-v="top">上面</button><button type="button" data-v="bottom">下面</button>
+    <button type="button" data-v="oblique">斜め</button>
+    <button type="button" id="spin" aria-pressed="false">自動回転</button>
+    <button type="button" id="move" aria-pressed="true">鰭・口・鰓の動き</button>
+    <button type="button" id="ink" aria-pressed="true">墨線</button>
+    <label>線の太さ <input type="range" id="lw" min="2" max="14" step="1" value="7"></label>
+  </nav>
+</div>
+<script>window.FISH={"geometry": "models/horyu.json", "texture": "models/horyu-2048.jpg"};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["nihonga-shader.js", "preview-app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>

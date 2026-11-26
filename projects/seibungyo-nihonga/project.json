@@ -271,8 +271,23 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "in_progress",
-          "version": 1
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-horyu/model/v1/horyu.glb",
+            "species/carassius-auratus-horyu/model/v1/web/preview.html"
+          ],
+          "glb_sha256": "4bc68ce920f2c3a8492e16450004e5db87f8aa874f742e9bd847faffde4b43ed",
+          "spec": "species/carassius-auratus-horyu/model/v1/model-spec.json",
+          "base": "seibungyo v5",
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            }
+          }
         }
       }
     }
@@ -531,6 +546,13 @@
       "species": "horyu, gin-suihogan",
       "event": "approved",
       "quote": "1,2ok　3添付します"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu",
+      "event": "built",
+      "note": "v1（青文魚v5を土台に出目・パール鱗・高頭）"
     }
   ],
   "renderer": {

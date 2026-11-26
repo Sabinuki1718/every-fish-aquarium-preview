@@ -466,15 +466,18 @@ for sign, name in [(1, 'gill_near'), (-1, 'gill_far')]:
     drivers[name] = {'kind': 'pulse', 'targets': ['open'], 'cycles': 3, 'phase': -1.3}
 
 # lower jaw: rotates down about the mouth corner; the dark cavity behind the lips shows through
-alpha = math.radians(17)
+alpha, beta = math.radians(48), 0.0                   # v4: lower jaw 34 deg down (upper lip stays; lifting it bent the forehead)
 pb = body.positions.astype(float)
 d = np.zeros_like(pb)
-for v in jaw_ids:
+jaw_set = set(jaw_ids)
+upper_ids = [j * NT + k for j in range(JC) for k in list(range(0, KM + 1)) + list(range(KF, NT))] + [C0]
+for v, ang in [(v, -alpha) for v in jaw_ids] + [(v, beta) for v in upper_ids if v not in jaw_set]:
     px, py = pb[v, 0] - MCX, pb[v, 1] + MCY
-    w = float(np.clip((MCX - pb[v, 0]) / 10, 0, 1))
-    a = alpha * w
-    d[v, 0] = px * math.cos(a) + py * math.sin(a) - px
-    d[v, 1] = -px * math.sin(a) + py * math.cos(a) - py
+    w = float(np.clip((MCX + 10 - pb[v, 0]) / 10, 0, 1))
+    a = ang * w
+    # rotate about the mouth corner (a<0: down for the jaw, a>0: up for the upper lip), then protrude forward
+    d[v, 0] = px * math.cos(a) - py * math.sin(a) - px - 2.5 * w
+    d[v, 1] = px * math.sin(a) + py * math.cos(a) - py
 targets['body'] = [('mouth_open', d)]
 drivers['body'] = {'kind': 'pulse', 'targets': ['mouth_open'], 'cycles': 3, 'phase': 0.0}
 
@@ -498,7 +501,17 @@ def ellipsoid(name, center, radii, uv_fn, nu=12, nv=24):
     return Mesh(name, [tuple(p) for p in P], UV, orient_closed(np.asarray(P), F))
 
 
-meshes.append(ellipsoid('mouth_cavity', (X0 + 13, -(MCY - 3), 0), (11, 6, 8), lambda a, b: dark_uv))
+_xc = X0 + 13; _hh, _hw, _cy = (float(np.interp(_xc, xs, a_)) for a_ in (hh, hw, cy))
+_ly = _cy + np.sign(math.cos(tt[KM])) * abs(math.cos(tt[KM])) ** (2 / POW) * _hh      # lip line height at _xc
+meshes.append(ellipsoid('mouth_cavity', (_xc + 3, _ly + .18 * _hh, 0), (9, .32 * _hh, .66 * _hw), lambda a, b: dark_uv))   # v4: on the lip line, just inside the skin
+# the cavity opens with the jaw: its lower half follows the lower lip down (same driver as the mouth)
+_cav = meshes[-1]; _cp = _cav.positions.astype(float); _cc = _ly + .18 * _hh
+_dc = np.zeros_like(_cp)
+_low = np.clip((_cc - _cp[:, 1]) / (.32 * _hh), 0, 1)
+_dc[:, 1] = -_low * np.clip((MCX + 10 - _cp[:, 0]), 0, None) * math.sin(alpha) * .95
+_dc[:, 0] = -7.0 * np.clip((_cp[:, 0] - (_xc - 6)) / 18, .4, 1)                     # whole cavity slides forward into the gape
+targets['mouth_cavity'] = [('mouth_open', _dc)]
+drivers['mouth_cavity'] = dict(drivers['body'])
 
 # wen (hood): a separate bumpy shell over the head, from the snout top back to the neck and down to the
 # approved side's lower edge of the bumps (above the eye, behind it down to the gill cover).

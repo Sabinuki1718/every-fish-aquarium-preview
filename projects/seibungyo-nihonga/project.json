@@ -272,17 +272,18 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-horyu/model/v1/horyu.glb",
-            "species/carassius-auratus-horyu/model/v1/web/preview.html"
+            "species/carassius-auratus-horyu/model/v2/horyu.glb",
+            "species/carassius-auratus-horyu/model/v2/web/preview.html"
           ],
-          "glb_sha256": "4bc68ce920f2c3a8492e16450004e5db87f8aa874f742e9bd847faffde4b43ed",
-          "spec": "species/carassius-auratus-horyu/model/v1/model-spec.json",
+          "glb_sha256": "711418d295643f957ecd08ab9d5936440a9f898ade560f38f3a972ffc5a5c5da",
+          "spec": "species/carassius-auratus-horyu/model/v2/model-spec.json",
           "base": "seibungyo v5",
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
@@ -553,6 +554,20 @@
       "species": "horyu",
       "event": "built",
       "note": "v1（青文魚v5を土台に出目・パール鱗・高頭）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu",
+      "event": "changes_requested",
+      "quote": "穂竜ほ青文より丸くなります"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "horyu",
+      "event": "revised",
+      "note": "v2: 胴を丸く"
     }
   ],
   "renderer": {
@@ -655,6 +670,26 @@
         },
         "record": "species/carassius-auratus-seibungyo/reviews.md"
       }
+    },
+    {
+      "status": "superseded",
+      "version": 1,
+      "files": [
+        "species/carassius-auratus-horyu/model/v1/horyu.glb",
+        "species/carassius-auratus-horyu/model/v1/web/preview.html"
+      ],
+      "glb_sha256": "4bc68ce920f2c3a8492e16450004e5db87f8aa874f742e9bd847faffde4b43ed",
+      "spec": "species/carassius-auratus-horyu/model/v1/model-spec.json",
+      "base": "seibungyo v5",
+      "review": {
+        "version": 1,
+        "mode": "main_only",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "species": "horyu"
     }
   ]
 }

@@ -100,6 +100,12 @@ cy = -(ytop + ybot) / 2; hh = np.maximum((ybot - ytop) / 2, 1.5)
 hw = np.maximum(half_width(xs), 1.5)
 tip = np.clip((xs - X0) / 14.0, 0, 1) ** 0.5
 hh = np.maximum(hh * np.maximum(tip, .12), 1.2); hw = np.maximum(hw * np.maximum(tip, .12), 1.2)
+# v2 (user: 穂竜は青文より丸くなります): ping-pong-pearl-like trunk. Behind the head the body swells into a ball:
+# depth +12 % (both up and down about the axis) and width +24 %, fading out toward the head and the peduncle.
+ROUND = np.clip((xs - 400) / 90, 0, 1) * np.clip((830 - xs) / 110, 0, 1)
+ROUND = ROUND * ROUND * (3 - 2 * ROUND)
+hh = hh * (1 + .12 * ROUND); hw = hw * (1 + .24 * ROUND)
+POW = 2.0                                                              # rounder cross-section than the Seibungyo (2.15)
 
 
 def body_z(xp, Yp):

@@ -157,6 +157,16 @@ KMJ = []
 for j in range(JC):
     e_t = np.clip((-_line_y(xs[j]) - cy[j]) / hh[j], -.97, .97)
     KMJ.append(int(np.argmin(np.abs(ey_[:SEG // 2 + 1] - e_t))))
+KMJ = np.asarray(KMJ)
+# v2: near the snout tip the section is tiny and the painted lip line falls outside it, so those rings were left
+# entirely 'upper' and stood in the gape as a triangle. Rings whose split hit the limit take the first valid ring's.
+_ok = np.nonzero((KMJ > 3) & (KMJ < SEG // 2 - 3))[0]
+if len(_ok): KMJ[:_ok[0]] = KMJ[_ok[0]]
+# the snout tip is a narrow cone: a split low on it leaves a wedge of upper lip standing in the gape. Toward the tip
+# the split opens up to the sides (t = 101 deg) so the upper lip ends in a smooth arc.
+_f = np.clip(np.arange(JC) / max(JC - 1, 1), 0, 1)
+KMJ = np.round(18 + (KMJ - 18) * _f ** 1.5).astype(int)
+print('lip split per ring', KMJ.tolist())
 KMJ = np.maximum(KMJ, 2); KFJ = SEG - KMJ
 def _lower_quad(j, k):
     if j >= JC: return False
@@ -176,6 +186,11 @@ for v in sorted(v for v in used_lo & used_up if v == C0 or (v < NS * NT and v //
     dup[v] = len(P); P.append(P[v]); UV.append(UV[v])
 F = [[dup.get(v, v) for v in f_] if sd else f_ for f_, sd in zip(F, side)]
 C0L = dup.get(C0, C0)
+# v2: the upper snout-cap centre sits on the axis, below the painted lip line, so with the jaw open it hung into
+# the gape as a triangle. Lift the upper copy onto the lip line (between the two split points of ring 0).
+if C0 in dup:
+    _a, _b = np.asarray(P[KMJ[0]]), np.asarray(P[KFJ[0]])
+    P[C0] = tuple((_a + _b) / 2)
 body = Mesh('body', P, UV, orient_closed(np.asarray(P), F))
 jaw_ids = sorted((used_lo - used_up) | set(dup.values()))
 jaw_ids = [v for v in jaw_ids if v < len(P) and (v >= NS * NT or v // NT < JC or v in dup.values())]

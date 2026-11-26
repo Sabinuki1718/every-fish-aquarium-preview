@@ -104,26 +104,23 @@
           "note": "top-v2: ユーザー指摘（体型が太い）により top-v1 の胴幅を0.82倍に補正。他の図は v1 承認のまま"
         },
         "model": {
-          "status": "approved",
-          "version": 8,
+          "status": "waiting_approval",
+          "version": 9,
           "files": [
-            "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
-            "species/carassius-auratus-seibungyo/model/v8/web/preview.html"
+            "species/carassius-auratus-seibungyo/model/v9/seibungyo.glb",
+            "species/carassius-auratus-seibungyo/model/v9/web/preview.html"
           ],
-          "glb_sha256": "d3325ffb2f230801b5b892477230ee750dc3f838455145e748069ec818b12a62",
-          "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
+          "glb_sha256": "c95dcffc60d15bdf81dcddbca47acad8647dc6dd32d2ff0022992a6d194b6118",
+          "change": "口の中央の三角形の突起を解消（銀水泡眼 v2 と同じ修正：吻先ほど唇の分割を横へ、上唇の吻先の中心を唇の線へ）",
           "review": {
-            "version": 8,
+            "version": 9,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
             }
-          },
-          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
-          "approved_at": "2026-11-26",
-          "approval_quote": "青文魚と穂竜はok"
+          }
         }
       }
     },
@@ -285,26 +282,23 @@
           "approval_quote": "1,2ok　3添付します"
         },
         "model": {
-          "status": "approved",
-          "version": 7,
+          "status": "waiting_approval",
+          "version": 8,
           "files": [
-            "species/carassius-auratus-horyu/model/v7/horyu.glb",
-            "species/carassius-auratus-horyu/model/v7/web/preview.html"
+            "species/carassius-auratus-horyu/model/v8/horyu.glb",
+            "species/carassius-auratus-horyu/model/v8/web/preview.html"
           ],
-          "glb_sha256": "aaeaddb168f3c95cef9869d93fcf88a530e269a6bb44cfe4cbdd5a6ce2732fa4",
-          "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
+          "glb_sha256": "b234df3d61735b1a44bd574b1c9a3d77fd7252019b18ff6407d8fce4c6da8030",
+          "change": "口の中央の三角形の突起を解消（銀水泡眼 v2 と同じ修正：吻先ほど唇の分割を横へ、上唇の吻先の中心を唇の線へ）",
           "review": {
-            "version": 7,
+            "version": 8,
             "mode": "main_only",
             "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
             }
-          },
-          "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
-          "approved_at": "2026-11-26",
-          "approval_quote": "青文魚と穂竜はok"
+          }
         }
       }
     }
@@ -365,8 +359,8 @@
     },
     "note_model": "青文魚は v8 を使用（承認待ち）",
     "fish": [
-      "seibungyo v8",
-      "horyu v7",
+      "seibungyo v9",
+      "horyu v8",
       "gin-suihogan v3"
     ]
   },
@@ -716,6 +710,19 @@
       "stage": "aquarium",
       "event": "revised",
       "note": "v4: 穂竜・銀水泡眼を追加して3匹（泳ぐ高さを分ける）、観察の解説を3品種分"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "seibungyo, horyu",
+      "event": "changes_requested",
+      "quote": "青文魚と穂竜 よく見たら口に小さい三角形の突起がありますね これは修正で"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "model",
+      "species": "seibungyo v9, horyu v8",
+      "event": "revised"
     }
   ],
   "renderer": {
@@ -1048,6 +1055,52 @@
         }
       },
       "species": "gin-suihogan"
+    },
+    {
+      "status": "approved (superseded by v8)",
+      "version": 7,
+      "files": [
+        "species/carassius-auratus-horyu/model/v7/horyu.glb",
+        "species/carassius-auratus-horyu/model/v7/web/preview.html"
+      ],
+      "glb_sha256": "aaeaddb168f3c95cef9869d93fcf88a530e269a6bb44cfe4cbdd5a6ce2732fa4",
+      "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
+      "review": {
+        "version": 7,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
+      "approved_at": "2026-11-26",
+      "approval_quote": "青文魚と穂竜はok",
+      "species": "carassius-auratus-horyu"
+    },
+    {
+      "status": "approved (superseded by v9)",
+      "version": 8,
+      "files": [
+        "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
+        "species/carassius-auratus-seibungyo/model/v8/web/preview.html"
+      ],
+      "glb_sha256": "d3325ffb2f230801b5b892477230ee750dc3f838455145e748069ec818b12a62",
+      "change": "開口部の縁に墨線（口の切れ目の頂点を溶接しない nihongaNoWeld、開いた縁を常に描く。口角の環は分割しない）。動きは前版のまま（ユーザー：動きはok）",
+      "review": {
+        "version": 8,
+        "mode": "main_only",
+        "reason": "ユーザーが明示した部分修正",
+        "status": "passed",
+        "verdicts": {
+          "main": "OK"
+        }
+      },
+      "note": "動きはユーザーOK（「動きはok」）、開口部の墨線を追加した版で承認待ち",
+      "approved_at": "2026-11-26",
+      "approval_quote": "青文魚と穂竜はok",
+      "species": "carassius-auratus-seibungyo"
     }
   ]
 }

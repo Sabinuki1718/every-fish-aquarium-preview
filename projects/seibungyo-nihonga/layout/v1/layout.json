@@ -23,7 +23,7 @@
   {
    "id": "seibungyo-1",
    "species_key": "seibungyo",
-   "model": "species/carassius-auratus-seibungyo/model/v8/seibungyo.glb",
+   "model": "species/carassius-auratus-seibungyo/model/v9/seibungyo.glb",
    "species": "青文魚 Carassius auratus",
    "count": 1,
    "total_length_cm": 15,
@@ -44,7 +44,7 @@
   {
    "id": "horyu-1",
    "species_key": "horyu",
-   "model": "species/carassius-auratus-horyu/model/v7/horyu.glb",
+   "model": "species/carassius-auratus-horyu/model/v8/horyu.glb",
    "species": "穂竜 Carassius auratus",
    "count": 1,
    "total_length_cm": 13,

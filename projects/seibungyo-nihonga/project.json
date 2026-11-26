@@ -141,8 +141,8 @@
       ],
       "stages": {
         "research": {
-          "status": "in_progress",
-          "note": "イラストの扱い・体色をユーザーに確認中"
+          "status": "done",
+          "note": "墨線版を承認用側面、淡彩版を色だけの元に。高解像度の画像待ち"
         },
         "side_view": {
           "status": "not_started"
@@ -159,15 +159,15 @@
       "id": "carassius-auratus-horyu",
       "name_ja": "穂竜",
       "scientific_name": "Carassius auratus",
-      "variant": "穂竜（竜眼×高頭パール）、成魚",
+      "variant": "穂竜（竜眼×高頭パール）、成魚、青灰色（個体差の範囲）",
       "photos": [
         "species/carassius-auratus-horyu/photos/01-user-illustration-ink.jpg",
         "species/carassius-auratus-horyu/photos/02-user-illustration-wash.jpg"
       ],
       "stages": {
         "research": {
-          "status": "in_progress",
-          "note": "イラストの扱い・体色をユーザーに確認中"
+          "status": "done",
+          "note": "墨線版を承認用側面、淡彩版を色だけの元に。体色は青灰（個体差の範囲）。パール鱗の盛り上がりを立体で再現。高解像度の画像待ち"
         },
         "side_view": {
           "status": "not_started"
@@ -400,6 +400,13 @@
       "event": "added",
       "quote": "銀水泡眼と穂竜を追加します",
       "note": "日本画イラスト各2枚（墨線版・淡彩版）"
+    },
+    {
+      "at": "2026-11-26",
+      "stage": "research",
+      "species": "gin-suihogan, horyu",
+      "event": "user_confirmed",
+      "quote": "1 はい／2 大きいのDLします／3 個体差の範疇なので青灰色としてok／4 パール鱗の盛り上がりは再現する"
     }
   ],
   "renderer": {

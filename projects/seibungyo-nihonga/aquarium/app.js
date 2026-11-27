@@ -113,7 +113,7 @@ function updateFish(f, dt) {
   // body wave: tail-beat ~0.7 Hz when hovering to ~1.6 Hz when pushing; amplitude grows with pace
   f.swim += dt * 2 * Math.PI * (.7 + .9 * speed);
   const amp = .045 + .07 * speed;
-  f.root.position.copy(pos);
+  f.base = pos; f.root.position.copy(pos).add(f.avoid || (f.avoid = new T.Vector3()));
   f.root.rotation.set(0, f.yaw, 0, 'YZX'); f.body.rotation.set(f.roll, 0, f.pitch, 'YZX');
   for (const a of f.animated) {
     const p = a.mesh.geometry.attributes.position, arr = p.array;
@@ -127,6 +127,26 @@ function updateFish(f, dt) {
     }
     p.needsUpdate = true;
   }
+}
+
+// keep the fish apart: each fish carries a smooth avoidance offset that grows when another fish comes within
+// about one body length and relaxes back to its own path when clear; offsets stay inside the water.
+function separateFish(dt) {
+  const tgt = fishes.map(() => new T.Vector3());
+  for (let i = 0; i < fishes.length; i++) for (let j = i + 1; j < fishes.length; j++) {
+    const a = fishes[i], b = fishes[j];
+    const pa = a.base.clone().add(a.avoid), pb = b.base.clone().add(b.avoid), d = pa.clone().sub(pb);
+    const D = .5 * (a.info.total_length_cm + b.info.total_length_cm) * CM + .025, L = d.length();
+    if (L < D) { if (L < 1e-4) d.set(0, 1, 0); else d.divideScalar(L);
+      const push = d.multiplyScalar((D - L) * .9); tgt[i].add(push); tgt[j].sub(push); }
+  }
+  fishes.forEach((f, i) => {
+    const goal = f.avoid.clone().add(tgt[i]).multiplyScalar(tgt[i].lengthSq() ? 1 : Math.max(0, 1 - dt * .35));
+    f.avoid.lerp(goal, Math.min(1, dt * 2.5));
+    const p = f.base.clone().add(f.avoid), hx = TW / 2 - .07, hz = TD / 2 - .05;
+    p.x = Math.max(-hx, Math.min(hx, p.x)); p.y = Math.max(.07, Math.min(TANK.water_level * CM - .05, p.y)); p.z = Math.max(-hz, Math.min(hz, p.z));
+    f.avoid.copy(p).sub(f.base); f.root.position.copy(p);
+  });
 }
 
 // ---------- materials ----------
@@ -219,7 +239,13 @@ L.plants.forEach((def, pi) => {
     const k = clumps[i % clumps.length], h = (def.height[0] + (def.height[1] - def.height[0]) * Math.pow(rnd(), .8)) * CM;
     const x0 = (k.x + (rnd() - .5) * 1.6) * CM, z0 = (k.z + (rnd() - .5) * 1.4) * CM;
     const lx = k.lx + (rnd() - .5) * .14, lz = k.lz + (rnd() - .5) * .12, bend = (rnd() - .5) * .3, phase = rnd() * Math.PI;
-    const at = y => new T.Vector3(x0 + lx * y + bend * y * y / h, y * (1 - .5 * (lx * lx + lz * lz)), z0 + lz * y + .3 * bend * y * y / h);
+    let LX = lx, LZ = lz, BD = bend, X0s = x0, Z0s = z0;
+    const at = y => new T.Vector3(X0s + LX * y + BD * y * y / h, y * (1 - .5 * (LX * LX + LZ * LZ)), Z0s + LZ * y + .3 * BD * y * y / h);
+    // keep the whole stem and its leaf fans (radius up to ~4.6 cm near the base) inside the glass: lean less, then shift
+    const fits = () => { for (let f = 0; f <= 1; f += .1) { const q = at(f * h), r = .046 * (1 - .4 * f) + .004;
+      if (Math.abs(def.pos[0] * CM + q.x) > TW / 2 - r || Math.abs(def.pos[2] * CM + q.z) > TD / 2 - r) return false; } return true; };
+    for (let it = 0; it < 12 && !fits(); it++) { LX *= .75; LZ *= .75; BD *= .75;
+      if (it > 4) { X0s -= Math.sign(def.pos[0] * CM + X0s) * .004; Z0s -= Math.sign(def.pos[2] * CM + Z0s + 1e-6) * .003; } }
     const stem = solid(new T.TubeGeometry(new T.CatmullRomCurve3([0, .33, .66, 1].map(f => at(f * h))), 16, .0012, 5, false), stemMat);
     stem.userData.nihongaLineScale = .25; stem.userData.layoutId = def.id; root.add(stem); parts.push(stem);
     const P = [], N = [], U = [], I = [], C = []; let y = .012, n = 0;
@@ -244,7 +270,15 @@ const byId = id => stones.find(s => s.id === id) || plants.find(p => p.id === id
 function applyState() {
   for (const o of state.snapshot().objects) { const it = byId(o.id); it.root.position.set(...o.position); it.root.rotation.set(...o.rotation);
     if (o.kind === 'stone') { it.colorId = o.colorId; it.mesh.material.map = stoneTex[o.colorId]; const nm = it.mesh.userData.nihonga; if (nm) nm.paint.uniforms.map.value = Object.assign(stoneTex[o.colorId].clone(), { colorSpace: T.NoColorSpace, needsUpdate: true }); } }
-  scene.updateMatrixWorld(true); drawSand();
+  scene.updateMatrixWorld(true);
+  for (const p of plants) {                                 // a moved / turned clump stays inside the glass
+    const bb = new T.Box3().setFromObject(p.root), m = .003; let dx = 0, dz = 0;
+    if (bb.min.x < -TW / 2 + m) dx = -TW / 2 + m - bb.min.x; if (bb.max.x > TW / 2 - m) dx = TW / 2 - m - bb.max.x;
+    if (bb.min.z < -TD / 2 + m) dz = -TD / 2 + m - bb.min.z; if (bb.max.z > TD / 2 - m) dz = TD / 2 - m - bb.max.z;
+    if (dx || dz) { p.root.position.x += dx; p.root.position.z += dz; p.root.updateMatrixWorld(true);
+      state.setTransform(p.id, { position: p.root.position.toArray() }); }
+  }
+  drawSand();
 }
 const save = () => store.set(SKEY, JSON.stringify(state.snapshot()));
 
@@ -387,6 +421,7 @@ renderer.setAnimationLoop(now => {
   if (document.hidden) return;
   acc += dt; if (acc < 1 / quality.fps - .002) return; const step = acc; acc = 0;
   for (const f of fishes) updateFish(f, step);
+  separateFish(step);
   if (watching) { const d = Lib.followDelta(watching.prev.toArray(), watching.root.position.toArray());
     camera.position.add(new T.Vector3(...d)); controls.target.add(new T.Vector3(...d)); watching.prev.copy(watching.root.position);
     camera.position.set(...Lib.clampWatchCamera(camera.position.toArray(), { w: TW, d: TD }, { floorY: .03 })); }

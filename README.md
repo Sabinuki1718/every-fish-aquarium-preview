@@ -121,7 +121,7 @@ dev/                       開発用（three.js オフライン版のビルド�
 配布するのは「作り方」です。作り方に沿って作った作例は配布の対象ではありません。
 
 - 本リポジトリのオリジナルのコード・スクリプトは [MIT License](LICENSE) です（作例ページのコード・スクリプトも含みます）。
-- 制作手順書（`.agents/skills/` の手順・参照資料など、作り方を説明する文書）は [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/legalcode) です。
-- 作例は上記の許諾の対象外です。作成済みの3Dモデル、作例の画像・テクスチャ・BGM、作例ページ（[3D水槽作例集](docs/examples/aquarium-gallery/) とそこから開く各水槽）上の素材、`docs/images/` の作例画像、手順書内の見本画像を含みます。複製・再配布・改変・転用はできません（Fish Kit などの第三者由来の部分は次の項目のとおり元の利用条件に従います）。
+- 制作手順書（`.agents/skills/` の手順・参照資料など、作り方を説明する文書）と、生成イメージの見本画像2枚（[ネオンテトラのアニメ調](.agents/skills/create-fish-3d-views/assets/neon-tetra-anime.webp)・[リアル調](.agents/skills/create-fish-3d-views/assets/neon-tetra-realistic.webp)）は [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/legalcode) です。
+- 作例は上記の許諾の対象外です。作成済みの3Dモデル、作例の画像・テクスチャ・BGM、作例ページ（[3D水槽作例集](docs/examples/aquarium-gallery/) とそこから開く各水槽）上の素材、`docs/images/` の作例画像を含みます。複製・再配布・改変・転用はできません（Fish Kit などの第三者由来の部分は次の項目のとおり元の利用条件に従います）。
 - Fish Kitなどの第三者由来の部分は元の利用条件に従います。取り込む場合は出典・版と元のライセンスを記録します。第三者素材や権利が確認できない素材は上記の許諾の対象外です。
 - BGMの追加は個別の水槽向けの対応です。標準制作フローや新規配布素材には含めません。一部の作例ページにはBGMを収録していますが、これも許諾の対象外です。

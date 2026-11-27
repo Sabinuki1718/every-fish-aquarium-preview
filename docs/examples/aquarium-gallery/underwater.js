@@ -218,3 +218,20 @@ void main(){
   document.addEventListener('visibilitychange', sync);
   sync();
 })();
+
+// Temporary slider for choosing how strong the backdrop is. The choice is kept per browser.
+(() => {
+  const input = document.querySelector('#water-opacity');
+  const output = document.querySelector('#water-opacity-value');
+  if (!input) return;
+  try { const saved = localStorage.getItem('gallery:water-opacity'); if (saved !== null) input.value = saved; } catch {}
+  const apply = () => {
+    const v = Number(input.value);
+    document.documentElement.style.setProperty('--water-opacity', v / 100);
+    document.documentElement.classList.toggle('water-light', v < 45);
+    output.textContent = v + '%';
+    try { localStorage.setItem('gallery:water-opacity', String(v)); } catch {}
+  };
+  input.addEventListener('input', apply);
+  apply();
+})();

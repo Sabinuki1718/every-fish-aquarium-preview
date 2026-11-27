@@ -10,7 +10,7 @@
 魚の種名と写真から、**実在魚種を再現した3Dモデルと3D水槽**を作るためのスキル集。
 観賞魚を含む淡水魚・海水魚・深海魚を、回転や拡大ができる水槽で観察する。対象は実在魚種。
 
-動作を確認しているのは Codex と Claude Code。どちらも同じ手順書に従って進める。Muse（Meta AI）でも一通り作れることを確かめた。無料で作れる選択肢になる（[作例：ハタタテハゼの水槽](docs/examples/aquarium-gallery/README.md#museによる作例)）。それ以外の AI でも、`AGENTS.md` と `.agents/skills/` の手順書を読んでコマンドを実行できれば使える可能性があるが、まだ確かめていない（専用の対応もしていない）。
+動作を確認しているのは Codex と Claude Code。どちらも同じ手順書に従って進める。Muse（Meta AI）でも一通り作れることを確かめた。無料で作れる選択肢になる（[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)の「Museによる作例」）。それ以外の AI でも、`AGENTS.md` と `.agents/skills/` の手順書を読んでコマンドを実行できれば使える可能性があるが、まだ確かめていない（専用の対応もしていない）。
 **追加のソフトは原則いらない。** AI と、すでに入っているものだけで進め、どうしても必要なときだけ AI が理由を添えて導入を提案する。
 
 ## 流れ
@@ -69,37 +69,15 @@ Fish Kitのファイルをユーザーが提示する必要はありません。
 
 ## 作例
 
-[公開中の水槽の作例一覧（8件）](docs/examples/aquarium-gallery/README.md)では、サムネイルから各水槽を開けます。Muse で無料で作ったハタタテハゼの水槽も載せています。完成日と制作時の主要モデルも掲載しています。
+**[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)** に、このワークフローで作った水槽をまとめています。サムネイルから各水槽を開けます。Codex・Claude Code・Muse（無料）それぞれの作例があり、完成日・制作時の主要モデル・画像生成に使ったサービスも載せています。
 
-### Codex での標準作例：モンガラカワハギの水槽
+[![3D水槽作例集の一覧ページ](docs/images/aquarium-gallery.webp)](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)
 
-![モンガラカワハギ1匹と、石灰藻をまとった5個の石の水槽](docs/images/mongara-aquarium.png)
+工程ごとの確認や修正の進め方は、次の制作記録を参照してください。
 
-提供写真から三面図・GLBモデル・レイアウト案を順に確認し、観察と石の配置編集ができる水槽を制作した。Codex内蔵の画像生成で三面図と素材を作り、モデルはv5、レイアウトはv2で承認された。
-
-[作例と簡潔なワークフロー](docs/examples/mongara-codex.md)に、工程ごとの確認・形状修正の要点・検証範囲をまとめている。[完成ページ](https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site/)は公開中。
-
-### Claude Code での標準作例：ルリヨシノボリの水槽
-
-![ルリヨシノボリの水槽（上流の瀬の砂底に、白い石英の帯が入った青黒い角石）](docs/images/ruri-yoshinobori-aquarium.png)
-
-![石の上に止まるルリヨシノボリ](docs/images/ruri-yoshinobori-closeup.png)
-
-Claude Code で①〜⑤を通しで進めた作例の一つ。ルリヨシノボリ（*Rhinogobius mizunoi*）1匹が、石や砂の上で止まっては短く泳ぐ。
-使ったコードは実装例として手順書に収録している（[モデル](.agents/skills/build-fish-3d-from-views/examples/README.md)・[水槽ページ](.agents/skills/build-aquarium-from-fish-model/examples/README.md)）。
-
-ワークフローの経過は [作例のまとめ](docs/examples/ruri-yoshinobori-claude-code.md) を参照。特に次の2点に注意する。
-
-- **魚と素材の画像は、別の AI で作った。** Claude は画像を生成できないので、三面図・正面図と石・砂・背景の素材は、ユーザーが別の画像生成 AI で作って渡した。
-- **3Dモデルの調整は、それなりの回数がかかることがある。** この作例では承認まで6版かかった。AI が持つ知識の少ない、マイナーな魚種ほど、この傾向が強い。
-
-### Codex + Tripo での高品質作例：王道の水景
-
-![カージナルテトラとエンゼルフィッシュが泳ぐ、チェーンアマゾンと石の凹型水景](docs/images/oudou-tripo-aquarium.png)
-
-魚2種と水草のモデルをTripoで生成し、Codexで鰭の透過・形状修正、石と底床の制作、群泳と水面の表現を仕上げた高品質バージョン。チェーンアマゾンのみを使い、中央へ広がる砂道と左右の石組みによる凹型構図を作った。
-
-[作例と制作手順](docs/examples/oudou-tripo-codex.md)に、TripoとCodexの役割分担、生成後の修正、消費クレジットと確認範囲をまとめている。[完成ページ「王道の水景」](https://oudou-aquascape.sabinuki1718.chatgpt.site/)は公開中。
+- [モンガラカワハギの水槽（Codex）](docs/examples/mongara-codex.md)
+- [ルリヨシノボリの水槽（Claude Code）](docs/examples/ruri-yoshinobori-claude-code.md)：魚と素材の画像は別の AI で作った。3Dモデルの承認まで6版かかった。
+- [王道の水景（Codex + Tripo）](docs/examples/oudou-tripo-codex.md)：Tripo と Codex の役割分担、消費クレジット
 
 ## フォルダ構成
 

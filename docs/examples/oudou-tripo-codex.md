@@ -4,7 +4,7 @@
 
 ![完成した王道の水景（実際のブラウザ画面）](../images/oudou-tripo-aquarium.png)
 
-- [完成ページ「王道の水景」](https://oudou-aquascape.sabinuki1718.chatgpt.site/)：公開ページ。
+- 完成した水槽：[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)から開けます。
 - 制作：Codex、内蔵画像生成、Tripo CLI/API、Three.js。
 - 構成：チェーンアマゾンのみを使用。石13個、奥へ高くなる底床、手前へ広がる曲線の白砂道、黒い外背景と上方照明、半透明のすりガラス調バックスクリーン。
 - 「高品質」はこの作例の制作方法を示す区分。標準作例から外部3D生成を使う場合の選択肢であり、Tripoの自動出力だけで完成したものではない。

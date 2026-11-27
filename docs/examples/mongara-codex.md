@@ -4,7 +4,7 @@
 
 ![完成したモンガラカワハギの水槽（実際のブラウザ画面）](../images/mongara-aquarium.png)
 
-- [完成ページ](https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site/)：公開ページ。
+- 完成した水槽：[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)から開けます。
 - 構成：青い背景、白砂、石灰藻を部分的に付けた石5個。中央に遊泳空間を確保した。
 - 使用環境：Codex、内蔵画像生成、既存のPython環境、Three.js r170。外部3D生成サービスは使っていない。
 - 記録対象：承認済みの三面図v4・モデルv5・レイアウトv2を用いた水槽。

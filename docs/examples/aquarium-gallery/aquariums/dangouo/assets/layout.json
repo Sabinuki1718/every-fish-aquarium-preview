@@ -1,0 +1,318 @@
+{
+  "revision": "layout-v1",
+  "approved": true,
+  "approval_status": "approved",
+  "image": "layout-v1.png",
+  "concept_method": "built-in image_gen, completion concept only, not implemented 3D",
+  "generation_prompt": "Create a realistic 3D AQUARIUM LAYOUT CONCEPT IMAGE, not a schematic, clean high quality wide landscape composition. A complete small rimless rectangular glass marine observation tank, 36cm wide x24cm deep x24cm high, water level 22cm, viewed from front and a little above at a gentle three-quarter angle so the front, right glass and water surface are visible. Entire tank inside frame on a quiet warm gray surface against deep blue-gray background, no text, labels or dimensions.\nRequested scene: Japanese rocky shallow shore with smooth dark BLACK ROUNDED sea cobbles and SWAYING SARGASSUM HONDAWARA BROWN SEAWEED. No freshwater aquarium grass, no driftwood, no tropical coral, no shells. Bottom thin dark fine gravel, irregular worn black basalt cobbles in medium and small sizes, subtle natural grain and pale mineral traces. About nine stones. Main low group at back left, smaller low group at front right, central open passage for observing fish. Two alternate natural rock tones visible subtly: charcoal black default with a few very dark blue-black stones. Not bright blue or red rocks.\nThree sargassum clumps, tallest rising along rear left, medium rear right, small center rear. Natural branching flexible brown-olive stems, small elongated narrow oval brown olive leaves and small spherical air bladders along branches, all gently leaning with common mild current. Not kelp ribbons, not freshwater stems. Open FRONT half of tank so fish remain visible. Soft cool daylight from top, calm fine rippling water surface with subtle reflections/refraction and gently patterned caustics on stones. Clear cool blue-green water, very restrained suspended particles, fish not lost in fog.\nEXACTLY THREE tiny rounded Japanese lumpsuckers Eumicrotremus awae, 3cm long each: ONE natural olive GREEN fish near front left stone, ONE soft PINK fish near front center gently hovering above cobble, ONE milky WHITE fish with black eyes near front right rock. Match fish references' globose smooth body and fins and broad flat mouth, anime fish integrated with realistic environment, no extra fish. Fish are 1/12 tank width, clearly visible near front, not giant floating heads. Small fan pectorals and rounded tail, no spines. Show fish each from a natural angle. The image communicates layout, material, initial colors, fish count and approximate scale. A polished honest concept rendering, no UI or annotations.",
+  "tank": {
+    "size_m": [
+      0.36,
+      0.24,
+      0.24
+    ],
+    "water_y_m": 0.22,
+    "up": "+Y",
+    "front": "+Z"
+  },
+  "fish": [
+    {
+      "id": "fish-green",
+      "species": "Eumicrotremus awae",
+      "color": "green",
+      "length_m": 0.03,
+      "assumed_scale": true,
+      "position": [
+        -0.09,
+        0.045,
+        0.065
+      ]
+    },
+    {
+      "id": "fish-pink",
+      "species": "Eumicrotremus awae",
+      "color": "pink",
+      "length_m": 0.03,
+      "assumed_scale": true,
+      "position": [
+        0,
+        0.045,
+        0.065
+      ]
+    },
+    {
+      "id": "fish-white",
+      "species": "Eumicrotremus awae",
+      "color": "white",
+      "length_m": 0.03,
+      "assumed_scale": true,
+      "position": [
+        0.09,
+        0.045,
+        0.065
+      ]
+    }
+  ],
+  "background": "ホンダワラの揺れる黒い丸石の磯。青灰色の奥行き。",
+  "substrate": {
+    "material": "暗い細礫",
+    "depth_m": 0.008
+  },
+  "lighting": "上方からの柔らかな冷色光、控えめな水中集光",
+  "palette": [
+    {
+      "id": "charcoal",
+      "label": "黒い玄武岩",
+      "default": true
+    },
+    {
+      "id": "blueblack",
+      "label": "青みの黒石"
+    }
+  ],
+  "objects": [
+    {
+      "id": "stone-1",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        -0.105,
+        0.02,
+        -0.065
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.07,
+        0.047,
+        0.057
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-2",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        -0.055,
+        0.016,
+        -0.027
+      ],
+      "rotation": [
+        0,
+        0.47,
+        0
+      ],
+      "scale": [
+        0.06,
+        0.033,
+        0.047
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-3",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        -0.135,
+        0.013,
+        0.025
+      ],
+      "rotation": [
+        0,
+        0.94,
+        0
+      ],
+      "scale": [
+        0.054,
+        0.026,
+        0.039
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-4",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        -0.07,
+        0.01,
+        0.064
+      ],
+      "rotation": [
+        0,
+        1.41,
+        0
+      ],
+      "scale": [
+        0.04,
+        0.021,
+        0.031
+      ],
+      "colorId": "blueblack"
+    },
+    {
+      "id": "stone-5",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        0.106,
+        0.023,
+        -0.04
+      ],
+      "rotation": [
+        0,
+        1.88,
+        0
+      ],
+      "scale": [
+        0.075,
+        0.047,
+        0.052
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-6",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        0.125,
+        0.012,
+        0.045
+      ],
+      "rotation": [
+        0,
+        2.3499999999999996,
+        0
+      ],
+      "scale": [
+        0.056,
+        0.025,
+        0.041
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-7",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        0.07,
+        0.011,
+        0.069
+      ],
+      "rotation": [
+        0,
+        2.82,
+        0
+      ],
+      "scale": [
+        0.052,
+        0.022,
+        0.039
+      ],
+      "colorId": "blueblack"
+    },
+    {
+      "id": "stone-8",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        0.005,
+        0.008,
+        0.061
+      ],
+      "rotation": [
+        0,
+        3.29,
+        0
+      ],
+      "scale": [
+        0.038,
+        0.016,
+        0.029
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "stone-9",
+      "kind": "stone",
+      "material": "丸みのある黒い磯石",
+      "position": [
+        0.005,
+        0.011,
+        -0.076
+      ],
+      "rotation": [
+        0,
+        3.76,
+        0
+      ],
+      "scale": [
+        0.052,
+        0.022,
+        0.039
+      ],
+      "colorId": "charcoal"
+    },
+    {
+      "id": "sargassum-1",
+      "kind": "plant",
+      "material": "ホンダワラ、褐色〜オリーブ色の分枝と小葉・気胞",
+      "position": [
+        -0.115,
+        0.008,
+        -0.075
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "height_m": 0.19
+    },
+    {
+      "id": "sargassum-2",
+      "kind": "plant",
+      "material": "ホンダワラ、褐色〜オリーブ色の分枝と小葉・気胞",
+      "position": [
+        0.102,
+        0.008,
+        -0.07
+      ],
+      "rotation": [
+        0,
+        0.7,
+        0
+      ],
+      "height_m": 0.15
+    },
+    {
+      "id": "sargassum-3",
+      "kind": "plant",
+      "material": "ホンダワラ、褐色〜オリーブ色の分枝と小葉・気胞",
+      "position": [
+        0.005,
+        0.008,
+        -0.09
+      ],
+      "rotation": [
+        0,
+        1.4,
+        0
+      ],
+      "height_m": 0.1
+    }
+  ],
+  "assumptions": [
+    "観察用の仮想水槽で実際の飼育設備・飼育密度の推奨ではない。",
+    "36×24×24cm、魚全長3cmを表示用の仮寸法として採用。",
+    "配置画像は完成予想であり、素材の細部と模様には生成由来の差がある。"
+  ],
+  "approval_evidence": "ユーザーの明示的返答：この配置で進める"
+}

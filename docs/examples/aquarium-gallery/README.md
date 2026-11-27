@@ -14,7 +14,7 @@
 
 完成日　2026-11-13　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://okinawa-harbor-aquarium.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/okinawa/)
 
 #### モンガラカワハギの水槽
 
@@ -24,7 +24,7 @@
 
 完成日　2026-10-28　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/mongara/)
 
 #### ダンゴウオとホンダワラの磯
 
@@ -34,7 +34,7 @@
 
 完成日　2026-10-26　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://dangouo-sargassum-shore.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/dangouo/)
 
 #### 王道の水景
 
@@ -44,7 +44,7 @@
 
 完成日　2026-10-24　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://oudou-aquascape.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/oudou/)
 
 #### 6月の琵琶湖湖岸
 
@@ -54,7 +54,7 @@
 
 完成日　2026-10-23　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://biwa-june-goby-aquarium.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/biwa/)
 
 #### イソギンポの水景
 
@@ -64,7 +64,7 @@
 
 完成日　2026-10-22　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://isoginpo-rocky-aquarium.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/isoginpo/)
 
 #### チョウセンブナの水景
 
@@ -74,7 +74,7 @@
 
 完成日　2026-10-22　｜　主要モデル　GPT-6.1 Sol
 
-[3D水槽を開く ↗](https://chousenbuna-aquarium-1022.sabinuki1718.chatgpt.site)
+[3D水槽を開く ↗](aquariums/chousenbuna/)
 
 ### Museによる作例
 

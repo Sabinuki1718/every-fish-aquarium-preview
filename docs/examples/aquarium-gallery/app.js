@@ -41,7 +41,7 @@ const exhibits = [
     "completed": "2026-11-13",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://okinawa-harbor-aquarium.sabinuki1718.chatgpt.site"
+    "url": "aquariums/okinawa/"
   },
   {
     "title": "モンガラカワハギの水槽",
@@ -52,7 +52,7 @@ const exhibits = [
     "completed": "2026-10-28",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://mongara-calm-aquarium-1718.sabinuki1718.chatgpt.site"
+    "url": "aquariums/mongara/"
   },
   {
     "title": "ダンゴウオとホンダワラの磯",
@@ -63,7 +63,7 @@ const exhibits = [
     "completed": "2026-10-26",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://dangouo-sargassum-shore.sabinuki1718.chatgpt.site"
+    "url": "aquariums/dangouo/"
   },
   {
     "title": "王道の水景",
@@ -75,7 +75,7 @@ const exhibits = [
     "completed": "2026-10-24",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://oudou-aquascape.sabinuki1718.chatgpt.site"
+    "url": "aquariums/oudou/"
   },
   {
     "title": "6月の琵琶湖湖岸",
@@ -86,7 +86,7 @@ const exhibits = [
     "completed": "2026-10-23",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://biwa-june-goby-aquarium.sabinuki1718.chatgpt.site"
+    "url": "aquariums/biwa/"
   },
   {
     "title": "イソギンポの水景",
@@ -97,7 +97,7 @@ const exhibits = [
     "completed": "2026-10-22",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://isoginpo-rocky-aquarium.sabinuki1718.chatgpt.site"
+    "url": "aquariums/isoginpo/"
   },
   {
     "title": "チョウセンブナの水景",
@@ -108,7 +108,7 @@ const exhibits = [
     "completed": "2026-10-22",
     "model": "GPT-6.1 Sol",
     "group": "codex",
-    "url": "https://chousenbuna-aquarium-1022.sabinuki1718.chatgpt.site"
+    "url": "aquariums/chousenbuna/"
   }
 ];
 

@@ -91,26 +91,29 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-seibun/model/v1/fish.glb",
-            "species/carassius-auratus-seibun/model/v1/preview/preview-offline.html"
+            "species/carassius-auratus-seibun/model/v2/fish.glb"
           ],
-          "sha256": "ac356ec926a91326c233224b0099a9d5a20585a8bd53b4690c7b0c23fb536dff",
-          "texture": "Tripo元テクスチャ",
-          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "sha256": "cd12abe6a88b05b958be4b4c83be34e4194140dc6a9f775e9578588de11ad06e",
+          "texture": "set-seibun 4方向を投影ベイク（写真の青灰色に合わせる）",
+          "change_request_quote": "青文の色は写真に寄せたい",
           "features": {
             "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
             "eye_gaze": "未実装"
           },
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
-            },
-            "record": "species/carassius-auratus-seibun/reviews.md"
+            }
+          },
+          "previous": {
+            "version": 1,
+            "texture": "Tripo元テクスチャ"
           }
         }
       }
@@ -162,7 +165,13 @@
     }
   ],
   "layout": {
-    "status": "not_started"
+    "status": "not_started",
+    "counts": {
+      "azumanishiki": 1,
+      "seibun": 1,
+      "oranda-yellowhood-blue": 1
+    },
+    "counts_quote": "各1匹"
   },
   "aquarium": {
     "status": "not_started"
@@ -208,6 +217,18 @@
       "at": "2026-11-27",
       "event": "model_v1_ready",
       "note": "3品種のテクスチャ付きGLBとプレビューを作成"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "changes_requested",
+      "species": "carassius-auratus-seibun",
+      "quote": "青文の色は写真に寄せたい"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "preview_issue",
+      "quote": "プレビューを開けないようです",
+      "note": "通信不要HTMLの代わりにArtifactで公開"
     }
   ],
   "shared_model": {
@@ -238,5 +259,10 @@
       "method": "ユーザー写真4方向の投影ベイク（青文魚はTripo元テクスチャ）",
       "approval_quote": "OKです"
     }
+  },
+  "preview": {
+    "url": "https://claude.ai/artifact/WMyJeU7LeUTw3kfzMVJrM5",
+    "files": "preview/",
+    "note": "3品種切替プレビュー（公開用・CDN）"
   }
 }

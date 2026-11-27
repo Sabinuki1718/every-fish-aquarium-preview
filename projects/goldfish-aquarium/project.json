@@ -1,0 +1,30 @@
+{
+  "title": "超リアル金魚水槽",
+  "environment": {
+    "ai": "claude-code",
+    "image_generation": "manual",
+    "model_route": "external",
+    "external_3d_tool": "Tripo（ユーザーのアカウントでWeb画面から生成。API方式の指定がないため既定）",
+    "checked_at": "2026-11-27",
+    "notes": "Python 3.13 / NumPy 2.5.3 / Pillow 13.0.0 あり。Tripo APIキーなし"
+  },
+  "style": { "mode": "realistic", "quote": "超リアルな金魚水槽を作成してください", "reference": "ユーザー写真＋create-fish-3d-views/assets/neon-tetra-realistic.webp" },
+  "review_policy": { "mode": "main_only", "chosen_at": "2026-11-27", "answer_quote": "（質問に未回答）", "reason": "希望なしのため既定" },
+  "species": [
+    { "id": "carassius-auratus-azumanishiki", "name_ja": "東錦", "scientific_name": "Carassius auratus (domesticated goldfish)", "variant": "オランダ型キャリコ。この個体は浅葱地＋黒斑＋白、赤なし",
+      "photos": ["species/carassius-auratus-azumanishiki/photos/01-oblique-dorsal.jpg","species/carassius-auratus-azumanishiki/photos/02-dorsal.jpg","species/carassius-auratus-azumanishiki/photos/03-ventral.jpg"],
+      "stages": { "research": {"status":"done"}, "side_view": {"status":"in_progress","note":"ユーザーの画像生成待ち"}, "model": {"status":"not_started"} } },
+    { "id": "carassius-auratus-seibun", "name_ja": "青文魚（ブルーオランダ）", "scientific_name": "Carassius auratus (domesticated goldfish)", "variant": "青一色のオランダ型",
+      "photos": ["species/carassius-auratus-seibun/photos/01-dorsal.jpg","species/carassius-auratus-seibun/photos/02-oblique-dorsal.jpg"],
+      "stages": { "research": {"status":"done"}, "side_view": {"status":"in_progress","note":"ユーザーの画像生成待ち"}, "model": {"status":"not_started"} } },
+    { "id": "carassius-auratus-oranda-yellowhood-blue", "name_ja": "黄頭の青白オランダ（固有の品種名は未確定）", "scientific_name": "Carassius auratus (domesticated goldfish)", "variant": "黄〜橙の肉瘤、背側青灰・腹側白〜淡桃のオランダ型",
+      "photos": [], "photos_note": "チャットで受領した写真は環境にファイルとして保存されていない",
+      "stages": { "research": {"status":"done"}, "side_view": {"status":"in_progress","note":"ユーザーの画像生成待ち"}, "model": {"status":"not_started"} } }
+  ],
+  "layout": { "status": "not_started" },
+  "aquarium": { "status": "not_started" },
+  "history": [
+    { "at": "2026-11-27", "event": "started", "quote": "今回はtripoを使ってOK 超リアルな金魚水槽を作成してください" },
+    { "at": "2026-11-27", "event": "species_confirmed", "quote": "この3品種です" }
+  ]
+}

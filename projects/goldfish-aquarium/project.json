@@ -44,26 +44,28 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-azumanishiki/model/v1/fish.glb",
-            "species/carassius-auratus-azumanishiki/model/v1/preview/preview-offline.html"
+            "species/carassius-auratus-azumanishiki/model/v2/fish.glb"
           ],
-          "sha256": "529317f5315fb45b9e7ca97b9b8936bf73d482735c6ce25adf07859422f841ed",
-          "texture": "set-BWA 4方向を投影ベイク（カメラ角はシルエット合わせ、IoU 0.73〜0.85）",
-          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "sha256": "f63cda4e04b3bfbb103e36e6c8720b214d4ff6e71cb34259141b4429c411c617",
+          "texture": "set-BWA 4方向を投影ベイク（カメラ角はシルエット合わせ、IoU 0.73〜0.85）。写真の眼を消して、モデルの眼の位置（青文魚と同じ）へ移動",
+          "change_request_quote": "青文以外、実物よりも目が前方についているようです。その点修正してください",
           "features": {
             "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
             "eye_gaze": "未実装"
           },
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
-            },
-            "record": "species/carassius-auratus-azumanishiki/reviews.md"
+            }
+          },
+          "previous": {
+            "version": 1
           }
         }
       }
@@ -139,26 +141,28 @@
         },
         "model": {
           "status": "waiting_approval",
-          "version": 1,
+          "version": 2,
           "files": [
-            "species/carassius-auratus-oranda-yellowhood-blue/model/v1/fish.glb",
-            "species/carassius-auratus-oranda-yellowhood-blue/model/v1/preview/preview-offline.html"
+            "species/carassius-auratus-oranda-yellowhood-blue/model/v2/fish.glb"
           ],
-          "sha256": "9166cb738dc685dd98eff06fc0d4aefa85c84c8edb7df59e48d18496debbe6a9",
-          "texture": "set-tensei 4方向を投影ベイク（IoU 0.78〜0.82）",
-          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "sha256": "de556de80e8c06db989df4890ba173bf09319e6fa3b39ff9523bf4b5b0bd10e7",
+          "texture": "set-tensei 4方向を投影ベイク（IoU 0.78〜0.82）。写真の眼を消して、モデルの眼の位置（青文魚と同じ）へ移動",
+          "change_request_quote": "青文以外、実物よりも目が前方についているようです。その点修正してください",
           "features": {
             "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
             "eye_gaze": "未実装"
           },
           "review": {
-            "version": 1,
+            "version": 2,
             "mode": "main_only",
+            "reason": "ユーザーが明示した部分修正",
             "status": "passed",
             "verdicts": {
               "main": "OK"
-            },
-            "record": "species/carassius-auratus-oranda-yellowhood-blue/reviews.md"
+            }
+          },
+          "previous": {
+            "version": 1
           }
         }
       }
@@ -229,6 +233,11 @@
       "event": "preview_issue",
       "quote": "プレビューを開けないようです",
       "note": "通信不要HTMLの代わりにArtifactで公開"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "changes_requested",
+      "quote": "形状はokですが、青文以外、実物よりも目が前方についているようです。その点修正してください"
     }
   ],
   "shared_model": {
@@ -258,6 +267,10 @@
       "status": "approved",
       "method": "ユーザー写真4方向の投影ベイク（青文魚はTripo元テクスチャ）",
       "approval_quote": "OKです"
+    },
+    "shape_approval": {
+      "quote": "形状はokですが",
+      "at": "2026-11-27"
     }
   },
   "preview": {

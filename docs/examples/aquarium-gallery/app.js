@@ -26,7 +26,7 @@ const exhibits = [
     ],
     "completed": "2026-11-27",
     "model": "Claude Opus 5.5",
-    "imageModel": "ChatGPT",
+    "imageModel": "Gemini",
     "group": "claude-code",
     "url": "aquariums/emaki-seibungyo/"
   },

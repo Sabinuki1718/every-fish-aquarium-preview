@@ -86,7 +86,7 @@ Claude には画像生成が内蔵されていないため、三面図や素材�
 
 魚種　青文魚、穂竜、銀水泡眼
 
-完成日　2026-11-27　｜　主要モデル　Claude Opus 5.5　｜　画像生成　ChatGPT
+完成日　2026-11-27　｜　主要モデル　Claude Opus 5.5　｜　画像生成　Gemini
 
 [3D水槽を開く ↗](aquariums/emaki-seibungyo/)
 

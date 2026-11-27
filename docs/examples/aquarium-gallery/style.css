@@ -183,3 +183,19 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   border-radius: 6px;
   border-inline-start: 4px solid var(--blue);
 }
+/* Phones and narrow tablets: the title stacks above the workflow, so only the title keeps the dark strip
+   and the workflow sits on the site blue. */
+@media (max-width: 920px) {
+  .intro { background: var(--blue); padding-block: var(--edge) 0; }
+  .intro-inner { padding-block: 0 20px; row-gap: 18px; }
+  .intro-inner > div:first-child {
+    background: #2b2b2b;
+    box-shadow: 0 0 0 100vmax #2b2b2b;
+    clip-path: inset(0 -100vmax);
+    padding-block: 16px 18px;
+  }
+}
+@media (max-width: 540px) {
+  .intro-inner { padding-block: 0 16px; row-gap: 14px; }
+  .intro-inner > div:first-child { padding-block: 14px 16px; }
+}

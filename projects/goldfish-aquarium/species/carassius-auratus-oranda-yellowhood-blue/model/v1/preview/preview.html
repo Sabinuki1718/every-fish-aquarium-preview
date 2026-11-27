@@ -1,0 +1,42 @@
+<title>黄頭の青白オランダ 3Dモデル v1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* One full-screen stage; title top-left, view buttons along the bottom edge. */
+:root{--paper:#f3f2ec;--paper-2:#e7e6de;--ink:#22303d;--ink-soft:#5d6b78;--accent:#4f7f99;--line:#cfd3d2;
+  --body:"Hiragino Sans","Yu Gothic",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#171c22;--paper-2:#222a32;--ink:#e6e8e4;--ink-soft:#a3adb6;--accent:#8ea6bd;--line:#38424c;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#171c22;--paper-2:#222a32;--ink:#e6e8e4;--ink-soft:#a3adb6;--accent:#8ea6bd;--line:#38424c;color-scheme:dark}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);overflow:hidden}
+.stage{position:relative;height:100%;background:radial-gradient(120% 90% at 50% 40%,var(--paper) 55%,var(--paper-2))}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:4px}
+h1{font-weight:600;font-size:clamp(20px,5vw,26px);margin:0;text-wrap:balance}
+.sub{margin:0;color:var(--ink-soft);font-size:13px;line-height:1.6;max-width:36em}
+nav{position:absolute;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+button{font:500 14px var(--body);color:var(--ink);background:color-mix(in srgb,var(--paper) 82%,transparent);border:1px solid var(--line);border-radius:999px;padding:9px 14px;min-height:40px;cursor:pointer}
+button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#status{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-soft);font-size:14px;pointer-events:none;padding-inline:16px;text-align:center}
+</style>
+<div class="stage">
+  <canvas id="view" aria-label="黄頭の青白オランダ 3Dモデル v1"></canvas>
+  <header><h1>黄頭の青白オランダ 3Dモデル v1</h1><p class="sub">Tripo生成の形（余分な鰭を切除）に写真4方向を投影。全長12cmの仮スケール</p><p class="sub">1本指で回転・2本指で拡大と移動</p></header>
+  <div id="status">読み込み中…</div>
+  <nav>
+    <button type="button" data-v="side">側面</button><button type="button" data-v="front">正面</button>
+    <button type="button" data-v="top">上面</button><button type="button" data-v="bottom">下面</button>
+    <button type="button" data-v="oblique">斜め</button><button type="button" id="spin" aria-pressed="false">自動回転</button>
+  </nav>
+</div>
+<script>window.FISH={"geometry": "models/tensei.json", "texture": "models/tensei-1024.jpg"};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["fish-json-loader.js", "preview-app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>

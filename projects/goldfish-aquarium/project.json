@@ -39,11 +39,32 @@
           "status": "done"
         },
         "side_view": {
-          "status": "in_progress",
-          "note": "真横の側面図（左体側・右体側）をユーザーの画像生成で作成待ち。left/rightは斜め上視点のためTripoの側方入力に不適"
+          "status": "skipped",
+          "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "not_started"
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-azumanishiki/model/v1/fish.glb",
+            "species/carassius-auratus-azumanishiki/model/v1/preview/preview-offline.html"
+          ],
+          "sha256": "529317f5315fb45b9e7ca97b9b8936bf73d482735c6ce25adf07859422f841ed",
+          "texture": "set-BWA 4方向を投影ベイク（カメラ角はシルエット合わせ、IoU 0.73〜0.85）",
+          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "features": {
+            "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
+            "eye_gaze": "未実装"
+          },
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-azumanishiki/reviews.md"
+          }
         }
       }
     },
@@ -65,11 +86,32 @@
           "status": "done"
         },
         "side_view": {
-          "status": "in_progress",
-          "note": "真横の側面図（左体側・右体側）をユーザーの画像生成で作成待ち。left/rightは斜め上視点のためTripoの側方入力に不適"
+          "status": "skipped",
+          "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "not_started"
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-seibun/model/v1/fish.glb",
+            "species/carassius-auratus-seibun/model/v1/preview/preview-offline.html"
+          ],
+          "sha256": "ac356ec926a91326c233224b0099a9d5a20585a8bd53b4690c7b0c23fb536dff",
+          "texture": "Tripo元テクスチャ",
+          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "features": {
+            "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
+            "eye_gaze": "未実装"
+          },
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-seibun/reviews.md"
+          }
         }
       }
     },
@@ -89,11 +131,32 @@
           "status": "done"
         },
         "side_view": {
-          "status": "in_progress",
-          "note": "真横の側面図（左体側・右体側）をユーザーの画像生成で作成待ち。left/rightは斜め上視点のためTripoの側方入力に不適"
+          "status": "skipped",
+          "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "not_started"
+          "status": "waiting_approval",
+          "version": 1,
+          "files": [
+            "species/carassius-auratus-oranda-yellowhood-blue/model/v1/fish.glb",
+            "species/carassius-auratus-oranda-yellowhood-blue/model/v1/preview/preview-offline.html"
+          ],
+          "sha256": "9166cb738dc685dd98eff06fc0d4aefa85c84c8edb7df59e48d18496debbe6a9",
+          "texture": "set-tensei 4方向を投影ベイク（IoU 0.78〜0.82）",
+          "orientation": "頭-X・背+Y、全長0.12（12cm仮スケール）",
+          "features": {
+            "fins_mouth_gill_animation": "未実装（GLBは静止。⑤で頂点シェーダーの遊泳・鰭揺れを付ける予定）",
+            "eye_gaze": "未実装"
+          },
+          "review": {
+            "version": 1,
+            "mode": "main_only",
+            "status": "passed",
+            "verdicts": {
+              "main": "OK"
+            },
+            "record": "species/carassius-auratus-oranda-yellowhood-blue/reviews.md"
+          }
         }
       }
     }
@@ -134,6 +197,17 @@
       "at": "2026-11-27",
       "event": "model_cut",
       "note": "余分な鰭を削除しv1作成"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "approved",
+      "stage": "shared_model_shape_v1",
+      "quote": "OKです"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "model_v1_ready",
+      "note": "3品種のテクスチャ付きGLBとプレビューを作成"
     }
   ],
   "shared_model": {
@@ -154,8 +228,15 @@
             "main": "OK"
           }
         },
-        "status": "waiting_approval"
+        "status": "approved",
+        "approved_at": "2026-11-27",
+        "approval_quote": "OKです"
       }
-    ]
+    ],
+    "texture_plan": {
+      "status": "approved",
+      "method": "ユーザー写真4方向の投影ベイク（青文魚はTripo元テクスチャ）",
+      "approval_quote": "OKです"
+    }
   }
 }

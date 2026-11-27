@@ -166,21 +166,13 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   .search input { width: min(170px, 35vw); }
   .search { gap: 5px; }
 }
-/* Headings that sit on the water get a solid label so they stay readable over the moving backdrop. */
+/* Group headings run as a dark bar across the card area. */
 .collection .group-title {
-  display: inline-block;
+  display: block;
   background: #2b2b2b;
   color: var(--white);
   text-shadow: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-.collection .group-title { border-inline-start: 3px solid var(--blue); }
-/* The list heading runs as a dark bar across the card area, with the filter inside it. */
-.collection .toolbar {
-  background: #2b2b2b;
-  color: var(--white);
+  padding: 8px 12px;
   border-radius: 6px;
-  padding: 10px 14px;
+  border-inline-start: 4px solid var(--blue);
 }
-.collection .toolbar h2 { text-shadow: none; }

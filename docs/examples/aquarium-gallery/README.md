@@ -193,3 +193,7 @@ Claude には画像生成が内蔵されていないため、三面図や素材�
 完成日　2026-11-24　｜　主要モデル　Muse　｜　費用　無料
 
 [3D水槽を開く ↗](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/aquariums/hatatate-haze/)（このリポジトリの [aquariums/hatatate-haze/index.html](aquariums/hatatate-haze/index.html) を GitHub Pages で公開）
+
+## ライセンス
+
+作例ページ上の画像・テクスチャ・3Dモデル・BGMなどの素材は許諾の対象外です（複製・再配布・改変・転用はできません）。コード・スクリプトは MIT License です。詳しくは[リポジトリの README](../../../README.md#ライセンス)を参照してください。

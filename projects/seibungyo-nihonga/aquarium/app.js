@@ -233,12 +233,16 @@ const plants = [];
 L.plants.forEach((def, pi) => {
   const rnd = seeded(41 + pi * 13), root = new T.Group(); root.userData.layoutId = def.id; const parts = [];
   const clumps = [];
-  for (let k = 0; k < Math.ceil(def.stems / 3); k++) { const az = rnd() * Math.PI * 2, tilt = .14 + .22 * rnd();
+  // clumps near a side wall lean inward (away from the glass and the back), each at its own angle (~6-22 deg)
+  // and within +-55 deg of straight inward, so the bed fans out naturally instead of standing upright
+  const nearWall = Math.abs(def.pos[0]) > TANK.width / 2 - 12, inX = -Math.sign(def.pos[0]), inZ = def.pos[2] < 0 ? .6 : -.6;
+  for (let k = 0; k < Math.ceil(def.stems / 3); k++) {
+    const az = nearWall ? Math.atan2(inZ, inX) + (rnd() - .5) * 1.9 : rnd() * Math.PI * 2, tilt = .1 + .3 * rnd();
     clumps.push({ x: (rnd() - .5) * def.spread[0], z: (rnd() - .5) * def.spread[1], lx: Math.cos(az) * tilt, lz: Math.sin(az) * tilt * .7 }); }
   for (let i = 0; i < def.stems; i++) {
     const k = clumps[i % clumps.length], h = (def.height[0] + (def.height[1] - def.height[0]) * Math.pow(rnd(), .8)) * CM;
     const x0 = (k.x + (rnd() - .5) * 1.6) * CM, z0 = (k.z + (rnd() - .5) * 1.4) * CM;
-    const lx = k.lx + (rnd() - .5) * .14, lz = k.lz + (rnd() - .5) * .12, bend = (rnd() - .5) * .3, phase = rnd() * Math.PI;
+    const lx = k.lx + (rnd() - .5) * .2, lz = k.lz + (rnd() - .5) * .16, bend = (rnd() - .5) * .3, phase = rnd() * Math.PI;
     let LX = lx, LZ = lz, BD = bend, X0s = x0, Z0s = z0;
     const at = y => new T.Vector3(X0s + LX * y + BD * y * y / h, y * (1 - .5 * (LX * LX + LZ * LZ)), Z0s + LZ * y + .3 * BD * y * y / h);
     // keep the whole stem and its leaf fans (radius up to ~4.6 cm near the base) inside the glass: lean less, then shift
@@ -413,6 +417,17 @@ $('rot-y').oninput = e => { state.setTransform(selected, { rotation: [0, +e.targ
 document.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { if (!selected) return; state.setStoneColor(selected, b.dataset.color); applyState(); save(); syncControls(); });
 document.querySelectorAll('[data-all-color]').forEach(b => b.onclick = () => { state.setAllStoneColors(b.dataset.allColor); applyState(); save(); syncControls(); toast('石の色をそろえました'); });
 $('reset').onclick = () => { state.restoreDefault(); applyState(); save(); syncControls(); toast('承認した配置と色に戻しました'); };
+
+// ---------- BGM (starts only from the button: browsers block autoplay with sound) ----------
+if (A.bgm) {
+  const audio = new Audio(A.bgm); audio.loop = true; audio.volume = .55; audio.preload = 'none';
+  const b = $('bgm'); b.hidden = false;
+  b.onclick = async () => {
+    if (audio.paused) { try { await audio.play(); press(b, true); b.textContent = 'BGM 停止'; } catch { toast('BGMを再生できませんでした'); } }
+    else { audio.pause(); press(b, false); b.textContent = 'BGM'; }
+  };
+  document.addEventListener('visibilitychange', () => { if (document.hidden && !audio.paused) audio.pause(), press(b, false), b.textContent = 'BGM'; });
+}
 
 // ---------- loop ----------
 let last = performance.now(), acc = 0;

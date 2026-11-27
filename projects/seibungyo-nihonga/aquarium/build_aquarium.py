@@ -57,11 +57,12 @@ def main():
     shutil.copy(AQ / 'src/app.js', AQ / 'app.js')
     page = (AQ / 'src/page.html').read_text(encoding='utf8')
     scripts = ['lib.js', 'nihonga-shader.js', 'app.js']
-    assets = {'layout': L, 'models': models, 'textures': textures, 'info': INFO}
+    bgm = 'audio/bgm.mp3' if (AQ / 'audio/bgm.mp3').exists() else None
+    assets = {'layout': L, 'models': models, 'textures': textures, 'info': INFO, 'bgm': bgm}
     online = page.replace('__SCRIPTS__', '<script>window.AQUARIUM_ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';</script>\n'
                           + online_three_loader(scripts))
     (AQ / 'index.html').write_text(online, encoding='utf8')
-    off = {'layout': L, 'info': INFO, 'textures': {k: data_uri(AQ / v) for k, v in textures.items()},
+    off = {'layout': L, 'info': INFO, 'bgm': data_uri(AQ / bgm, 'audio/mpeg') if bgm else None, 'textures': {k: data_uri(AQ / v) for k, v in textures.items()},
            'models': {k: {'geometry': data_uri(AQ / v['geometry'], 'application/json'), 'standard': data_uri(AQ / v['light'])} for k, v in models.items()}}
     for v in off['models'].values():
         v['light'] = v['standard']                                     # one copy per fish in the offline file

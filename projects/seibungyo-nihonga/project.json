@@ -339,7 +339,7 @@
   },
   "aquarium": {
     "status": "in_progress",
-    "version": 6,
+    "version": 7,
     "files": [
       "aquarium/index.html",
       "aquarium/aquarium-offline.html",
@@ -366,7 +366,8 @@
       "seibungyo v9",
       "horyu v8",
       "gin-suihogan v3"
-    ]
+    ],
+    "bgm": "aquarium/audio/bgm.mp3（ユーザー提供、4.9MB、ボタンで再生・ループ）"
   },
   "history": [
     {
@@ -748,6 +749,13 @@
       "event": "revised",
       "quote": "①右側のカボンバがガラスからはみ出ているので、水槽内側に収まるよう修正 ②金魚同士がぶつからないように配置してください",
       "note": "v6: カボンバの茎と葉の広がりをガラスの内側に収める（傾きを弱め、必要なら内へずらす。移動・回転でも内側に戻す）／泳ぐ層を分け、近づいたら避ける動き（確認中の最小中心間隔16.3 cm）"
+    },
+    {
+      "at": "2026-11-27",
+      "stage": "aquarium",
+      "event": "revised",
+      "quote": "①右側のカボンバ 内側に傾く角度にバリエーションをつけて、もう少し自然な広がりにしてください ②BGM 添付のもの追加してください",
+      "note": "v7: 壁際の株を内向きにそれぞれ違う角度（約6〜22°、内向きから±55°）で傾ける／BGMボタン（ループ再生、タブを離れると停止）"
     }
   ],
   "renderer": {

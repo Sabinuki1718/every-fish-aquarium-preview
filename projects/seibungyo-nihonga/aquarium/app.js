@@ -26,7 +26,7 @@ const fitSize = () => { const s = Lib.aquariumDrawingSize(quality, canvas.client
   renderer.setPixelRatio(s.pixelRatio); renderer.setSize(s.cssWidth, s.cssHeight, false); };
 fitSize();
 const scene = new T.Scene(), camera = new T.PerspectiveCamera(30, 1, .01, 10);
-const nihonga = createNihonga(T, renderer, { lineWidth: quality.name === 'light' ? 4 : 5, occlusionEps: .002, maxStrokeVertices: 400000 });
+const nihonga = createNihonga(T, renderer, { lineWidth: 11, occlusionEps: .002, maxStrokeVertices: 400000 });   // bold sumi lines (user's reference)
 const controls = new T.OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.minDistance = .18; controls.maxDistance = 2.6; controls.maxPolarAngle = Math.PI * .62;
 const TANK = L.tank, TW = TANK.width * CM, TD = TANK.depth * CM;
@@ -73,7 +73,8 @@ async function loadFish(f, i) {
     const mesh = new T.Mesh(g, new T.MeshBasicMaterial({ map, side: T.DoubleSide })); mesh.name = part.name; mesh.userData.fishId = f.id;
     if (part.noweld) { const k = new Uint8Array(part.p.length / 3); for (const v of part.noweld) k[v] = 1; mesh.userData.nihongaNoWeld = k; }
     if (part.contour) { const k = new Uint8Array(part.i.length / 3); for (const c of part.contour) k[c] = 1; mesh.userData.nihongaContourFaces = k; }
-    if (part.targets) { mesh.userData.nihongaDynamic = true; animated.push({ mesh, base: Float32Array.from(part.p), d: part.targets.map(t => Float32Array.from(t.d)), dv: part.driver }); }
+    mesh.userData.nihongaDynamic = true;                // every part bends with the body
+    animated.push({ mesh, base: Float32Array.from(part.p), d: part.targets ? part.targets.map(t => Float32Array.from(t.d)) : [], dv: part.driver });
     body.add(mesh);
   }
   const s = (f.total_length_cm * CM) / .15; root.scale.setScalar(s);              // model is 15 cm long
@@ -81,7 +82,7 @@ async function loadFish(f, i) {
   const rnd = seeded(97 + i * 31);
   fishes.push({ id: f.id, info: f, root, body, animated, t: rnd() * 40, finT: rnd() * 5, stopped: false,
     path: { ...(f.path || { cx: 0, cy: 19, cz: 3, ax: 19, ay: 4.5, az: 4 }), w: [2 * Math.PI / 41, 2 * Math.PI / 23, 2 * Math.PI / 29].map(w => w * (.9 + .2 * rnd())), ph: [rnd() * 6, rnd() * 6, rnd() * 6] },
-    yaw: 0, pitch: 0, prev: new T.Vector3() });
+    yaw: 0, pitch: 0, roll: 0, swim: rnd() * 6, seed: rnd() * 10, prev: new T.Vector3() });
 }
 function driverWeights(dv, t) {
   const ph = 2 * Math.PI * dv.cycles * t / dv.duration + dv.phase;
@@ -92,19 +93,38 @@ function driverWeights(dv, t) {
 }
 function pathAt(f, t) { const p = f.path;
   return new T.Vector3((p.cx + p.ax * Math.sin(p.w[0] * t + p.ph[0])) * CM, (p.cy + p.ay * Math.sin(p.w[1] * t + p.ph[1])) * CM, (p.cz + p.az * Math.sin(p.w[2] * t + p.ph[2])) * CM); }
+// Goldfish swimming: slow, unhurried glides with soft pushes, short hovers where only the fins work,
+// a gentle bob, rolling into turns, and a travelling body wave that grows toward the tail.
+function paceAt(f, t) {          // 0.12 (hover) .. 1 (push): smooth pseudo-random pace
+  const s = f.seed;
+  return Math.max(.12, Math.min(1, .55 + .3 * Math.sin(.21 * t + s) + .2 * Math.sin(.53 * t + 2 * s) - .18 * Math.max(0, Math.sin(.09 * t + 3 * s)) * 2));
+}
 function updateFish(f, dt) {
-  if (!f.stopped) f.t += dt;
-  const pos = pathAt(f, f.t), ahead = pathAt(f, f.t + .4), v = ahead.clone().sub(pos), speed = v.length() / .4;
-  const yaw = Math.atan2(v.z, -v.x), pitch = -Math.asin(Math.max(-.5, Math.min(.5, v.y / (v.length() || 1)))) * .6;
-  let dy = yaw - f.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); f.yaw += dy * Math.min(1, dt * 2.5); f.pitch += (pitch - f.pitch) * Math.min(1, dt * 2);
-  const rate = f.stopped ? .45 : .75 + Math.min(1, speed / .05) * .6 + Math.min(.6, Math.abs(dy) * 1.5);   // fins quicken with speed and turns
-  f.finT += dt * rate;
+  const pace = f.stopped ? 0 : paceAt(f, f.clock = (f.clock || 0) + dt);
+  f.t += dt * pace * .75;
+  const pos = pathAt(f, f.t), ahead = pathAt(f, f.t + .6), v = ahead.clone().sub(pos), speed = pace;
+  pos.y += .0035 * Math.sin(.9 * f.clock + f.seed) + .0015 * Math.sin(2.3 * f.clock);          // drifting bob
+  const yaw = Math.atan2(v.z, -v.x), pitch = -Math.asin(Math.max(-.5, Math.min(.5, v.y / (v.length() || 1)))) * .5;
+  let dy = yaw - f.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+  const turn = dy * Math.min(1, dt * 1.6); f.yaw += turn; f.pitch += (pitch - f.pitch) * Math.min(1, dt * 1.5);
+  f.roll += (Math.max(-.25, Math.min(.25, -turn / Math.max(dt, 1e-3) * .35)) - f.roll) * Math.min(1, dt * 2);
+  // fins: quicker when pushing or turning, a lazy flutter when hovering
+  f.finT += dt * (.55 + .7 * speed + Math.min(.5, Math.abs(turn / Math.max(dt, 1e-3)) * .8));
+  // body wave: tail-beat ~0.7 Hz when hovering to ~1.6 Hz when pushing; amplitude grows with pace
+  f.swim += dt * 2 * Math.PI * (.7 + .9 * speed);
+  const amp = .045 + .07 * speed;
   f.root.position.copy(pos);
-  f.root.rotation.set(0, f.yaw, 0, 'YZX'); f.body.rotation.set(0, .045 * Math.sin(2 * Math.PI * f.finT * 2 / 4.8), f.pitch, 'YZX');   // body sways with the tail beat
+  f.root.rotation.set(0, f.yaw, 0, 'YZX'); f.body.rotation.set(f.roll, 0, f.pitch, 'YZX');
   for (const a of f.animated) {
-    const w = driverWeights(a.dv, f.finT % a.dv.duration), p = a.mesh.geometry.attributes.position, arr = p.array;
+    const p = a.mesh.geometry.attributes.position, arr = p.array;
     arr.set(a.base);
-    for (let k = 0; k < a.d.length; k++) { const wk = w[k], dk = a.d[k]; for (let i = 0; i < arr.length; i++) arr[i] += wk * dk[i]; }
+    if (a.d.length) { const w = driverWeights(a.dv, f.finT % a.dv.duration);
+      for (let k = 0; k < a.d.length; k++) { const wk = w[k], dk = a.d[k]; for (let i = 0; i < arr.length; i++) arr[i] += wk * dk[i]; } }
+    // lateral bend (model: head at -x, length .15 m): z += A(x) sin(phase - k x), A grows ~quadratically to the tail
+    for (let i = 0; i < arr.length; i += 3) {
+      const u = Math.min(1, Math.max(0, (arr[i] + .075) / .15)), w = u * u * .15;
+      arr[i + 2] += amp * w * Math.sin(f.swim - 5.2 * u) - .012 * Math.sin(f.swim) * (1 - u) * .15;
+    }
     p.needsUpdate = true;
   }
 }
@@ -201,14 +221,14 @@ L.plants.forEach((def, pi) => {
     const lx = k.lx + (rnd() - .5) * .14, lz = k.lz + (rnd() - .5) * .12, bend = (rnd() - .5) * .3, phase = rnd() * Math.PI;
     const at = y => new T.Vector3(x0 + lx * y + bend * y * y / h, y * (1 - .5 * (lx * lx + lz * lz)), z0 + lz * y + .3 * bend * y * y / h);
     const stem = solid(new T.TubeGeometry(new T.CatmullRomCurve3([0, .33, .66, 1].map(f => at(f * h))), 16, .0012, 5, false), stemMat);
-    stem.userData.nihongaLineScale = .45; stem.userData.layoutId = def.id; root.add(stem); parts.push(stem);
+    stem.userData.nihongaLineScale = .25; stem.userData.layoutId = def.id; root.add(stem); parts.push(stem);
     const P = [], N = [], U = [], I = [], C = []; let y = .012, n = 0;
     while (y < h) { const f = y / h, r = .046 * (1 - .4 * f) * (.9 + .2 * rnd()), a = phase + n * Math.PI / 2 + (rnd() - .5) * .3;
       for (const s of [0, Math.PI]) fanInto(P, N, U, I, C, at(y), new T.Vector3(Math.cos(a + s), 0, Math.sin(a + s)), .12 + .2 * f, r);
       y += .024 * (1 - .6 * f * f); n++; }
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(P, 3)); g.setAttribute('normal', new T.Float32BufferAttribute(N, 3));
     g.setAttribute('uv', new T.Float32BufferAttribute(U, 2)); g.setIndex(I);
-    const leaves = new T.Mesh(g, leafMat[rnd() < .5 ? 0 : 1]); leaves.userData.nihongaContourFaces = Uint8Array.from(C); leaves.userData.nihongaLineScale = .4; leaves.userData.layoutId = def.id;
+    const leaves = new T.Mesh(g, leafMat[rnd() < .5 ? 0 : 1]); leaves.userData.nihongaContourFaces = Uint8Array.from(C); leaves.userData.nihongaLineScale = .22; leaves.userData.layoutId = def.id;
     root.add(leaves); parts.push(leaves);
   }
   plants.push({ id: def.id, def, root, parts });
@@ -233,12 +253,37 @@ try {
   for (const [i, f] of L.fish.entries()) await loadFish(f, i);
 } catch (e) { console.error(e); fail('魚のモデルを読み込めませんでした。再読み込みしてください。'); return; }
 scene.add(sand); nihonga.add(sand);
+// rakkan (seal) "青色金魚" on the front glass, lower left: vermilion with paper-coloured carved characters (hakubun)
+await document.fonts?.load?.('600 120px "Shippori Mincho"').catch(() => {});
+{
+  const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'), r = seeded(23);
+  x.fillStyle = '#b2382c'; x.fillRect(0, 0, 512, 512);
+  for (let k = 0; k < 2500; k++) { x.globalAlpha = .08 * r(); x.fillStyle = r() < .5 ? '#7d2019' : '#d4614f'; x.fillRect(512 * r(), 512 * r(), 3, 3); }
+  x.globalAlpha = 1; x.fillStyle = '#efe3c8'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '600 200px "Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif';
+  [['青', 372, 140], ['色', 372, 372], ['金', 140, 140], ['魚', 140, 372]].forEach(([ch, cx, cy]) => x.fillText(ch, cx, cy));   // right column first
+  x.fillStyle = '#e9dcc0';                                         // worn spots (the shader draws colour only, no alpha)
+  for (let k = 0; k < 60; k++) { x.beginPath(); x.arc(512 * r(), 512 * r(), 1.5 + 4 * r(), 0, 7); x.fill(); }
+  const tex = canvasTex(c);
+  const sh = new T.Shape(), n = 28, half = .018;
+  for (let k = 0; k < n * 4; k++) {                               // slightly irregular square outline
+    const side = Math.floor(k / n), t = (k % n) / n, j = (r() - .5) * .0012;
+    const [px, py] = [[-half + 2 * half * t, -half], [half, -half + 2 * half * t], [half - 2 * half * t, half], [-half, half - 2 * half * t]][side];
+    side % 2 ? sh.lineTo(px + j, py) : (k ? sh.lineTo(px, py + j) : sh.moveTo(px, py));
+  }
+  const g = new T.ShapeGeometry(sh); const uv = g.attributes.uv; const P = g.attributes.position;
+  for (let i = 0; i < P.count; i++) uv.setXY(i, (P.getX(i) + half) / (2 * half), (P.getY(i) + half) / (2 * half));
+  const seal = new T.Mesh(g, new T.MeshBasicMaterial({ map: tex, side: T.FrontSide }));
+  seal.position.set(-TW / 2 + .035, .045, TD / 2 + .0045);
+  seal.userData.nihongaContourFaces = new Uint8Array(g.index.count / 3);
+  scene.add(seal); nihonga.add(seal);
+}
 // tank frame: lacquered rails along the twelve edges (thicker at the base and the rim) and a fine water line.
 // The glass itself stays unpainted (the nihonga shader draws opaque colour only), so the frame says "tank".
 {
   const frameMat = new T.MeshBasicMaterial({ color: '#2b2a2e' }), waterMat = new T.MeshBasicMaterial({ color: '#8fa3b0' });
   const H = TANK.height * CM, WL = TANK.water_level * CM, t = .006, base = .016, rim = .01;
-  const rail = (w, h, d, x, y, z, mat = frameMat, scale = 1) => { const m = solid(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.userData.nihongaLineScale = scale; scene.add(m); nihonga.add(m); };
+  const rail = (w, h, d, x, y, z, mat = frameMat, scale = .5) => { const m = solid(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.userData.nihongaLineScale = scale; scene.add(m); nihonga.add(m); };
   const X = TW / 2 + t / 2, Z = TD / 2 + t / 2;
   for (const z of [-Z, Z]) { rail(TW + 2 * t, base, t, 0, -.014 + base / 2 + .001, z); rail(TW + 2 * t, rim, t, 0, H - rim / 2, z); }
   for (const x of [-X, X]) { rail(t, base, TD, x, -.014 + base / 2 + .001, 0); rail(t, rim, TD, x, H - rim / 2, 0); }

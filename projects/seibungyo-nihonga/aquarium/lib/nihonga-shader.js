@@ -333,7 +333,19 @@ export function createNihonga(T, renderer, opts = {}) {
       const start = nv;
       const camL = S.mesh.worldToLocal(camera.position.clone());
       const chains = contourChains(S, camL);
-      for (const c of chains) strokesFromChain(c.pts.map(p => project(S.mesh, p)), c.closed);
+      for (const c of chains) {
+        // [拡張] 視点の後ろ・すぐ手前の点や、画面の外へ大きく飛ぶ点で鎖を切る（近づいたときに出る細い直線の不具合）
+        const pts = c.pts.map(p => project(S.mesh, p)), near = camera.near * 1.05, jump = .25 * Math.hypot(BW, BH);
+        const ok = p => p[2] > near && p[0] > -BW && p[0] < 2 * BW && p[1] > -BH && p[1] < 2 * BH;
+        if (pts.every(ok) && pts.every((p, i) => i === 0 || dist(p, pts[i - 1]) < jump)) { strokesFromChain(pts, c.closed); continue; }
+        let run = [];
+        for (let i = 0; i < pts.length; i++) {
+          const p = pts[i];
+          if (!ok(p) || (run.length && dist(p, run[run.length - 1]) >= jump)) { if (run.length > 3) strokesFromChain(run, false); run = ok(p) ? [p] : []; }
+          else run.push(p);
+        }
+        if (run.length > 3) strokesFromChain(run, false);
+      }
       if (key) { S.cacheKey = key; S.cache = { n: nv - start, p: sPos.slice(start * 3, nv * 3), s: sS.slice(start * 2, nv * 2), c: sC.slice(start * 3, nv * 3) }; }
     }
     for (const k of ['position', 'aS', 'aC']) sGeo.attributes[k].needsUpdate = true;

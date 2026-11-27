@@ -17,16 +17,13 @@ SK = ROOT.parents[1] / '.agents/skills'
 sys.path.insert(0, str(SK / 'publish-aquarium-web/scripts'))
 from web_bundle import online_three_loader, offline_document, data_uri
 
-INFO = {'seibungyo': {
-    'name': '青文魚（せいぶんぎょ）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
-    'text': '中国で作られた金魚の品種で、昭和30年代に日本へ入りました。オランダ獅子頭に近い体型で、頭にこぶ状の肉瘤があり、'
-            '体は青みがかった灰色、背鰭と長い四つ尾をもちます。肉瘤の大きさには個体差があります。'},
+INFO = {
+    'seibungyo': {'name': '青文魚（せいぶんぎょ）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
+                  'text': '青灰色の体と頭のこぶ（肉瘤）が特徴の中国生まれの品種。背鰭と長い四つ尾をもちます。'},
     'horyu': {'name': '穂竜（ほりゅう）', 'scientific': 'Carassius auratus（キンギョの改良品種）',
-              'text': '兵庫県赤穂市の愛好家が、青の竜眼に高頭パールを掛け合わせて作った日本の品種です。左右に突き出た出目、'
-                      '頭の肉瘤、真珠のように盛り上がるパール鱗、丸い体が特徴です。流通は少なく、愛好家の間で守られています。'},
+              'text': '赤穂生まれの日本の品種。出目、頭の肉瘤、真珠のようなパール鱗、丸い体が特徴です。'},
     'gin-suihogan': {'name': '銀水泡眼（ぎんすいほうがん）', 'scientific': 'Carassius auratus（キンギョの改良品種・水泡眼）',
-                     'text': '眼の下に液体の入った大きな袋（水泡）をもつ中国の品種、水泡眼の青〜銀系の個体です。背鰭がなく、'
-                             '眼は上を向きます。水泡は破れやすいので、とがった物のない水槽で飼われます。'}}
+                     'text': '眼の下に液体の入った水泡をもつ水泡眼の青系。背鰭がなく、眼は上を向きます。'}}
 
 
 def lib_js():

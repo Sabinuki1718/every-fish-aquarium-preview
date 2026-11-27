@@ -1,5 +1,5 @@
 {
-  "title": "日本画風の青文魚",
+  "title": "青色金魚絵巻",
   "environment": {
     "ai": "claude-code",
     "image_generation": "manual",
@@ -339,7 +339,7 @@
   },
   "aquarium": {
     "status": "in_progress",
-    "version": 4,
+    "version": 5,
     "files": [
       "aquarium/index.html",
       "aquarium/aquarium-offline.html",
@@ -734,6 +734,13 @@
       "species": "seibungyo v9, horyu v8",
       "event": "approved",
       "quote": "ok"
+    },
+    {
+      "at": "2026-11-27",
+      "stage": "aquarium",
+      "event": "revised",
+      "quote": "①金魚の泳ぎ方モーション もっとリアルにゆらゆら泳ぐようにする ②輪郭線 添付画像くらい太くしてください ③見る角度によって、必要以上に細かい直線がはいる不具合があるようです 修正 ④左下の水槽ガラス表面に、「青色金魚」の落款印を追加 ⑤タイトルを青色金魚絵巻に変更 ⑥魚の解説 もう少し短く簡潔にしてください",
+      "note": "v5: 体のうねり・ゆるい押し出しと漂い・上下の揺れ・旋回の傾き／墨線11px（水草・枠は細め）／視点の後ろの点で筆線を切る（シェーダー修正）／落款「青色金魚」／タイトル変更／解説を1文に"
     }
   ],
   "renderer": {

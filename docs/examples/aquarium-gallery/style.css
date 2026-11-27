@@ -60,33 +60,9 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: var(--water-opacity, .7);
+  opacity: .6;
   background: linear-gradient(180deg, #2c7ea3, #0b3552 55%, #04182b);
 }
-/* Light water: switch the text on the water back to dark ink. */
-.water-light .collection-surface { color: var(--ink); }
-.water-light .collection .toolbar h2, .water-light .group-title,
-.water-light .group-note, .water-light #empty { text-shadow: none; }
-.water-light .group-title { border-inline-start-color: var(--blue); }
-/* Temporary control for choosing the backdrop strength. */
-.tuner {
-  position: fixed;
-  right: max(16px, env(safe-area-inset-right, 0px));
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: var(--white);
-  color: var(--ink);
-  box-shadow: 0 6px 24px rgba(0, 18, 36, .3);
-  font-size: .8rem;
-  font-weight: 650;
-}
-.tuner input { width: min(180px, 40vw); accent-color: var(--blue); }
-.tuner output { min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; }
 .water-backdrop canvas {
   position: absolute;
   inset: 0;

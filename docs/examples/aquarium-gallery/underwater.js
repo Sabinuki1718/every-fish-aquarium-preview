@@ -24,9 +24,13 @@
   let drawWater = () => {};
   if (gl) {
     const vs = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-    const fs = `precision mediump float;
+    const fs = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
 uniform vec2 uRes; uniform float uTime; uniform float uDepth; uniform float uScroll;
-float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float hash(vec2 p){ vec3 q = fract(vec3(p.xyx) * .1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
 float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
   return mix(mix(hash(i), hash(i+vec2(1.,0.)), f.x), mix(hash(i+vec2(0.,1.)), hash(i+vec2(1.,1.)), f.x), f.y); }
 float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= .5; } return v; }
@@ -94,9 +98,9 @@ void main(){
       drawWater = time => {
         gl.viewport(0, 0, glCanvas.width, glCanvas.height);
         gl.uniform2f(uRes, glCanvas.width, glCanvas.height);
-        gl.uniform1f(uTime, time);
+        gl.uniform1f(uTime, time % 600);
         gl.uniform1f(uDepth, depth);
-        gl.uniform1f(uScroll, scrollY);
+        gl.uniform1f(uScroll, scrollY % 20000);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       };
       document.documentElement.classList.add('has-water');
@@ -219,19 +223,3 @@ void main(){
   sync();
 })();
 
-// Temporary slider for choosing how strong the backdrop is. The choice is kept per browser.
-(() => {
-  const input = document.querySelector('#water-opacity');
-  const output = document.querySelector('#water-opacity-value');
-  if (!input) return;
-  try { const saved = localStorage.getItem('gallery:water-opacity'); if (saved !== null) input.value = saved; } catch {}
-  const apply = () => {
-    const v = Number(input.value);
-    document.documentElement.style.setProperty('--water-opacity', v / 100);
-    document.documentElement.classList.toggle('water-light', v < 45);
-    output.textContent = v + '%';
-    try { localStorage.setItem('gallery:water-opacity', String(v)); } catch {}
-  };
-  input.addEventListener('input', apply);
-  apply();
-})();

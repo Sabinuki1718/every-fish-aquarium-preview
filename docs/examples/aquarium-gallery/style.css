@@ -26,7 +26,7 @@ a:focus-visible, input:focus-visible {
 }
 .repo { font-size: .8rem; font-weight: 650; padding: 10px 0 10px 10px; }
 .repo:hover { text-decoration: underline; }
-.intro { background: var(--blue); color: var(--white); }
+.intro { background: #2b2b2b; color: var(--white); }
 .intro-inner {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -167,7 +167,7 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   .search { gap: 5px; }
 }
 /* Headings that sit on the water get a solid label so they stay readable over the moving backdrop. */
-.collection .toolbar h2, .collection .group-title {
+.collection .group-title {
   display: inline-block;
   background: #2b2b2b;
   color: var(--white);
@@ -176,3 +176,11 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   border-radius: 4px;
 }
 .collection .group-title { border-inline-start: 3px solid var(--blue); }
+/* The list heading runs as a dark bar across the card area, with the filter inside it. */
+.collection .toolbar {
+  background: #2b2b2b;
+  color: var(--white);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+.collection .toolbar h2 { text-shadow: none; }

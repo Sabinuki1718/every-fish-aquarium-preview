@@ -10,6 +10,10 @@
 魚の種名と写真から、**実在魚種を再現した3Dモデルと3D水槽**を作るためのスキル集。
 観賞魚を含む淡水魚・海水魚・深海魚を、回転や拡大ができる水槽で観察する。対象は実在魚種。
 
+### [作例一覧（3D水槽作例集）を見る ↗](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)
+
+[![3D水槽作例集の一覧ページ](docs/images/aquarium-gallery.webp)](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)
+
 動作を確認しているのは Codex と Claude Code。どちらも同じ手順書に従って進める。Muse（Meta AI）でも一通り作れることを確かめた。無料で作れる選択肢になる（[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)の「Museによる作例」）。それ以外の AI でも、`AGENTS.md` と `.agents/skills/` の手順書を読んでコマンドを実行できれば使える可能性があるが、まだ確かめていない（専用の対応もしていない）。
 **追加のソフトは原則いらない。** AI と、すでに入っているものだけで進め、どうしても必要なときだけ AI が理由を添えて導入を提案する。
 
@@ -70,8 +74,6 @@ Fish Kitのファイルをユーザーが提示する必要はありません。
 ## 作例
 
 **[3D水槽作例集](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)** に、このワークフローで作った水槽をまとめています。サムネイルから各水槽を開けます。Codex・Claude Code・Muse（無料）それぞれの作例があり、完成日・制作時の主要モデル・画像生成に使ったサービスも載せています。
-
-[![3D水槽作例集の一覧ページ](docs/images/aquarium-gallery.webp)](https://sabinuki1718.github.io/every-fish-aquarium-preview/examples/aquarium-gallery/)
 
 工程ごとの確認や修正の進め方は、次の制作記録を参照してください。
 

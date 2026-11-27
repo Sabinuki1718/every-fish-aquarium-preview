@@ -283,7 +283,6 @@ function card(exhibit, index) {
 
   const body = make('div', 'card-body');
   const heading = make('h4', '', exhibit.title);
-  if (exhibit.cost) heading.append(make('span', 'badge', exhibit.cost));
   const species = make('ul', 'species');
   species.setAttribute('role', 'list');
   species.append(...exhibit.species.map(name => make('li', '', name)));

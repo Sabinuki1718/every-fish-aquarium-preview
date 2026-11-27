@@ -1,0 +1,86 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>防波堤の下の海</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{color-scheme:dark;--bg:#0b1d22;--panel:rgba(10,30,36,.86);--line:rgba(190,225,230,.22);--text:#e6f2f3;--sub:#9fbfc4;--accent:#5fc3c9;--accent2:#e4b363}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;overflow:hidden}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap;pointer-events:none}
+header h1{margin:0 6px 0 0;font-size:17px;font-weight:600;letter-spacing:.04em;text-shadow:0 1px 6px #000}
+.group{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;pointer-events:auto}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+button{font:inherit;color:var(--text);background:transparent;border:0;border-radius:7px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+button:hover{background:rgba(255,255,255,.08)}
+button[aria-pressed=true]{background:var(--accent);color:#06262a;font-weight:600}
+#editor{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(64px + env(safe-area-inset-top,0px));width:300px;max-height:calc(100% - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:none}
+#editor.open{display:block}
+#editor h2{font-size:13px;margin:12px 0 6px;color:var(--sub);font-weight:600}
+#editor h2:first-child{margin-top:0}
+select{width:100%;font:inherit;color:var(--text);background:#123138;border:1px solid var(--line);border-radius:7px;padding:5px}
+label.slider{display:grid;grid-template-columns:3.2em 1fr 4.2em;align-items:center;gap:6px;margin:4px 0}
+label.slider span:last-child{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.vol{display:flex;align-items:center;padding:0 8px 0 2px}
+.vol input{width:84px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.swatch{border:1px solid var(--line);background:#123138}
+.swatch i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+#reset{width:100%;margin-top:12px;border:1px solid var(--accent2);color:var(--accent2)}
+.note{color:var(--sub);font-size:12px;margin:8px 0 0}
+#hint{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));color:var(--sub);font-size:12px;text-shadow:0 1px 4px #000;pointer-events:none}
+#overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:5;text-align:center;padding:24px}
+#overlay p{max-width:30em}
+#overlay button{border:1px solid var(--accent);margin-top:10px}
+@media (max-width:640px){
+  header{top:calc(8px + env(safe-area-inset-top,0px));gap:6px}
+  header h1{font-size:15px;width:100%}
+  #editor{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));width:auto;top:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-height:46%}
+  #hint{display:none}
+}
+</style>
+<div id="stage"></div>
+<header>
+  <h1>防波堤の下の海</h1>
+  <div class="group" role="group" aria-label="モード">
+    <button id="mode-view" aria-pressed="true">眺める</button>
+    <button id="mode-edit" aria-pressed="false">配置を変更</button>
+  </div>
+  <div class="group" role="group" aria-label="視点">
+    <button data-view="front">正面</button>
+    <button data-view="top">上から</button>
+    <button data-view="oblique">斜め</button>
+    <button data-view="reset">視点を戻す</button>
+  </div>
+  <div class="group" role="group" aria-label="BGM">
+    <button id="bgm" aria-pressed="false" title="BGM を再生／停止">♪ BGM</button>
+    <label class="vol"><span class="sr">音量</span><input id="bgm-vol" type="range" min="0" max="1" step="0.05" value="0.5" aria-label="BGMの音量"></label>
+  </div>
+</header>
+<aside id="editor" aria-label="配置の変更">
+  <h2>動かすもの</h2>
+  <select id="target"></select>
+  <p class="note">水槽の中の石・ブロック・海藻をタップしても選べます。選んだものはドラッグで動かせます。</p>
+  <h2>位置と向き</h2>
+  <label class="slider"><span>左右</span><input id="px" type="range" step="0.001"><span id="px-v"></span></label>
+  <label class="slider"><span>前後</span><input id="pz" type="range" step="0.001"><span id="pz-v"></span></label>
+  <label class="slider"><span>高さ</span><input id="py" type="range" step="0.001"><span id="py-v"></span></label>
+  <label class="slider"><span>向き</span><input id="ry" type="range" min="-180" max="180" step="1"><span id="ry-v"></span></label>
+  <div id="stone-colors">
+    <h2>この石の色</h2>
+    <div class="row" id="one-color"></div>
+    <h2>すべての石の色</h2>
+    <div class="row" id="all-color"></div>
+  </div>
+  <button id="reset">デフォルトに戻す</button>
+  <p class="note" id="save-note">変更はこのブラウザに自動で保存されます。</p>
+</aside>
+<div id="hint">ドラッグで回転・ホイールやピンチで拡大</div>
+<div id="overlay"><p id="overlay-text">読み込んでいます…</p></div>
+<script>window.MODEL_EXT = '.gltf.json';</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module" src="boot-cdn.js"></script>
+
+</body></html>

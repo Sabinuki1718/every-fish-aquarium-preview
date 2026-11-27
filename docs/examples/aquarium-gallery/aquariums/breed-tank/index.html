@@ -1,0 +1,110 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>トリファスキアータのブリードタンク</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500&display=swap">
+<style>
+/* Layout: the dark blackwater tank fills the screen; name top-left, controls along the bottom edge, the layout
+   editor opens as a sheet above them. Single dark look on purpose (black back screen, tea-coloured water). */
+:root{
+  --room:#141716; --room-2:#1e2321;
+  --ink:#ece6da; --ink-soft:#b3aa98; --accent:#e0b45c; --line:#3a3e39; --chip:#20251f; --sheet:#1a1e1b;
+  --ui:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --latin:"Cormorant Garamond","Times New Roman",serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--room);color:var(--ink);font-family:var(--ui);overflow:hidden}
+#stage{position:relative;height:100%;background:radial-gradient(120% 90% at 50% 45%,var(--room-2),var(--room))}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:3px}
+h1{font-weight:700;font-size:clamp(18px,4.2vw,24px);letter-spacing:.06em;margin:0;text-wrap:balance}
+.sci{font-family:var(--latin);font-style:italic;font-size:15px;color:var(--ink-soft)}
+.hint{margin:0;color:var(--ink-soft);font-size:12.5px;line-height:1.6;max-width:44ch}
+body[data-mode="edit"] .hint-view,body[data-mode="view"] .hint-edit{display:none}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button,select{font:500 14px var(--ui);color:var(--ink);background:color-mix(in srgb,var(--chip) 86%,transparent);border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--chip))}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex;gap:0}
+.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0;border-left:0}
+#edit-panel,#watch-bar{position:absolute;left:0;right:0;bottom:calc(var(--bar-h,64px) + 4px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+#watch-bar > div{pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.sheet{pointer-events:auto;width:min(560px,100%);max-height:46vh;overflow:auto;background:color-mix(in srgb,var(--sheet) 94%,transparent);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > label{font-size:13px;opacity:.85;min-width:4.5em}
+input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.note{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.6}
+#status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
+#toast{position:absolute;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink)}
+#info{position:absolute;top:calc(90px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:min(320px,calc(100% - 32px));background:color-mix(in srgb,var(--sheet) 90%,transparent);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#info p{margin:0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+#info .info-name{display:grid;gap:0}
+#info-name{font-weight:700;font-size:16px;color:var(--ink)}
+#info-sci{font-family:var(--latin);font-style:italic;font-size:14px}
+@media (max-width:600px){#info{top:calc(64px + env(safe-area-inset-top,0px));right:16px;padding:10px 12px;gap:6px}
+  #info-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+  #info.open #info-text{display:block}
+  #info button{min-height:34px;padding:5px 12px;font-size:13px}
+  .hint{display:none}}
+body[data-mode="edit"] #info,body[data-mode="edit"] #watch-bar{display:none}
+.q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+.q select{min-height:32px;padding:4px 10px;font-size:12px}
+</style>
+<div id="stage">
+  <canvas id="view" aria-label="アピストグラマ・トリファスキアータのブリードタンク：ソイルの底床に、ミクロソリウムを活着させたココナッツシェルター、マジックリーフ、スポンジフィルター。オスとメスのペアが泳ぐ3D水槽"></canvas>
+  <header>
+    <h1>トリファスキアータのブリードタンク</h1>
+    <span class="sci">Apistogramma trifasciata</span>
+    <p class="hint hint-view">ドラッグで回転、ホイール・2本指で拡大。魚をタップすると近くで観察できます。</p>
+    <p class="hint hint-edit">シェルター・落ち葉・フィルターをタップして選び、ドラッグで動かせます。下の欄でも調整できます。</p>
+  </header>
+  <div id="toast" role="status" hidden></div>
+  <aside id="info" hidden aria-live="polite">
+    <p class="info-name"><span id="info-name"></span><span id="info-sci"></span></p>
+    <p id="info-text"></p>
+    <div class="row"><button type="button" id="info-close">解説を閉じる</button></div>
+  </aside>
+  <div id="watch-bar" hidden><div>
+    <button type="button" id="hold" aria-pressed="false">止める</button>
+    <button type="button" id="next">次の魚</button>
+    <button type="button" id="all">全体へ</button>
+  </div></div>
+  <div id="edit-panel" hidden>
+    <div class="sheet">
+      <div class="row"><label for="obj-select">選択</label><select id="obj-select"><option value="">（なし）</option></select></div>
+      <div id="obj-controls" hidden style="display:grid;gap:10px">
+        <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-22" max="22" step="0.5"></div>
+        <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-13" max="13" step="0.5"></div>
+        <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
+      </div>
+      <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
+      <p class="note">配置はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置に戻ります。シェルターを回すと出入口の向きも変わり、メスはその入口を使います。</p>
+    </div>
+  </div>
+  <div class="bar">
+    <span class="seg"><button type="button" id="mode-view" aria-pressed="true">眺める</button><button type="button" id="mode-edit" aria-pressed="false">配置を変更</button></span>
+    <button type="button" data-view="front">正面</button>
+    <button type="button" data-view="oblique">斜め</button>
+    <button type="button" data-view="top">上から</button>
+    <select id="watch-select" aria-label="観察する魚"><option value="">観察：全体を見る</option></select>
+    <span class="q"><span id="quality-now"></span><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準（反射・屈折）</option><option value="light">軽量（スマホ向け）</option></select></span>
+  </div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+</div>
+<script>window.AQUARIUM_ASSETS={"layout": {"version": 3, "units": "cm; tank center at origin, floor (glass bottom) y=0, front glass +z, left -x. heading_deg: 0 = head toward -x (left), positive turns the head toward the back (-z)", "request": "ココナッツシェルターにミクロソリウムを植え付けて、底床にソイルを敷いた、アピストグラマのブリードタンクとしてよくあるレイアウト", "tank": {"w": 45, "d": 27, "h": 30, "water": 27, "background": "black back screen; faint tea-coloured blackwater tint from the leaves", "substrate": "granular aqua soil, black-brown, 4 cm at the front rising to 5 cm at the back, flat", "light": "moderate, from above; a little dimmer than a planted tank"}, "fish": [{"id": "male-1", "model": "species/apistogramma-trifasciata-male/model/v5/apisto-trifasciata-male.glb", "length_cm": 6.0, "pos": [-8, 11, 3], "heading_deg": 200, "note": "patrols the middle layer, turned toward the front and the shelter"}, {"id": "female-1", "model": "species/apistogramma-trifasciata-female/model/v5/apisto-trifasciata-female.glb", "length_cm": 4.5, "pos": [0.5, 6.0, 6.0], "heading_deg": 160, "note": "stays near the shelter entrance, just above the soil, facing it"}], "objects": [{"id": "coconut-1", "kind": "coconut_shelter", "material": "half coconut shell, fibrous brown outside, dark inside", "pos": [6, null, -1], "radius": 6.0, "rot_deg": 20, "entrance": {"dir_deg": 20, "width_deg": 50, "height_cm": 3.2}, "note": "dome placed cut side down on the soil; entrance arch faces the front-left", "wall_cm": 0.5}, {"id": "microsorum-1", "kind": "microsorum", "material": "Microsorum pteropus (Java fern), narrow lanceolate leaves 8-14 cm, dark green", "attached_to": "coconut-1", "leaves": 11, "note": "rhizome tied on the top of the shell, leaves arch up and outward"}, {"id": "leaf-1", "kind": "catappa_leaf", "material": "dried Terminalia catappa leaf, red-brown", "pos": [-9, null, 7], "length_cm": 12, "rot_deg": 35}, {"id": "leaf-2", "kind": "catappa_leaf", "material": "dried Terminalia catappa leaf, dark brown", "pos": [14, null, 6], "length_cm": 10, "rot_deg": -50}, {"id": "leaf-3", "kind": "catappa_leaf", "material": "dried Terminalia catappa leaf, half sunk", "pos": [-15, null, -1.5], "length_cm": 11, "rot_deg": 65}, {"id": "sponge-1", "kind": "sponge_filter", "style": "horizontal_billy", "material": "horizontal dark grey foam cylinder (Billy-style); a green lift pipe in the back-left corner joins its end with an L-elbow at the foot, bends to a sideways outlet under the surface, and an air tube runs from the nozzle over the back glass", "pos": [-14.8, null, -11.0], "radius": 2.2, "length_cm": 9, "rot_deg": 0}], "assumptions": ["水槽寸法（45cm 規格）、マジックリーフ3枚、スポンジフィルター1基、黒の背景は「よくあるブリードタンク」からの主担当の仮定"], "changes_from_v1": ["ユーザーの依頼でスポンジフィルターをビリーフィルター風の横置き型（L字の揚水パイプ、水槽外からのエアーチューブ）に変更", "ココナッツシェルターの殻に厚み（約5 mm）を追加"], "changes_from_v2": ["フィルターの揚水パイプを水槽の左奥の角へ。パイプの下端をL字に曲げて横置きスポンジの端につなぐ。パイプは緑色", "フィルターの下にあったマジックリーフ（leaf-3）を手前へ"]}, "models": {"male": {"json": "models/apisto-male.json", "texture": "models/apisto-male.webp"}, "female": {"json": "models/apisto-female.json", "texture": "models/apisto-female.webp"}}, "textures": {"soil": "textures/soil.jpg", "coconut": "textures/coconut.jpg", "microsorum": "textures/microsorum.png", "catappa": "textures/catappa.png"}};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["lib.js", "app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>
+
+</body></html>

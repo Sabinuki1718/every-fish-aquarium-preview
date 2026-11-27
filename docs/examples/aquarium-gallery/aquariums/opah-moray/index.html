@@ -1,0 +1,111 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>アカマンボウとウツボの水槽</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
+<style>
+/* Layout: the bright tank fills the screen; title top-left, controls float along the bottom edge,
+   and the layout editor opens as a sheet above them. The tank itself is always sunlit blue water;
+   the controls are dark glass chips that stay readable on top of it. */
+:root{
+  --deep:#06243a; --deep-2:#0b3b5c;
+  --ink:#eef5fa; --ink-soft:#c3d6e4; --glow:#8fd0f2; --line:#2f5876; --sheet:#0c2437; --chip:#0c2437;
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--sheet:#f2f6f9;--ink-panel:#1d2a36;--line:#c3ceda;color-scheme:light}}
+:root[data-theme="light"]{--sheet:#f2f6f9;--ink-panel:#1d2a36;--line:#c3ceda;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark}}
+:root[data-theme="dark"]{color-scheme:dark}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--deep);color:var(--ink);font-family:var(--body);overflow:hidden}
+#stage{position:relative;height:100%;background:radial-gradient(110% 80% at 50% 30%,var(--deep-2),var(--deep) 70%)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:2px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(20px,4.6vw,28px);letter-spacing:.08em;margin:0;color:#fff;text-shadow:0 1px 8px rgba(3,24,44,.65);text-wrap:balance}
+.hint{margin:0;color:#e3f0f8;font-size:12.5px;line-height:1.6;text-shadow:0 1px 6px rgba(3,24,44,.75)}
+body[data-mode="edit"] .hint-view,body[data-mode="view"] .hint-edit{display:none}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button,select{font:500 14px var(--body);color:var(--ink);background:color-mix(in srgb,var(--chip) 78%,transparent);border:1px solid #2f5876;border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+button[aria-pressed="true"]{border-color:var(--glow);color:var(--glow);background:color-mix(in srgb,var(--glow) 14%,var(--chip))}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.seg{display:inline-flex;gap:0}
+.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0;border-left:0}
+#edit-panel{position:absolute;left:0;right:0;bottom:calc(var(--bar-h,64px) + 8px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.sheet{pointer-events:auto;width:min(560px,100%);max-height:46vh;overflow:auto;background:color-mix(in srgb,var(--sheet) 94%,transparent);color:var(--ink-panel,var(--ink));border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sheet button,.sheet select{color:var(--ink-panel,var(--ink));background:color-mix(in srgb,var(--sheet) 80%,transparent);border-color:var(--line)}
+.sheet button[aria-pressed="true"]{border-color:var(--glow);color:var(--glow)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > label{font-size:13px;opacity:.8;min-width:4.5em}
+input[type=range]{flex:1;min-width:0;accent-color:var(--glow)}
+.note{margin:0;font-size:12px;opacity:.75;line-height:1.6}
+#status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center;background:var(--deep)}
+#status[hidden]{display:none}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
+#toast{position:absolute;left:50%;top:calc(76px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#0c2437;border:1px solid #2f5876;border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink)}
+#toast[hidden]{display:none}
+#info{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:min(320px,calc(100% - 32px));background:color-mix(in srgb,#0c2437 86%,transparent);border:1px solid #2f5876;border-radius:14px;padding:12px 14px;display:grid;gap:8px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#info p{margin:0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+#info .info-name{display:grid;gap:0}
+#info-name{font-family:var(--display);font-size:18px;color:var(--ink)}
+#info-sci{font-style:italic;font-size:12px}
+@media (max-width:600px){#info{top:auto;bottom:calc(var(--bar-h,64px) + 8px);right:16px;padding:10px 12px;gap:6px}
+  #info-name{font-size:16px}
+  #info-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+  #info.open #info-text{display:block}
+  #info button{min-height:34px;padding:5px 12px;font-size:13px}}
+body[data-mode="edit"] #info{display:none}
+.q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+.q select{min-height:32px;padding:4px 10px;font-size:12px}
+</style>
+<div id="stage">
+  <canvas id="view" aria-label="アカマンボウとウツボの水槽：外洋の青い水を泳ぐアカマンボウ1匹と、岩礁のウツボ2匹の3D水槽"></canvas>
+  <header>
+    <h1>アカマンボウとウツボの水槽</h1>
+    <p class="hint hint-view">アカマンボウ（外洋）とウツボ（岩礁）が同居する仮想の水槽。1本指（ドラッグ）で回転、2本指（ホイール）で拡大。</p>
+    <p class="hint hint-edit">岩や海藻をタップして選び、ドラッグで動かせます。下の欄でも調整できます。</p>
+  </header>
+  <div id="toast" role="status" hidden></div>
+  <aside id="info" hidden aria-live="polite">
+    <p class="info-name"><span id="info-name"></span><span id="info-sci"></span></p>
+    <p id="info-text"></p>
+    <div class="row"><button type="button" id="info-next" hidden>次のウツボ</button><button type="button" id="info-close">全体を見る</button></div>
+  </aside>
+  <div id="edit-panel" hidden>
+    <div class="sheet">
+      <div class="row"><label for="obj-select">選択</label><select id="obj-select"><option value="">（なし）</option></select></div>
+      <div id="obj-controls" hidden style="display:grid;gap:10px">
+        <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-200" max="200" step="1"></div>
+        <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-75" max="75" step="1"></div>
+        <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
+        <div class="row" id="stone-color"><label>この岩の色</label><button type="button" data-color="blue">青灰色</button><button type="button" data-color="red">赤褐色</button></div>
+      </div>
+      <div class="row"><label>岩をすべて</label><button type="button" data-all-color="blue">青灰色にする</button><button type="button" data-all-color="red">赤褐色にする</button></div>
+      <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
+      <p class="note">配置と色はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置と色に戻ります。左の大岩の穴にいるウツボは、岩と一緒に動きます。</p>
+    </div>
+  </div>
+  <div class="bar" id="bar">
+    <span class="seg"><button type="button" id="mode-view" aria-pressed="true">眺める</button><button type="button" id="mode-edit" aria-pressed="false">配置を変更</button></span>
+    <button type="button" data-view="front">正面</button>
+    <button type="button" data-view="oblique">斜め</button>
+    <button type="button" data-view="top">上から</button>
+    <select id="watch" aria-label="観察する魚"><option value="">魚を観察…</option><option value="opah">アカマンボウ</option><option value="moray">ウツボ</option></select>
+    <span class="q"><span id="quality-now"></span><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準（反射・屈折）</option><option value="light">軽量（スマホ向け）</option></select></span>
+  </div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+</div>
+<script>window.AQUARIUM_ASSETS={"layout": {"version": 1, "note": "承認済みレイアウト v1（layout/v1/layout-front.jpg）を3Dの配置にしたもの。単位 cm。水槽中央の床が原点、前面ガラスが +z、左が -x。画像は正面図のみなので、奥行き方向の位置は layout-v1.json の案に従った。", "tank": {"w": 400, "d": 150, "h": 200, "water": 190}, "objects": [{"id": "stone-1", "kind": "stone", "pos": [-81, 0, -22], "rot_deg": 0, "color": "blue", "size": [230, 110, 90], "cave": {"x": 5, "y": 43, "w": 125, "h": 42, "depth": 52}, "seed": 11}, {"id": "stone-2", "kind": "stone", "pos": [131, 0, -22], "rot_deg": 0, "color": "blue", "size": [127, 72, 70], "cave": {"x": 0, "y": 23, "w": 88, "h": 36, "depth": 52, "floor": 0.5, "floor_w": 0.85}, "seed": 23}, {"id": "stone-3", "kind": "stone", "pos": [-5, 0, 30], "rot_deg": 20, "color": "blue", "size": [42, 28, 34], "seed": 31}, {"id": "stone-4", "kind": "stone", "pos": [63, 0, 6], "rot_deg": -35, "color": "blue", "size": [36, 24, 30], "seed": 47}, {"id": "stone-5", "kind": "stone", "pos": [100, 0, 62], "rot_deg": 70, "color": "blue", "size": [34, 22, 30], "seed": 59}, {"id": "kelp-1", "kind": "plant", "pos": [-153, 0, -30], "rot_deg": 0, "plant": "kelp_left_1"}, {"id": "kelp-2", "kind": "plant", "pos": [-99, 0, -32], "rot_deg": 25, "plant": "kelp_left_2"}, {"id": "kelp-3", "kind": "plant", "pos": [98, 0, -22], "rot_deg": -20, "plant": "kelp_right_1"}, {"id": "kelp-4", "kind": "plant", "pos": [149, 0, -22], "rot_deg": 10, "plant": "kelp_right_23"}], "fish": [{"id": "opah", "species": "opah", "model": "species/lampris-megalopsis/model/v4/opah.glb", "length_cm": 100, "path": {"center": [30, 141, 12], "rx_cm": 32, "rz_cm": 28, "speed_cm_s": 13, "bob_cm": 6}}, {"id": "moray-1", "species": "moray", "model": "species/gymnothorax-kidako/model/v2/moray.glb", "length_cm": 80, "rock": "stone-1", "local_cm": [10, 0, 22], "heading_deg": 8, "note": "1匹目：左の大岩のくぼみから頭を出して口を開閉する（岩と一緒に動く）"}, {"id": "moray-2", "species": "moray", "model": "species/gymnothorax-kidako/model/v2/moray.glb", "length_cm": 80, "note": "2匹目：右の岩のくぼみにすみ、くぼみの中で体を曲げて休み、口の前の砂の上へ出てきて、また戻る（岩と一緒に動く）", "rock": "stone-2", "den": true}]}, "models": {"species/gymnothorax-kidako/model/v2/moray.glb": {"geometry": "models/moray.json", "standard": "models/moray-2048.jpg", "light": "models/moray-1024.jpg", "hinge": {"x": -0.34756946563720703, "y": -0.01371527835726738}}, "species/lampris-megalopsis/model/v4/opah.glb": {"geometry": "models/opah.json", "standard": "models/opah-2048.jpg", "light": "models/opah-1024.jpg", "pectoral_pivot": {"x": -0.200561797752809, "y": 0.025280898876404497, "rest_deg": -32.59473450495923, "gap_m": 0.0016853932584269663, "tilt": 0.06, "sink_m": 0.005617977528089888, "root_zone_m": 0.03370786516853933, "half_thick_m": 0.001314606741573034}}}, "textures": {"rock-blue": "textures/rock-blue.jpg", "rock-red": "textures/rock-red.jpg", "sand": "textures/sand.jpg", "kelp": "textures/kelp.png", "background": "textures/background.jpg"}, "kelp": {"atlas": [1026, 529], "plants": {"kelp_left_1": {"rect": [6, 6, 272, 517], "width_m": 0.531, "height_m": 1.009, "base_u": 0.663, "layout_base_height_m": 0.64}, "kelp_left_2": {"rect": [284, 6, 211, 336], "width_m": 0.412, "height_m": 0.656, "base_u": 0.737, "layout_base_height_m": 0.83}, "kelp_right_1": {"rect": [501, 6, 209, 315], "width_m": 0.408, "height_m": 0.615, "base_u": 0.524, "layout_base_height_m": 0.69}, "kelp_right_23": {"rect": [716, 6, 304, 489], "width_m": 0.593, "height_m": 0.954, "base_u": 0.801, "layout_base_height_m": 0.56}}}};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["lib.js", "app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>
+
+</body></html>

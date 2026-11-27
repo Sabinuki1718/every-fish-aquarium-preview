@@ -76,6 +76,110 @@
 
 [3D水槽を開く ↗](aquariums/chousenbuna/)
 
+### Claude Codeによる作例
+
+Claude には画像生成が内蔵されていないため、三面図や素材画像はユーザーが別の画像生成サービスで作り、Claude Code に渡しました。
+
+#### トリファスキアータのブリードタンク
+
+![トリファスキアータのブリードタンクの水槽全景](assets/breed-tank.webp)
+
+魚種　アピストグラマ・トリファスキアータ
+
+完成日　2026-11-24　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/breed-tank/)
+
+#### ムツゴロウの干潟水槽
+
+![ムツゴロウの干潟水槽の水槽全景](assets/mutsugoro.webp)
+
+魚種　ムツゴロウ
+
+完成日　2026-11-01　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/mutsugoro/)
+
+#### 深海の水槽
+
+![深海の水槽の水槽全景](assets/deep-sea.webp)
+
+魚種　リュウグウノツカイ、オトヒメコンニャクウオ、ミズウオ、メヒカリ
+
+完成日　2026-11-01　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/deep-sea/)
+
+#### アカマンボウとウツボの水槽
+
+![アカマンボウとウツボの水槽の水槽全景](assets/opah-moray.webp)
+
+魚種　アカマンボウ、ウツボ
+
+完成日　2026-10-29　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/opah-moray/)
+
+#### ルリヨシノボリの水槽
+
+![ルリヨシノボリの水槽の水槽全景](assets/ruri-yoshinobori-cc.webp)
+
+魚種　ルリヨシノボリ
+
+完成日　2026-10-28　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/ruri-yoshinobori-cc/)
+
+#### ヨシキリザメの大水槽
+
+![ヨシキリザメの大水槽の水槽全景](assets/blue-shark.webp)
+
+魚種　ヨシキリザメ、ハチワレ
+
+完成日　2026-10-27　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/blue-shark/)
+
+#### シマウミヘビとマアナゴの水槽
+
+![シマウミヘビとマアナゴの水槽の水槽全景](assets/snake-eel-conger.webp)
+
+魚種　シマウミヘビ、マアナゴ
+
+完成日　2026-10-27　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/snake-eel-conger/)
+
+#### グッピーの水草水槽
+
+![グッピーの水草水槽の水槽全景](assets/guppy.webp)
+
+魚種　グッピー（ゴールデンキングコブラ）、グッピー（ギャラクシーブルーグラス）、グッピー（RREAレッドグラスリボン）、グッピー（サンセットドイツイエロータキシード）、グッピー（マーブルマゼンタ）
+
+完成日　2026-10-27　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/guppy/)
+
+#### 水彩の金魚水槽
+
+![水彩の金魚水槽の水槽全景](assets/goldfish.webp)
+
+魚種　青文魚、水泡眼、東錦
+
+完成日　2026-10-24　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/goldfish/)
+
+#### 防波堤の下の海
+
+![防波堤の下の海の水槽全景](assets/breakwater.webp)
+
+魚種　マアジ、シロギス、クロダイ、ウマヅラハギ、キジハタ
+
+完成日　2026-10-23　｜　主要モデル　Claude Opus 5.5
+
+[3D水槽を開く ↗](aquariums/breakwater/)
+
 ### Museによる作例
 
 無料で作れる選択肢。Meta AI の Muse でも、魚種調査から3D水槽まで一通り作れました。

@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  background-color: var(--white);
   --blue: #38a1db;
   --white: #ffffff;
   --ink: #2b2b2b;
@@ -7,7 +8,6 @@
   --line: color-mix(in srgb, var(--ink) 17%, var(--white));
   font-family: system-ui, 'Yu Gothic', Meiryo, sans-serif;
   color: var(--ink);
-  background: var(--white);
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -26,13 +26,19 @@ a:focus-visible, input:focus-visible {
 }
 .repo { font-size: .8rem; font-weight: 650; padding: 10px 0 10px 10px; }
 .repo:hover { text-decoration: underline; }
-.intro { background: var(--blue); color: var(--white); }
+/* Title band: a dark strip with a strip of the site blue above and below it. */
+.intro {
+  --edge: 22px;
+  color: var(--white);
+  padding-block: var(--edge);
+  background: linear-gradient(var(--blue) 0 var(--edge), #2b2b2b var(--edge) calc(100% - var(--edge)), var(--blue) calc(100% - var(--edge)));
+}
 .intro-inner {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
   column-gap: 32px;
-  padding-block: 37px 39px;
+  padding-block: 18px 20px;
 }
 h1, h2, h3, h4, p { margin: 0; }
 h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: -.05em; }
@@ -47,26 +53,34 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
 .workflow-label { font-size: .78rem; font-weight: 740; }
 .steps { font-size: .82rem; line-height: 1.8; }
 .steps b { margin-inline: .22em; font-weight: 650; }
+.top { position: relative; background: var(--white); }
+.intro { position: relative; }
 .collection-surface {
   position: relative;
-  isolation: isolate;
-  background: var(--white);
+  color: #eaf6fb;
 }
+/* Underwater backdrop: fixed behind the page, drawn by underwater.js.
+   The gradient is the fallback when WebGL is unavailable. */
 .water-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .6;
+  background: linear-gradient(180deg, #2c7ea3, #0b3552 55%, #04182b);
+}
+.water-backdrop canvas {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background: linear-gradient(150deg, #f0f9fc, var(--white) 54%, #edf8fc);
-}
-.water-ripples {
-  display: block;
-  position: sticky;
-  top: 0;
   width: 100%;
-  height: min(100%, 100svh);
+  height: 100%;
+  display: block;
 }
-.collection { padding-block: 28px 60px; }
+.water-gl { opacity: 0; transition: opacity .8s; }
+.has-water .water-gl { opacity: 1; }
+.collection { padding-block: 28px 80px; }
+.collection .toolbar h2, .group-title, .group-note, #empty { text-shadow: 0 1px 6px rgba(0, 20, 40, .55); }
+.group-title { border-inline-start-color: #8fd6f5; }
 .toolbar {
   display: flex;
   align-items: center;
@@ -84,7 +98,7 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   border: 1px solid var(--line);
   border-radius: 6px;
   font: inherit;
-  color: inherit;
+  color: var(--ink);
   background: var(--white);
 }
 .group-title {
@@ -95,7 +109,6 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
 }
 .group + .group { margin-top: 32px; }
 .group-note { margin: -4px 0 12px; font-size: .8rem; line-height: 1.7; }
-.badge { display: inline-block; vertical-align: .15em; margin-left: 8px; padding: 2px 7px; border-radius: 4px; background: var(--blue); color: var(--white); font-size: .7rem; font-weight: 700; }
 .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .card {
   background: var(--white);
@@ -105,6 +118,8 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 18, 36, .35);
+  color: var(--ink);
 }
 .photo {
   display: block;
@@ -151,9 +166,36 @@ h1 { font-size: clamp(2.1rem, 5vw, 3.45rem); line-height: 1.15; letter-spacing: 
 }
 @media (max-width: 540px) {
   .wrap { width: 92%; }
-  .intro-inner { padding-block: 25px; }
+  .intro-inner { padding-block: 16px; }
+  .intro { --edge: 14px; }
   .gallery { grid-template-columns: 1fr; }
   .toolbar { gap: 8px; }
   .search input { width: min(170px, 35vw); }
   .search { gap: 5px; }
+}
+/* Group headings run as a dark bar across the card area. */
+.collection .group-title {
+  display: block;
+  background: #2b2b2b;
+  color: var(--white);
+  text-shadow: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-inline-start: 4px solid var(--blue);
+}
+/* Phones and narrow tablets: the title stacks above the workflow, so only the title keeps the dark strip
+   and the workflow sits on the site blue. */
+@media (max-width: 920px) {
+  .intro { background: var(--blue); padding-block: var(--edge) 0; }
+  .intro-inner { padding-block: 0 20px; row-gap: 18px; }
+  .intro-inner > div:first-child {
+    background: #2b2b2b;
+    box-shadow: 0 0 0 100vmax #2b2b2b;
+    clip-path: inset(0 -100vmax);
+    padding-block: 16px 18px;
+  }
+}
+@media (max-width: 540px) {
+  .intro-inner { padding-block: 0 16px; row-gap: 14px; }
+  .intro-inner > div:first-child { padding-block: 14px 16px; }
 }

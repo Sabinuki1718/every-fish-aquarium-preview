@@ -6,7 +6,7 @@ const groups = [
   {
     "id": "claude-code",
     "title": "Claude Codeによる作例",
-    "note": "Claude には画像生成が内蔵されていないため、三面図や素材画像はユーザーが別の画像生成サービスで作り、Claude Code に渡しました。"
+    "note": "Claude には画像生成が内蔵されていないため、三面図や素材画像はユーザーが別の画像生成サービスで作り、Claude Code に渡しました。「画像生成」には使ったサービスを記載しています（複数使った場合は最初に使ったもの）。"
   },
   {
     "id": "muse",
@@ -24,6 +24,7 @@ const exhibits = [
     ],
     "completed": "2026-11-24",
     "model": "Claude Opus 5.5",
+    "imageModel": "Gemini",
     "group": "claude-code",
     "url": "aquariums/breed-tank/"
   },
@@ -35,6 +36,7 @@ const exhibits = [
     ],
     "completed": "2026-11-01",
     "model": "Claude Opus 5.5",
+    "imageModel": "Meta AI",
     "group": "claude-code",
     "url": "aquariums/mutsugoro/"
   },
@@ -49,6 +51,7 @@ const exhibits = [
     ],
     "completed": "2026-11-01",
     "model": "Claude Opus 5.5",
+    "imageModel": "ChatGPT",
     "group": "claude-code",
     "url": "aquariums/deep-sea/"
   },
@@ -61,6 +64,7 @@ const exhibits = [
     ],
     "completed": "2026-10-29",
     "model": "Claude Opus 5.5",
+    "imageModel": "Meta AI",
     "group": "claude-code",
     "url": "aquariums/opah-moray/"
   },
@@ -72,6 +76,7 @@ const exhibits = [
     ],
     "completed": "2026-10-28",
     "model": "Claude Opus 5.5",
+    "imageModel": "ChatGPT",
     "group": "claude-code",
     "url": "aquariums/ruri-yoshinobori-cc/"
   },
@@ -84,6 +89,7 @@ const exhibits = [
     ],
     "completed": "2026-10-27",
     "model": "Claude Opus 5.5",
+    "imageModel": "ChatGPT",
     "group": "claude-code",
     "url": "aquariums/blue-shark/"
   },
@@ -96,6 +102,7 @@ const exhibits = [
     ],
     "completed": "2026-10-27",
     "model": "Claude Opus 5.5",
+    "imageModel": "ChatGPT",
     "group": "claude-code",
     "url": "aquariums/snake-eel-conger/"
   },
@@ -111,6 +118,7 @@ const exhibits = [
     ],
     "completed": "2026-10-27",
     "model": "Claude Opus 5.5",
+    "imageModel": "Gemini",
     "group": "claude-code",
     "url": "aquariums/guppy/"
   },
@@ -124,6 +132,7 @@ const exhibits = [
     ],
     "completed": "2026-10-24",
     "model": "Claude Opus 5.5",
+    "imageModel": "Gemini",
     "group": "claude-code",
     "url": "aquariums/goldfish/"
   },
@@ -139,6 +148,7 @@ const exhibits = [
     ],
     "completed": "2026-10-23",
     "model": "Claude Opus 5.5",
+    "imageModel": "ChatGPT",
     "group": "claude-code",
     "url": "aquariums/breakwater/"
   },
@@ -273,13 +283,13 @@ function card(exhibit, index) {
 
   const body = make('div', 'card-body');
   const heading = make('h4', '', exhibit.title);
-  if (exhibit.cost) heading.append(make('span', 'badge', exhibit.cost));
   const species = make('ul', 'species');
   species.setAttribute('role', 'list');
   species.append(...exhibit.species.map(name => make('li', '', name)));
   const footer = make('div', 'card-footer');
   const details = make('dl', 'meta');
   details.append(metadata('完成日', exhibit.completed), metadata('主要モデル', exhibit.model));
+  if (exhibit.imageModel) details.append(metadata('画像生成', exhibit.imageModel));
   if (exhibit.cost) details.append(metadata('費用', exhibit.cost));
   const link = make('a', 'open', '3D水槽を開く');
   link.href = exhibit.url;

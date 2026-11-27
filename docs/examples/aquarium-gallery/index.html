@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#38a1db">
   <title>3D水槽作例集 | every-fish-aquarium-generator</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js?v=pages-20261127b" defer></script>
-  <script src="water-ripples.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261127h">
+  <script src="app.js?v=pages-20261127d" defer></script>
+  <script src="underwater.js?v=20261127c" defer></script>
 </head>
 <body>
+  <div class="water-backdrop" aria-hidden="true">
+    <canvas class="water-gl"></canvas>
+    <canvas class="water-bubbles"></canvas>
+  </div>
   <header class="top">
     <div class="wrap top-inner">
       <a class="repo" href="https://github.com/Sabinuki1718/every-fish-aquarium-preview">GitHub <span aria-hidden="true">↗</span></a>
@@ -28,9 +32,6 @@
       </div>
     </section>
     <div class="collection-surface">
-      <div class="water-backdrop" aria-hidden="true">
-        <canvas class="water-ripples"></canvas>
-      </div>
       <section class="wrap collection" aria-labelledby="gallery-title">
         <div class="toolbar">
           <h2 id="gallery-title">作例一覧 <span id="count" aria-live="polite"></span></h2>

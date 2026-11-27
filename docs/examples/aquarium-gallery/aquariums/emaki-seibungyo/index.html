@@ -1,0 +1,102 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>青色金魚絵巻</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600&display=swap">
+<style>
+/* Layout: one sheet of washi filling the screen (the nihonga shader paints the paper); the title sits top-left like a
+   scroll's inscription, controls float along the bottom edge; editor and fish notes open as small sheets above them.
+   Single look by design: the paper and sumi stay the same in light and dark themes. */
+:root{
+  --paper:#ded1b0; --paper-2:#d3c49f; --sheet:#f1e9d6; --ink:#26262d; --ink-soft:#5f5b55; --ai:#3e5a73; --line:#c9bea6;
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--display);overflow:hidden}
+#stage{position:relative;height:100%;background:var(--paper)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:2px}
+h1{font-weight:600;font-size:clamp(20px,4.6vw,28px);letter-spacing:.12em;margin:0;text-wrap:balance}
+.hint{margin:0;color:var(--ink-soft);font-size:12.5px;line-height:1.7}
+body[data-mode="edit"] .hint-view,body[data-mode="view"] .hint-edit{display:none}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button,select{font:500 14px var(--display);color:var(--ink);background:color-mix(in srgb,var(--sheet) 88%,transparent);border:1px solid var(--line);border-radius:3px;padding:7px 13px;min-height:40px;cursor:pointer}
+button[aria-pressed="true"]{border-color:var(--ai);color:var(--ai);background:color-mix(in srgb,var(--ai) 10%,var(--sheet))}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+.seg{display:inline-flex}
+.seg button:first-child{border-radius:3px 0 0 3px}.seg button:last-child{border-radius:0 3px 3px 0;border-left:0}
+.panel{position:absolute;left:0;right:0;bottom:calc(var(--bar-h,66px) + 6px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.sheet{pointer-events:auto;width:min(560px,100%);max-height:min(46vh,calc(100% - var(--bar-h,66px) - 120px));overflow:auto;background:color-mix(in srgb,var(--sheet) 95%,transparent);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:grid;gap:10px;box-shadow:0 1px 0 var(--paper-2)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > label{font-size:13px;color:var(--ink-soft);min-width:5em}
+input[type=range]{flex:1;min-width:0;accent-color:var(--ai)}
+.note{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.7}
+#watch-panel .sheet{width:min(440px,100%)}
+#watch-panel h2{margin:0;font-size:18px;font-weight:600;letter-spacing:.08em}
+#watch-panel .sci{margin:0;font-size:13px;color:var(--ink-soft);font-style:italic}
+#watch-panel p.body{margin:0;font-size:13.5px;line-height:1.8}
+#watch-bar{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+#status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
+#toast{position:absolute;left:50%;top:calc(80px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--sheet);border:1px solid var(--line);border-radius:3px;padding:6px 14px;font-size:13px}
+.q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+.q select{min-height:34px;padding:4px 8px;font-size:12px}
+@media (max-width:520px){#watch-panel p.body{font-size:12.5px;line-height:1.7}#watch-panel .sheet{padding:10px 12px;gap:6px}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<div id="stage">
+  <canvas id="view" aria-label="青色金魚絵巻：枯山水の石組とカボンバの間を青文魚・穂竜・銀水泡眼が泳ぐ、日本画で描いた3D水槽"></canvas>
+  <header>
+    <h1>青色金魚絵巻</h1>
+    <p class="hint hint-view">1本指（ドラッグ）で回転、2本指（ホイール）で拡大。魚をタップすると近くで観察できます。</p>
+    <p class="hint hint-edit">石や水草の株をタップして選び、ドラッグで動かせます。下の欄でも調整できます。</p>
+  </header>
+  <div id="toast" role="status" hidden></div>
+  <div id="edit-panel" class="panel" hidden>
+    <div class="sheet">
+      <div class="row"><label for="obj-select">選択</label><select id="obj-select"><option value="">（なし）</option></select></div>
+      <div id="obj-controls" hidden style="display:grid;gap:10px">
+        <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-27" max="27" step="0.5"></div>
+        <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-13" max="13" step="0.5"></div>
+        <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
+        <div class="row" id="stone-color"><label>この石の色</label><button type="button" data-color="ai">藍鼠</button><button type="button" data-color="midori">苔緑</button></div>
+      </div>
+      <div class="row"><label>石をすべて</label><button type="button" data-all-color="ai">藍鼠にする</button><button type="button" data-all-color="midori">苔緑にする</button></div>
+      <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
+      <p class="note">配置と色はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置と色に戻ります。砂紋は石の位置に合わせて引き直されます。</p>
+    </div>
+  </div>
+  <div id="watch-panel" class="panel" hidden>
+    <div class="sheet" role="dialog" aria-labelledby="watch-name">
+      <h2 id="watch-name"></h2>
+      <p class="sci" id="watch-sci"></p>
+      <p class="body" id="watch-body"></p>
+      <div id="watch-bar"><button type="button" id="watch-stop" aria-pressed="false">止める</button><button type="button" id="watch-next">次の魚</button><button type="button" id="watch-all">全体へ</button><button type="button" id="watch-close">説明を閉じる</button></div>
+    </div>
+  </div>
+  <div class="bar">
+    <span class="seg"><button type="button" id="mode-view" aria-pressed="true">眺める</button><button type="button" id="mode-edit" aria-pressed="false">配置を変更</button></span>
+    <button type="button" data-view="front">正面</button>
+    <button type="button" data-view="oblique">斜め</button>
+    <button type="button" data-view="top">上から</button>
+    <button type="button" id="bgm" aria-pressed="false" hidden>BGM</button>
+    <select id="watch-select" aria-label="観察する魚"><option value="">観察：全体を見る</option></select>
+    <span class="q"><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準</option><option value="light">軽量（スマホ向け）</option></select></span>
+  </div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+</div>
+<script>window.AQUARIUM_ASSETS={"layout": {"version": 1, "title": "絵巻風の青文魚水槽", "units": "cm（水槽の床の中央が原点、x 右、y 上、z 手前）", "tank": {"width": 60, "depth": 30, "height": 36, "water_level": 33, "note": "60 cm 規格水槽相当。枠・ガラスは描かず、和紙の余白に見せる"}, "style": "日本画（ユーザー提供の nihonga-shader.js で全体を描画）。絵巻のように余白を広く取る", "background": {"type": "和紙（ユーザー提供の画像 aquarium/textures/washi.jpg を画面全体の地に使う）", "color": "#ded1b0"}, "substrate": {"type": "枯山水の白砂", "color": "#e6e1d4", "pattern": "石組の周りに同心円の砂紋、ほかは横方向の平行な砂紋"}, "fish": [{"id": "seibungyo-1", "species_key": "seibungyo", "model": "species/carassius-auratus-seibungyo/model/v9/seibungyo.glb", "species": "青文魚 Carassius auratus", "count": 1, "total_length_cm": 15, "start": [3, 15, 2], "path": {"cx": 0, "cy": 19, "cz": 2, "ax": 18, "ay": 2.5, "az": 4}}, {"id": "horyu-1", "species_key": "horyu", "model": "species/carassius-auratus-horyu/model/v8/horyu.glb", "species": "穂竜 Carassius auratus", "count": 1, "total_length_cm": 13, "path": {"cx": -3, "cy": 11.5, "cz": -1, "ax": 15, "ay": 2.0, "az": 5}}, {"id": "gin-suihogan-1", "species_key": "gin-suihogan", "model": "species/carassius-auratus-gin-suihogan/model/v3/gin-suihogan.glb", "species": "銀水泡眼 Carassius auratus", "count": 1, "total_length_cm": 13, "path": {"cx": 3, "cy": 26, "cz": 0, "ax": 15, "ay": 2.0, "az": 4}}], "stones": [{"id": "stone-main", "role": "主石（三尊石組の中央）", "material": "黒っぽい山石", "pos": [-15, 0, -5], "size": [8, 13, 6], "rot_y": 10, "color": "ai"}, {"id": "stone-side-1", "role": "脇石", "material": "山石", "pos": [-8.5, 0, -2.5], "size": [6, 7, 5], "rot_y": -25, "color": "ai"}, {"id": "stone-side-2", "role": "脇石", "material": "山石", "pos": [-21, 0, -1], "size": [5, 4.5, 4], "rot_y": 40, "color": "ai"}, {"id": "stone-pair-1", "role": "二石組", "material": "山石", "pos": [16, 0, -7], "size": [7, 6.5, 5], "rot_y": 15, "color": "ai"}, {"id": "stone-pair-2", "role": "二石組", "material": "山石", "pos": [21.5, 0, -4], "size": [4.5, 3.5, 4], "rot_y": -30, "color": "ai"}], "stone_colors": {"ai": {"name": "藍鼠（青系）", "hex": "#5d6670"}, "midori": {"name": "苔緑（緑系）", "hex": "#5e6d5c"}}, "plants": [{"id": "cabomba-left", "type": "カボンバ", "pos": [-23, 0, -8.5], "spread": [13, 9], "stems": 14, "height": [16, 31]}, {"id": "cabomba-right", "type": "カボンバ", "pos": [22.5, 0, -8.5], "spread": [12, 8], "stems": 11, "height": [12, 25]}], "assumptions": ["水槽の大きさは60 cm規格（おまかせ）", "石は5個（三石組＋二石組）", "照明は日本画シェーダーの固定光（左上から）", "鰭の半透明は使わない（シェーダーは不透明描画）"], "plants_note": "ユーザーの写真に合わせた形：節ごとに向かい合う2枚の細裂した半円形の扇が上向きに開き、節ごとに90°回る。上ほど小さく密。葉は墨の輪郭なし（没骨）で、細い葉脈を筆致として描く。v1c：葉の扇の先の縁と茎に細い墨線（線の太さ0.4〜0.45倍）。2〜3本の株ごとに8〜20°傾け、株の中で少しずつ開く", "revision": "v1c（カボンバに日本画シェーダーの墨線、株ごとの傾き）", "stone_colors_note": "2026-11-26 ユーザー指定：石のサブカラーを赤系から緑にする（「石のサブカラーは緑にします」）", "fish_note": "2026-11-26 ユーザー依頼（「銀水泡眼と穂竜を追加します」）で3匹に。泳ぐ高さを分ける：銀水泡眼は上層、青文魚は中層、穂竜は低層。2026-11-27 ぶつからないよう層を分け直し（穂竜 9.5〜13.5、青文魚 16.5〜21.5、銀水泡眼 24〜28 cm）、近づいたら避ける動きを追加"}, "models": {"seibungyo-1": {"geometry": "models/seibungyo.json", "standard": "models/seibungyo-2048.jpg", "light": "models/seibungyo-1024.jpg"}, "horyu-1": {"geometry": "models/horyu.json", "standard": "models/horyu-2048.jpg", "light": "models/horyu-1024.jpg"}, "gin-suihogan-1": {"geometry": "models/gin-suihogan.json", "standard": "models/gin-suihogan-2048.jpg", "light": "models/gin-suihogan-1024.jpg"}}, "textures": {"stone-ai": "textures/stone-ai.jpg", "stone-midori": "textures/stone-midori.jpg", "sand": "textures/sand.jpg", "washi": "textures/washi.jpg"}, "info": {"seibungyo": {"name": "青文魚（せいぶんぎょ）", "scientific": "Carassius auratus（キンギョの改良品種）", "text": "青灰色の体と頭のこぶ（肉瘤）が特徴の中国生まれの品種。背鰭と長い四つ尾をもちます。"}, "horyu": {"name": "穂竜（ほりゅう）", "scientific": "Carassius auratus（キンギョの改良品種）", "text": "赤穂生まれの日本の品種。出目、頭の肉瘤、真珠のようなパール鱗、丸い体が特徴です。"}, "gin-suihogan": {"name": "銀水泡眼（ぎんすいほうがん）", "scientific": "Carassius auratus（キンギョの改良品種・水泡眼）", "text": "眼の下に液体の入った水泡をもつ水泡眼の青系。背鰭がなく、眼は上を向きます。"}}, "bgm": "audio/bgm.mp3"};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["lib.js", "nihonga-shader.js", "app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>
+
+</body></html>

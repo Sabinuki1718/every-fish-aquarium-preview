@@ -17,6 +17,20 @@ const groups = [
 
 const exhibits = [
   {
+    "title": "青色金魚絵巻",
+    "image": "emaki-seibungyo.webp",
+    "species": [
+      "青文魚",
+      "穂竜",
+      "銀水泡眼"
+    ],
+    "completed": "2026-11-27",
+    "model": "Claude Opus 5.5",
+    "imageModel": "Gemini",
+    "group": "claude-code",
+    "url": "aquariums/emaki-seibungyo/"
+  },
+  {
     "title": "トリファスキアータのブリードタンク",
     "image": "breed-tank.webp",
     "species": [

@@ -4,7 +4,7 @@
     "ai": "claude-code",
     "image_generation": "manual",
     "model_route": "external",
-    "external_3d_tool": "Tripo API（ユーザー希望「APIキーでの生成希望」）。キーはユーザーが環境のNetwork secretsに登録",
+    "external_3d_tool": "Tripo（ユーザーが生成済みのFBXを提供）",
     "checked_at": "2026-11-27",
     "notes": "Python 3.13 / NumPy 2.5.3 / Pillow 13.0.0 あり。Tripo APIキーなし"
   },
@@ -124,6 +124,38 @@
       "at": "2026-11-27",
       "event": "route",
       "quote": "APIキーでの生成希望"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "model_received",
+      "quote": "すでに生成済みのモデルがあるのでこれ使ってください"
+    },
+    {
+      "at": "2026-11-27",
+      "event": "model_cut",
+      "note": "余分な鰭を削除しv1作成"
     }
-  ]
+  ],
+  "shared_model": {
+    "source": "shared-model/source/Oranda_goldfish_3d_model.fbx",
+    "source_sha256": "9bd1b3c285b63e4c863470e8fc092863c12f795aa76133322215c829d9fd8ebf",
+    "note": "ユーザー提供のTripo生成モデル（青文魚の写真から生成、頭+Y・高さ1.0）。3品種で形状を共用し、テクスチャを品種ごとに作る",
+    "versions": [
+      {
+        "version": 1,
+        "file": "shared-model/v1/oranda-base-cut.glb",
+        "sha256": "0101e139c7adc59c6c36417125c6de24f5998e072f7171e4be4ada9b9d789177",
+        "change": "胸鰭の上の余分な鰭（左右各1、独立した130三角形の部品）を削除。5263→5003三角形",
+        "request_quote": "胸鰭の上に余分な鰭がついてしまっているので、これを切除して使ってください",
+        "review": {
+          "mode": "main_only",
+          "status": "passed",
+          "verdicts": {
+            "main": "OK"
+          }
+        },
+        "status": "waiting_approval"
+      }
+    ]
+  }
 }

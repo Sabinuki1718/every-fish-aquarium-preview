@@ -4,6 +4,11 @@ const groups = [
     "title": "Codexによる作例"
   },
   {
+    "id": "claude-code",
+    "title": "Claude Codeによる作例",
+    "note": "Claude には画像生成が内蔵されていないため、三面図や素材画像はユーザーが別の画像生成サービスで作り、Claude Code に渡しました。"
+  },
+  {
     "id": "muse",
     "title": "Museによる作例",
     "note": "無料で作れる選択肢。Meta AI の Muse でも、魚種調査から3D水槽まで一通り作れました。"
@@ -11,6 +16,132 @@ const groups = [
 ];
 
 const exhibits = [
+  {
+    "title": "トリファスキアータのブリードタンク",
+    "image": "breed-tank.webp",
+    "species": [
+      "アピストグラマ・トリファスキアータ"
+    ],
+    "completed": "2026-11-24",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/breed-tank/"
+  },
+  {
+    "title": "ムツゴロウの干潟水槽",
+    "image": "mutsugoro.webp",
+    "species": [
+      "ムツゴロウ"
+    ],
+    "completed": "2026-11-01",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/mutsugoro/"
+  },
+  {
+    "title": "深海の水槽",
+    "image": "deep-sea.webp",
+    "species": [
+      "リュウグウノツカイ",
+      "オトヒメコンニャクウオ",
+      "ミズウオ",
+      "メヒカリ"
+    ],
+    "completed": "2026-11-01",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/deep-sea/"
+  },
+  {
+    "title": "アカマンボウとウツボの水槽",
+    "image": "opah-moray.webp",
+    "species": [
+      "アカマンボウ",
+      "ウツボ"
+    ],
+    "completed": "2026-10-29",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/opah-moray/"
+  },
+  {
+    "title": "ルリヨシノボリの水槽",
+    "image": "ruri-yoshinobori-cc.webp",
+    "species": [
+      "ルリヨシノボリ"
+    ],
+    "completed": "2026-10-28",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/ruri-yoshinobori-cc/"
+  },
+  {
+    "title": "ヨシキリザメの大水槽",
+    "image": "blue-shark.webp",
+    "species": [
+      "ヨシキリザメ",
+      "ハチワレ"
+    ],
+    "completed": "2026-10-27",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/blue-shark/"
+  },
+  {
+    "title": "シマウミヘビとマアナゴの水槽",
+    "image": "snake-eel-conger.webp",
+    "species": [
+      "シマウミヘビ",
+      "マアナゴ"
+    ],
+    "completed": "2026-10-27",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/snake-eel-conger/"
+  },
+  {
+    "title": "グッピーの水草水槽",
+    "image": "guppy.webp",
+    "species": [
+      "グッピー（ゴールデンキングコブラ）",
+      "グッピー（ギャラクシーブルーグラス）",
+      "グッピー（RREAレッドグラスリボン）",
+      "グッピー（サンセットドイツイエロータキシード）",
+      "グッピー（マーブルマゼンタ）"
+    ],
+    "completed": "2026-10-27",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/guppy/"
+  },
+  {
+    "title": "水彩の金魚水槽",
+    "image": "goldfish.webp",
+    "species": [
+      "青文魚",
+      "水泡眼",
+      "東錦"
+    ],
+    "completed": "2026-10-24",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/goldfish/"
+  },
+  {
+    "title": "防波堤の下の海",
+    "image": "breakwater.webp",
+    "species": [
+      "マアジ",
+      "シロギス",
+      "クロダイ",
+      "ウマヅラハギ",
+      "キジハタ"
+    ],
+    "completed": "2026-10-23",
+    "model": "Claude Opus 5.5",
+    "group": "claude-code",
+    "url": "aquariums/breakwater/"
+  },
   {
     "title": "ハタタテハゼの水槽",
     "image": "hatatate.webp",

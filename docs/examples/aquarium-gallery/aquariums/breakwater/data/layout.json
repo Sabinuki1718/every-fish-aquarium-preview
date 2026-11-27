@@ -1,0 +1,652 @@
+{
+  "version": 3,
+  "status": "draft",
+  "title": "防波堤の下の海",
+  "tank": {
+    "width_m": 0.9,
+    "depth_m": 0.45,
+    "height_m": 0.45,
+    "water_level_m": 0.42,
+    "axes": "x=左右（右が+）、y=上、z=前後（手前が+）、原点は底面中央。魚モデルは頭が-X"
+  },
+  "background": {
+    "type": "breakwater_wall",
+    "note": "後ろの壁はケーソン（防波堤の本体）のコンクリート面。水面近くにフジツボ・カキ・イガイの帯、その下に薄い藻",
+    "water_color": "#2f6f78",
+    "light": "上からの日差し、ゆらぐ光の模様（⑤で実装）"
+  },
+  "substrate": {
+    "type": "fine_sand",
+    "note": "前側〜右側は細かい砂（シロギス用）。貝殻がまばらに"
+  },
+  "items": [
+    {
+      "id": "rock-01",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.4,
+        0.04,
+        -0.16
+      ],
+      "size": [
+        0.13,
+        0.1,
+        0.11
+      ],
+      "rotation_deg": [
+        0,
+        -30,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-02",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.31,
+        0.038,
+        -0.17
+      ],
+      "size": [
+        0.11,
+        0.09,
+        0.1
+      ],
+      "rotation_deg": [
+        0,
+        61,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-03",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.17,
+        0.038,
+        -0.17
+      ],
+      "size": [
+        0.12,
+        0.09,
+        0.1
+      ],
+      "rotation_deg": [
+        0,
+        49,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-04",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.06,
+        0.035,
+        -0.17
+      ],
+      "size": [
+        0.1,
+        0.08,
+        0.09
+      ],
+      "rotation_deg": [
+        0,
+        -57,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-07",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.37,
+        0.057,
+        -0.18
+      ],
+      "size": [
+        0.11,
+        0.08,
+        0.09
+      ],
+      "rotation_deg": [
+        0,
+        31,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-08",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.24,
+        0.052,
+        -0.18
+      ],
+      "size": [
+        0.1,
+        0.08,
+        0.09
+      ],
+      "rotation_deg": [
+        0,
+        70,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-09",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.11,
+        0.05,
+        -0.19
+      ],
+      "size": [
+        0.09,
+        0.07,
+        0.08
+      ],
+      "rotation_deg": [
+        0,
+        58,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-10",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.3,
+        0.071,
+        -0.19
+      ],
+      "size": [
+        0.09,
+        0.07,
+        0.08
+      ],
+      "rotation_deg": [
+        0,
+        -74,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-11",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.34,
+        0.024,
+        -0.07
+      ],
+      "size": [
+        0.08,
+        0.06,
+        0.07
+      ],
+      "rotation_deg": [
+        0,
+        65,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-12",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.16,
+        0.022,
+        -0.08
+      ],
+      "size": [
+        0.07,
+        0.05,
+        0.06
+      ],
+      "rotation_deg": [
+        0,
+        -87,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-13",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        -0.42,
+        0.018,
+        0.02
+      ],
+      "size": [
+        0.06,
+        0.045,
+        0.05
+      ],
+      "rotation_deg": [
+        0,
+        30,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-14",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        0.04,
+        0.014,
+        -0.05
+      ],
+      "size": [
+        0.04,
+        0.03,
+        0.035
+      ],
+      "rotation_deg": [
+        0,
+        -24,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "rock-15",
+      "type": "stone",
+      "material": "捨て石（花崗岩質の割石）",
+      "position": [
+        0.36,
+        0.013,
+        0.06
+      ],
+      "size": [
+        0.035,
+        0.025,
+        0.03
+      ],
+      "rotation_deg": [
+        0,
+        51,
+        0
+      ],
+      "color": "blue-gray"
+    },
+    {
+      "id": "block-01",
+      "type": "block",
+      "material": "消波ブロック（テトラポッド型。コンクリート、藻と付着生物）",
+      "position": [
+        0.1,
+        0.061,
+        -0.16
+      ],
+      "size": 0.17,
+      "rotation_deg": [
+        -35.26,
+        -0.0,
+        45.0
+      ],
+      "note": "3本の脚で床に立ち、1本を真上へ。隣のブロックの脚の間に脚が入るように回して組む"
+    },
+    {
+      "id": "block-02",
+      "type": "block",
+      "material": "消波ブロック（テトラポッド型。コンクリート、藻と付着生物）",
+      "position": [
+        0.213,
+        0.061,
+        -0.12
+      ],
+      "size": 0.17,
+      "rotation_deg": [
+        -54.74,
+        45.0,
+        90.0
+      ],
+      "note": "3本の脚で床に立ち、1本を真上へ。隣のブロックの脚の間に脚が入るように回して組む"
+    },
+    {
+      "id": "block-03",
+      "type": "block",
+      "material": "消波ブロック（テトラポッド型。コンクリート、藻と付着生物）",
+      "position": [
+        0.326,
+        0.061,
+        -0.16
+      ],
+      "size": 0.17,
+      "rotation_deg": [
+        -35.26,
+        -0.0,
+        45.0
+      ],
+      "note": "3本の脚で床に立ち、1本を真上へ。隣のブロックの脚の間に脚が入るように回して組む"
+    },
+    {
+      "id": "weed-01",
+      "type": "seaweed",
+      "material": "ホンダワラ類（褐藻）",
+      "position": [
+        -0.3,
+        0.084,
+        -0.19
+      ],
+      "height": 0.17
+    },
+    {
+      "id": "weed-02",
+      "type": "seaweed",
+      "material": "ホンダワラ類（褐藻）",
+      "position": [
+        -0.17,
+        0.057,
+        -0.17
+      ],
+      "height": 0.13
+    },
+    {
+      "id": "weed-03",
+      "type": "seaweed",
+      "material": "ホンダワラ類（褐藻）",
+      "position": [
+        -0.06,
+        0.051,
+        -0.17
+      ],
+      "height": 0.12
+    },
+    {
+      "id": "weed-04",
+      "type": "seaweed",
+      "material": "ホンダワラ類（褐藻）",
+      "position": [
+        0.213,
+        0.156,
+        -0.12
+      ],
+      "height": 0.1,
+      "note": "真ん中のテトラポッドの上向きの脚の先に付く"
+    },
+    {
+      "id": "weed-05",
+      "type": "seaweed",
+      "material": "ホンダワラ類（褐藻）",
+      "position": [
+        -0.42,
+        0.024,
+        0.02
+      ],
+      "height": 0.09
+    },
+    {
+      "id": "seagrass-01",
+      "type": "seagrass",
+      "material": "アマモ（海草。砂泥に根を張る細長い葉）",
+      "position": [
+        -0.02,
+        0.012,
+        -0.09
+      ],
+      "radius": 0.07,
+      "shoots": 22,
+      "height": 0.22
+    },
+    {
+      "id": "seagrass-02",
+      "type": "seagrass",
+      "material": "アマモ（海草。砂泥に根を張る細長い葉）",
+      "position": [
+        -0.41,
+        0.012,
+        -0.02
+      ],
+      "radius": 0.04,
+      "shoots": 9,
+      "height": 0.18
+    }
+  ],
+  "fish": [
+    {
+      "id": "trachurus-1",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.05,
+        0.31,
+        0.0
+      ],
+      "heading_deg": 170,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-2",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.11,
+        0.33,
+        -0.04
+      ],
+      "heading_deg": 172,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-3",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.16,
+        0.3,
+        0.05
+      ],
+      "heading_deg": 168,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-4",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.2,
+        0.34,
+        -0.01
+      ],
+      "heading_deg": 175,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-5",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.08,
+        0.27,
+        0.07
+      ],
+      "heading_deg": 165,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-6",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.24,
+        0.29,
+        0.02
+      ],
+      "heading_deg": 170,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-7",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.14,
+        0.36,
+        0.03
+      ],
+      "heading_deg": 173,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "trachurus-8",
+      "species": "trachurus-japonicus",
+      "name_ja": "マアジ",
+      "model": "species/trachurus-japonicus/model/v2/trachurus-japonicus.glb",
+      "display_length_m": 0.12,
+      "position": [
+        0.27,
+        0.33,
+        -0.05
+      ],
+      "heading_deg": 169,
+      "layer": "中層〜表層を群れで"
+    },
+    {
+      "id": "sillago-1",
+      "species": "sillago-japonica",
+      "name_ja": "シロギス",
+      "model": "species/sillago-japonica/model/v1/sillago-japonica.glb",
+      "display_length_m": 0.14,
+      "position": [
+        0.22,
+        0.045,
+        0.12
+      ],
+      "heading_deg": 200,
+      "layer": "砂底の底近く"
+    },
+    {
+      "id": "sillago-2",
+      "species": "sillago-japonica",
+      "name_ja": "シロギス",
+      "model": "species/sillago-japonica/model/v1/sillago-japonica.glb",
+      "display_length_m": 0.14,
+      "position": [
+        0.3,
+        0.05,
+        0.07
+      ],
+      "heading_deg": 195,
+      "layer": "砂底の底近く"
+    },
+    {
+      "id": "sillago-3",
+      "species": "sillago-japonica",
+      "name_ja": "シロギス",
+      "model": "species/sillago-japonica/model/v1/sillago-japonica.glb",
+      "display_length_m": 0.14,
+      "position": [
+        0.14,
+        0.04,
+        0.15
+      ],
+      "heading_deg": 210,
+      "layer": "砂底の底近く"
+    },
+    {
+      "id": "acanthopagrus-1",
+      "species": "acanthopagrus-schlegelii",
+      "name_ja": "クロダイ",
+      "model": "species/acanthopagrus-schlegelii/model/v1/acanthopagrus-schlegelii.glb",
+      "display_length_m": 0.24,
+      "position": [
+        -0.1,
+        0.2,
+        -0.05
+      ],
+      "heading_deg": 20,
+      "layer": "壁・捨て石の周りの中層"
+    },
+    {
+      "id": "thamnaconus-1",
+      "species": "thamnaconus-modestus",
+      "name_ja": "ウマヅラハギ",
+      "model": "species/thamnaconus-modestus/model/v1/thamnaconus-modestus.glb",
+      "display_length_m": 0.16,
+      "position": [
+        -0.02,
+        0.14,
+        0.04
+      ],
+      "heading_deg": -15,
+      "layer": "岩の周りの中層〜底層"
+    },
+    {
+      "id": "thamnaconus-2",
+      "species": "thamnaconus-modestus",
+      "name_ja": "ウマヅラハギ",
+      "model": "species/thamnaconus-modestus/model/v1/thamnaconus-modestus.glb",
+      "display_length_m": 0.16,
+      "position": [
+        0.05,
+        0.12,
+        -0.02
+      ],
+      "heading_deg": -30,
+      "layer": "岩の周りの中層〜底層"
+    },
+    {
+      "id": "epinephelus-1",
+      "species": "epinephelus-akaara",
+      "name_ja": "キジハタ",
+      "model": "species/epinephelus-akaara/model/v1/epinephelus-akaara.glb",
+      "display_length_m": 0.2,
+      "position": [
+        -0.25,
+        0.055,
+        -0.08
+      ],
+      "heading_deg": -40,
+      "layer": "捨て石の隙間から頭を出して定位"
+    }
+  ],
+  "stone_color_options": {
+    "blue-gray": "青みの灰色（初期色）",
+    "red-brown": "赤茶色（鉄さびを帯びた石）"
+  },
+  "assumptions": [
+    "魚の大きさは水槽に合わせて縮めた表示長（マアジ12・シロギス14・クロダイ24・ウマヅラハギ16・キジハタ20 cm）。実寸の成魚より小さい",
+    "匹数は仮（マアジ8・シロギス3・クロダイ1・ウマヅラハギ2・キジハタ1）",
+    "この画像は配置を見るための仮の場面。石・ブロック・藻・壁の質感は⑤で生成した素材に置き換える",
+    "アマモは港内側など波の穏やかな砂地に生える海草として、水槽の前面を避け、石の山とテトラポッドの間の奥と、左側面の中ほどに置いた"
+  ]
+}

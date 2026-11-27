@@ -1,0 +1,105 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>シマウミヘビとマアナゴの水槽</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
+<style>
+/* Layout: the tank fills the screen; title top-left, controls float along the bottom edge,
+   and the layout editor opens as a sheet above them. Palette: warm sand paper, pale glass teal. */
+:root{
+  --paper:#f0ebe1; --paper-2:#e2dccf; --ink:#2b2a26; --ink-soft:#6a655b; --wash:#2a7f8c; --line:#d5cdbd; --sheet:#faf7f1;
+  --display:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans",system-ui,sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#1a1814;--paper-2:#25221c;--ink:#ece6da;--ink-soft:#b2aa9a;--wash:#6fc0cc;--line:#3b362c;--sheet:#211e18;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#1a1814;--paper-2:#25221c;--ink:#ece6da;--ink-soft:#b2aa9a;--wash:#6fc0cc;--line:#3b362c;--sheet:#211e18;color-scheme:dark}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);overflow:hidden}
+#stage{position:relative;height:100%;background:radial-gradient(120% 90% at 50% 45%,var(--paper) 55%,var(--paper-2))}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:2px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(20px,4.6vw,28px);letter-spacing:.04em;margin:0;text-wrap:balance}
+.hint{margin:0;color:var(--ink-soft);font-size:12.5px;line-height:1.6}
+body[data-mode="edit"] .hint-view,body[data-mode="view"] .hint-edit{display:none}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button,select{font:500 14px var(--body);color:var(--ink);background:color-mix(in srgb,var(--sheet) 86%,transparent);border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+button[aria-pressed="true"]{border-color:var(--wash);color:var(--wash);background:color-mix(in srgb,var(--wash) 12%,var(--sheet))}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--wash);outline-offset:2px}
+.seg{display:inline-flex;gap:0}
+.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0;border-left:0}
+#edit-panel{position:absolute;left:0;right:0;bottom:calc(var(--bar-h,64px) + 6px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.sheet{pointer-events:auto;width:min(560px,100%);max-height:46vh;overflow:auto;background:color-mix(in srgb,var(--sheet) 94%,transparent);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > label{font-size:13px;color:var(--ink-soft);min-width:4.5em}
+input[type=range]{flex:1;min-width:0;accent-color:var(--wash)}
+.note{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.6}
+#status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center}
+#status[hidden]{display:none}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
+#toast{position:absolute;left:50%;top:calc(76px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink)}
+#toast[hidden]{display:none}
+.bgm{display:inline-flex;align-items:center;gap:6px}
+.bgm input{width:80px;accent-color:var(--wash)}
+#watch-panel{position:absolute;left:0;right:0;bottom:calc(var(--bar-h,64px) + 6px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+#watch-panel .sheet{width:auto;max-width:100%;padding:6px 8px;border-radius:24px}
+#watch-panel .row{gap:6px;justify-content:center;flex-wrap:nowrap}
+#watch-panel button{padding-inline:14px;white-space:nowrap}
+#watch-panel #watch-name{font-family:var(--display);font-weight:700;font-size:14px;padding-inline:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#watch{max-width:100%}
+body[data-mode="edit"] #watch-panel{display:none}
+body[data-watching] .hint{display:none}
+.q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+.q select{min-height:32px;padding:4px 10px;font-size:12px}
+</style>
+<div id="stage">
+  <canvas id="view" aria-label="シマウミヘビとマアナゴの水槽：砂の底から頭を出し、這って移動する2匹の3D水槽"></canvas>
+    <header>
+    <h1>シマウミヘビとマアナゴの水槽</h1>
+    <p class="hint hint-view">砂から頭を出す2匹を、タップするか「観察」で選ぶと近くで追いかけて見られます。1本指（ドラッグ）で回転、2本指（ホイール）で拡大。</p>
+    <p class="hint hint-edit">石をタップして選び、ドラッグで動かせます。下の欄でも調整できます。</p>
+  </header>
+  <div id="toast" role="status" hidden></div>
+  <div id="edit-panel" hidden>
+    <div class="sheet">
+      <div class="row"><label for="obj-select">選択</label><select id="obj-select"><option value="">（なし）</option></select></div>
+      <div id="obj-controls" hidden style="display:grid;gap:10px">
+        <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-30" max="30" step="0.5"></div>
+        <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-15" max="15" step="0.5"></div>
+        <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
+        <div class="row" id="stone-color"><label>この石の色</label><button type="button" data-color="red">赤紫</button><button type="button" data-color="peach">桃色</button><button type="button" data-color="yellow">黄緑</button></div>
+      </div>
+      <div class="row"><label>石をすべて</label><button type="button" data-all-color="red">赤紫にする</button><button type="button" data-all-color="peach">桃色にする</button><button type="button" data-all-color="yellow">黄緑にする</button></div>
+      <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
+      <p class="note">石の色は、白い結晶質の台の上に載った色つきの石の部分だけが変わります。配置と色はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置と色に戻ります。</p>
+    </div>
+  </div>
+  <div id="watch-panel" hidden>
+    <div class="sheet" role="region" aria-live="polite" aria-label="観察中の魚">
+      <div class="row"><span id="watch-name" hidden></span><button type="button" id="watch-hold" aria-pressed="false">止める</button><button type="button" id="watch-next">次の魚</button><button type="button" id="watch-exit">全体へ</button></div>
+    </div>
+  </div>
+  <div class="bar">
+    <span class="seg"><button type="button" id="mode-view" aria-pressed="true">眺める</button><button type="button" id="mode-edit" aria-pressed="false">配置を変更</button></span>
+    <select id="watch" aria-label="1匹を選んで観察"><option value="">観察：全体を見る</option></select>
+    <button type="button" data-view="front">正面</button>
+    <button type="button" data-view="oblique">斜め</button>
+    <button type="button" data-view="top">上から</button>
+    <span class="bgm"><button type="button" id="bgm" aria-pressed="false">BGM：オフ</button><input id="bgm-vol" type="range" min="0" max="1" step="0.05" value="0.45" aria-label="BGMの音量"></span>
+    <span class="q"><span id="quality-now"></span><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準（水面の反射・屈折あり）</option><option value="light">軽量（スマホ向け）</option></select></span>
+  </div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+</div>
+<script>window.AQUARIUM_ASSETS={"layout": {"version": 2, "units": "cm; tank centre at the origin, floor y=0, front glass +z, left -x; heading_deg: 0 = +x, 90 = +z (toward the viewer)", "tank": {"w": 90, "d": 45, "h": 45, "water": 40, "background": "sand-coloured back screen (the approved sand, soft focus, a little blue-grey haze toward the top)", "substrate": "fine pale beige sand, about 4.5 cm at the front rising to 7.5 cm at the back, gentle ripples", "light": "soft light from above with gentle caustics"}, "fish": [{"id": "fish-snake-eel", "model": "species/myrichthys-colubrinus/model/v2/shima-umihebi.glb", "model_length_cm": 70, "length_cm": 30, "behavior": {"speed_cm_s": 4.0, "radius_cm": 1.1, "peek_s": [9, 15], "start": "peek", "sites": [{"pos": [36.0, 7.5], "heading_deg": 100}, {"pos": [-6.0, 16.5], "heading_deg": 95}, {"pos": [15.0, 15.0], "heading_deg": 80}], "dives": [{"pre": [-18.0, 17.2], "spot": [-31.5, 17.2]}, {"pre": [22.5, 17.2], "spot": [34.5, 17.2]}], "wave_scale": 0.8, "min_turn_radius_cm": 7}}, {"id": "fish-conger", "model": "species/conger-myriaster/model/v3/maanago.glb", "model_length_cm": 60, "length_cm": 30, "behavior": {"speed_cm_s": 3.4, "radius_cm": 1.2, "peek_s": [12, 20], "start": "peek", "sites": [{"pos": [-36.0, 7.5], "heading_deg": 75}, {"pos": [-16.5, 16.5], "heading_deg": 100}, {"pos": [16.5, 10.5], "heading_deg": 85}], "dives": [{"pre": [-13.5, 17.2], "spot": [-25.5, 17.2]}, {"pre": [21.0, 17.2], "spot": [33.0, 17.2]}], "wave_scale": 0.4, "min_turn_radius_cm": 9}}], "objects": [{"id": "stone-1", "kind": "stone", "label": "石1（赤紫）", "color": "red", "model": "aquarium/stones/stone-red.glb", "model_length_cm": 18, "length_cm": 18, "pos": [-24, 0, -3], "rot_deg": 20}, {"id": "stone-2", "kind": "stone", "label": "石2（桃色）", "color": "peach", "model": "aquarium/stones/stone-peach.glb", "model_length_cm": 21, "length_cm": 21, "pos": [0, 0, 7.5], "rot_deg": -35}, {"id": "stone-3", "kind": "stone", "label": "石3（黄緑）", "color": "yellow", "model": "aquarium/stones/stone-yellow.glb", "model_length_cm": 20, "length_cm": 20, "pos": [25.5, 0, -1.5], "rot_deg": 10}], "stone_colors": {"red": "赤紫の石", "peach": "桃色の石", "yellow": "黄緑がかった黄色の石"}, "assumptions": ["fish are shown as young animals, 30 cm each (the real animals reach 60-70 cm)", "tank enlarged from 60 x 30 x 40 cm to 90 x 45 x 45 cm (water 40 cm) at the user's request; positions of stones and fish sites are scaled by 1.5, stone sizes by about 1.2 (the approved layout image is otherwise unchanged)", "stones are modelled from the user's side / top / bottom views (layout/reference/stone-views/*.png): coloured stone + white crystal base (+ the peach stone's two-lobed tassel); built by tools/build_stones.py", "colour swap: a stone keeps its own baked appearance by default; the other two colours use tiles cut from the views (aquarium/textures/stone-*.jpg)"]}, "models": {"fish-snake-eel": {"geometry": "models/snake-eel.json", "standard": "models/snake-eel-2048.jpg", "light": "models/snake-eel-1024.jpg"}, "fish-conger": {"geometry": "models/conger.json", "standard": "models/conger-2048.jpg", "light": "models/conger-1024.jpg"}, "stone-1": {"geometry": "models/stone-1.json", "standard": "models/stone-1-2048.jpg", "light": "models/stone-1-1024.jpg"}, "stone-2": {"geometry": "models/stone-2.json", "standard": "models/stone-2-2048.jpg", "light": "models/stone-2-1024.jpg"}, "stone-3": {"geometry": "models/stone-3.json", "standard": "models/stone-3-2048.jpg", "light": "models/stone-3-1024.jpg"}}, "textures": {"background": "textures/background.jpg", "sand": "textures/sand.jpg", "stone-red": "textures/stone-red.jpg", "stone-peach": "textures/stone-peach.jpg", "stone-yellow": "textures/stone-yellow.jpg"}, "bgm": "audio/bgm.mp3"};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["lib.js", "app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>
+
+</body></html>

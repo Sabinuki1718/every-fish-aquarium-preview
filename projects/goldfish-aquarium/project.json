@@ -130,12 +130,12 @@
           "approved_at": "2026-11-28",
           "approval_quote": "ok",
           "technical_revision": {
-            "version": 3,
-            "file": "species/carassius-auratus-seibun/model/v3/fish.glb",
-            "sha256": "ae097019d1a99d65489c93a8c89849f186f57e6934b04be2e9249c1194b78598",
-            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
-            "status": "waiting_approval",
-            "note": "水槽はこの版で表示。承認済みはv2"
+            "version": 4,
+            "file": "species/carassius-auratus-seibun/model/v4/fish.glb",
+            "sha256": "6fecf3250e73e00cba436c688aa668b41f5e040d3f5d41cb6ef871bfe7f127c4",
+            "change": "写真の眼を消し、モデルの眼の位置（Tripo元テクスチャと同じ位置）へ移して貼付",
+            "request_quote": "青文の顔　よく見ると、モデルとテクスチャの目の位置がずれていることに気づきました",
+            "status": "waiting_approval"
           }
         }
       }
@@ -376,6 +376,11 @@
       "event": "aquarium_updated",
       "quote": "金魚のモーション ①胸鰭は大きく動かしてください ②腹鰭はあまり大きく動かさず、下向きを基本姿勢としてください ③方向転換するとき、体全体の角度を傾けるのではなく、滑らかに動くようにしてください",
       "note": "胸鰭の漕ぎ・開閉の振幅を約1.5倍に。腹鰭は基本姿勢を下向き（外向き→真下へ60%回転）にして微動のみ。経路を楕円から角の丸いトラック形（半径5.5〜6cm）に変更、向きは滑らかに追従、体のロール傾斜を廃止し、旋回時は体を内側へ弓なりに曲げる"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "changes_requested",
+      "quote": "①見る角度によって腹鰭の描画がおかしくなるようです ②青文の顔　よく見ると、モデルとテクスチャの目の位置がずれていることに気づきました"
     }
   ],
   "shared_model": {

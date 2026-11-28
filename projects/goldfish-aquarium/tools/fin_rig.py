@@ -33,7 +33,7 @@ def rig(P, fin, root, kind):
             idx = np.nonzero(sel)[0]
             # weights: soft hinge at the root (0..1.5 mm), the outer half bends further with the tip bone
             w_on = _ss(0.0, 0.0015, root[idx]) * np.clip(fin[idx] * 1.4, 0, 1)
-            w_tip = _ss(0.35 * L, 0.8 * L, root[idx]) * w_on
+            w_tip = np.clip((root[idx] - 0.15 * L) / (0.85 * L), 0, 1) ** 1.3 * w_on      # long, gradual ramp: bends, never creases
             w_base = w_on - w_tip
             si[idx] = np.stack([np.zeros(len(idx), int), np.full(len(idx), b_base), np.full(len(idx), b_tip), np.zeros(len(idx), int)], 1)
             sw[idx] = np.stack([1 - w_on, w_base, w_tip, np.zeros(len(idx))], 1)

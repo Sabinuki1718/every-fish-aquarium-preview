@@ -540,8 +540,10 @@
       const hinge = new THREE.Vector3().fromArray(b.axis), out = new THREE.Vector3().fromArray(b.out);
       const sweep = new THREE.Vector3().crossVectors(hinge, out).normalize();       // normal to the fin: rowing fore and aft
       const tip = bones[fishGeo.bones.findIndex(x => x.name === b.name.replace('_base', '_tip'))];
-      const down = out.clone().lerp(new THREE.Vector3(0, -1, 0), 0.6).normalize();    // pelvic rest pose: turned toward straight down
-      const rest = new THREE.Quaternion().setFromUnitVectors(out, down);
+      // pelvic rest pose: swung about its own attachment line (no twist of the fin plane) toward straight down
+      let best = 0, lowest = Infinity;
+      for (let a = -1.4; a <= 1.4; a += 0.02) { const y = out.clone().applyAxisAngle(hinge, a).y; if (y < lowest) { lowest = y; best = a; } }
+      const rest = new THREE.Quaternion().setFromAxisAngle(hinge, best * 0.7);
       finBones.push({ base: bones[k], tip, hinge, sweep, rest, pec: b.name.startsWith('pectoral'), side: b.name.includes('_L_') ? 1 : -1 });
     });
     const root = new THREE.Group(); root.add(rig); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
@@ -579,11 +581,11 @@
         const abd = (0.35 + 0.6 * open) * (0.5 + 0.5 * Math.sin(p + 1.57));
         _q1.setFromAxisAngle(B.sweep, row); _q2.setFromAxisAngle(B.hinge, abd * B.side);
         B.base.quaternion.multiplyQuaternions(_q1, _q2);
-        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.55 * (0.4 + open) * Math.sin(p - 0.9));
+        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.3 * (0.4 + open) * Math.sin(p - 0.9));
       } else {                // pelvic: held pointing down, only a small trim
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));
         B.base.quaternion.copy(B.rest).multiply(_q1).multiply(_q2);
-        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.08 * Math.sin(p - 0.7));
+        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.05 * Math.sin(p - 0.7));
       }
     }
   }

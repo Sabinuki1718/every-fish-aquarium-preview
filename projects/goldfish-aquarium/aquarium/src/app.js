@@ -379,7 +379,7 @@
   // centre, shorter and upright; older ones outside, longer and leaning out); plants stand in short rows along runners.
   function vallisneria(o) {
     const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], leaf = [], c = new THREE.Color();
-    const nPlants = Math.max(3, Math.round(o.count / 4.5)), plants = [];
+    const nPlants = Math.max(3, Math.round(o.count / 3.6)), plants = [];
     let rx = (rnd() - 0.5) * 0.02, rz = (rnd() - 0.5) * 0.02, ra = rnd() * Math.PI * 2;
     for (let k = 0; k < nPlants; k++) {                  // walk along a wandering runner, 1.5-3 cm per daughter plant
       plants.push([rx, rz, 0.65 + 0.4 * rnd() * (k === 0 ? 0 : 1) + (k === 0 ? 0.4 : 0)]);
@@ -393,7 +393,7 @@
     const runC = new THREE.Color().setHSL(0.2, 0.35, 0.42);
     for (let k = 1; k < plants.length; k++) strip([[plants[k - 1][0], -0.001, plants[k - 1][1]], [plants[k][0], -0.0005, plants[k][1]]], 0.0012, runC, 0);
     for (const [px, pz, vigor] of plants) {
-      const nLeaves = 4 + Math.floor(rnd() * 4 + vigor * 2), spin = rnd() * Math.PI * 2;
+      const nLeaves = 6 + Math.floor(rnd() * 4 + vigor * 3), spin = rnd() * Math.PI * 2;
       for (let lf = 0; lf < nLeaves; lf++) {
         const age = (lf + 0.5) / nLeaves;               // 0 = youngest (centre) .. 1 = oldest (outside)
         const h = Math.min(o.height * cm * vigor * (0.45 + 0.6 * age) * (0.85 + 0.25 * rnd()), o.maxH ?? 1);
@@ -458,7 +458,7 @@
       if (level + 1 < LEVELS) for (const k of [-1, 1]) fork(to, ang + k * (0.24 - level * 0.07) + (rnd() - 0.5) * 0.08, dy + 0.1 + (rnd() - 0.5) * 0.12, len * (0.85 + rnd() * 0.15), level + 1, nrm, t + 0.004, color);
     };
     for (let s = 0; s < o.count; s++) {
-      const h = o.height * cm * (0.7 + rnd() * 0.35), x0 = (rnd() - 0.5) * 0.055, z0 = (rnd() - 0.5) * 0.035;
+      const spr = Math.sqrt(o.count / 9), h = o.height * cm * (0.7 + rnd() * 0.35), x0 = (rnd() - 0.5) * 0.055 * spr, z0 = (rnd() - 0.5) * 0.035 * Math.min(spr, 1.25);
       const lean = new THREE.Vector3((rnd() - 0.5) * 0.12, 1, (rnd() - 0.5) * 0.12).normalize();
       const stemC = new THREE.Color().setHSL(0.27, 0.45, 0.24);
       const at = y => new THREE.Vector3(x0, -0.01, z0).addScaledVector(lean, y + 0.01);

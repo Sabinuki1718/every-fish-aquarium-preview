@@ -506,6 +506,12 @@
       "event": "layout_revised",
       "version": 5,
       "quote": "カボンバを両脇に寄せて、中央は開けるようにしてください"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "layout_revised",
+      "version": 5,
+      "quote": "カボンバとバリスネリア　両方数を増やしてボリュームアップしてください"
     }
   ],
   "shared_model": {

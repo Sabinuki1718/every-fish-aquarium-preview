@@ -16,6 +16,7 @@
 | `build-fish-3d-from-views` | ③三面図から GLB（Python・NumPy・Pillow） |
 | `build-aquarium-from-fish-model` | ④背景レイアウト案と⑤3D水槽 |
 | `make-fish-fins-translucent` | ⑤の薄い鰭の半透明化 |
+| `rig-tripo-fish-fins` | Tripo 等で作った一体メッシュの魚に、鰭の判定・胸鰭/腹鰭のボーン・動きを付ける |
 | `keep-illustration-style` | イラストが提供されたとき、その画風を全工程で保つ |
 | `make-aquarium-textures` | ⑤の素材をユーザーの画像生成で作り、加工して貼る |
 | `publish-aquarium-web` | プレビュー・水槽をスマホで開ける公開用と通信不要版に書き出す |

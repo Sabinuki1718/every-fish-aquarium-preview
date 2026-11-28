@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tripo製の魚モデルの鰭リグ"
+  short_description: "胴体と一体の鰭を判定し、胸鰭・腹鰭にボーンを入れて自然に動かす"
+  default_prompt: "$rig-tripo-fish-fins を使って、Tripoで作った魚モデルの鰭を判定し、胸鰭・腹鰭にボーンを入れて水槽で自然に動かしてください。"

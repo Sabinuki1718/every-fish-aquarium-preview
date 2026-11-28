@@ -49,6 +49,37 @@ def main():
     R = rig(np.array(geo['meshes'][0]['p']).reshape(-1, 3), fin, root, kind, ed)
     for b in R['bones'][1:]: print('bone', b['name'], np.round(b['pos'], 4), 'axis', np.round(b['axis'], 2), 'len', round(b.get('len', 0), 4))
     m = geo['meshes'][0]; I = np.array(m['i']).reshape(-1, 3)
+    # Small membrane scraps next to a paired fin that the thickness test missed would stay behind as floating white
+    # fragments: adopt them into the fin (weights copied from the neighbouring fin vertex).
+    _P = np.array(m['p']).reshape(-1, 3); _si = np.array(R['skinIndex']).reshape(-1, 4); _sw = np.array(R['skinWeight']).reshape(-1, 4)
+    _key = np.unique(np.round(_P, 6), axis=0, return_inverse=True)[1].ravel()
+    for bi, b in enumerate(R['bones']):
+        if not b['name'].endswith('_base'): continue
+        piv = np.array(b['pos']); kk = 3 if b['name'].startswith('pectoral') else 4
+        w = sum(np.where(np.isin(_si[:, j], [bi, bi + 1]), _sw[:, j], 0) for j in range(4))
+        wk = np.zeros(_key.max() + 1); np.maximum.at(wk, _key, w)
+        cen = _P[I].mean(1)
+        still = (wk[_key[I]].max(1) < 0.05) & (np.linalg.norm(cen - piv, axis=1) < 1.3 * b['len']) & (np.sign(cen[:, 2]) == np.sign(piv[2]))
+        T = np.nonzero(still)[0]; par = {}
+        def fd(x):
+            par.setdefault(x, x)
+            while par[x] != x: par[x] = par[par[x]]; x = par[x]
+            return x
+        for ti in T:
+            a_, b_, c_ = _key[I[ti]]; r_ = fd(a_); par[fd(b_)] = r_; par[fd(c_)] = r_
+        comps = {}
+        for ti in T: comps.setdefault(fd(_key[I[ti, 0]]), []).append(ti)
+        for tris in comps.values():
+            if len(tris) > 30: continue                               # the body itself
+            vs = np.unique(I[tris].ravel())
+            src = np.nonzero(w > 0.5)[0]
+            gap = min(np.linalg.norm(_P[src] - _P[v], axis=1).min() for v in vs)
+            if gap > 0.0025: continue                                  # not next to the fin
+            for v in vs:
+                n_ = src[np.argmin(np.linalg.norm(_P[src] - _P[v], axis=1))]
+                _si[v] = _si[n_]; _sw[v] = _sw[n_]; fin[v] = 1.0; kind[v] = kk
+            print('adopted scrap', b['name'], len(tris), 'triangles')
+    R['skinIndex'] = _si.ravel().tolist(); R['skinWeight'] = _sw.ravel().tolist()
     # Tripo fused the paired fins to the body along their rear edge. Those joining triangles would stretch like threads
     # when the fin moves, but some of them are real membrane, so they are kept: their body-side corners away from the
     # fin root are duplicated, and the copies move with the fin (the body keeps the originals, so its surface stays whole).

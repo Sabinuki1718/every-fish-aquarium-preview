@@ -882,36 +882,27 @@
     // breathing; while pecking the mouth works fast (sucking up grit)
     F.breathPh = (F.breathPh ?? F.path.ph) + dt * (4.2 + 10 * pose.pump);
     F.u.uBreath.value = pose.gulp !== undefined ? 2.6 * pose.gulp : Math.sin(F.breathPh) * (1 + 0.6 * pose.pump);
-    // ---- pectoral fins (bones), after the user's reference video of a goldfish:
-    // hovering: both hang down below the gills and row fore and aft like oars, left and right alternately; each stroke is
-    // a quick forward flick with the rays fanned, then a slower sweep back, closing at the end (~0.8 s per cycle).
-    // cruising: folded back along the belly; braking: both swing forward and spread; turning: the inner fin goes forward.
-    F.pecPh = (F.pecPh ?? Math.random()) + dt / (0.8 + 0.35 * (1 - hover));
+    // ---- pectoral fins (bones), re-measured from the user's reference video (8 fps, 3 s):
+    // the fin rests folded back along the belly; in bursts of a few strokes it drops quickly down-and-back to ~50 deg and
+    // eases back (one stroke ~0.7 s), never swinging forward; left and right alternate. Between bursts it rests, barely moving.
+    F.pecPh = (F.pecPh ?? Math.random()) + dt / 0.72;
+    F.burstPh = (F.burstPh ?? Math.random() * 6) + dt;
     const inner = Math.sign(F.turn), turnAmt = Math.min(Math.abs(F.turn) / 0.5, 1);
+    const burst = THREE.MathUtils.smoothstep(Math.sin(F.burstPh * 0.75), -0.2, 0.35);      // ~4 s on, ~4 s off
+    const drive = Math.min(1, hover * (0.35 + 0.65 * burst) + 0.8 * F.brake);
     for (const B of F.finBones) {
       if (B.pec) {
-        const u = ((F.pecPh + (B.side > 0 ? 0 : 0.5)) % 1 + 1) % 1;                         // stroke phase 0..1, sides alternate
-        const fwd = u < 0.3 ? ease(u / 0.3) : 1 - ease((u - 0.3) / 0.7);                 // 1 = fully forward
-        const fanned = u < 0.3 ? 0.6 + 0.4 * ease(u / 0.3) : u < 0.75 ? 1 : 1 - (u - 0.75) / 0.25;
-        const strokeAmp = hover + 0.25 * (1 - hover);                                      // small strokes now and then when cruising
-        const cruiseFold = (1 - hover) * (1 - F.brake);
-        let back = 0.8 * strokeAmp * (1 - 2 * fwd) - 0.7 * F.brake;
-        let open = 0.2 * hover + 0.05 * Math.sin(u * 6.283) + 0.55 * F.brake;
-        let spread = 0.78 + 0.32 * fanned * strokeAmp + 0.3 * F.brake;
-        if (B.side === inner) { back -= 0.6 * turnAmt; open += 0.35 * turnAmt; spread += 0.2 * turnAmt; }
-        else { back += 0.25 * turnAmt; open -= 0.15 * turnAmt; }
-        // fish-space axes: hang the fin from its pressed-back rest pose down below the gill, then row it fore and aft
-        // about the body's side axis (z) and lift it away from the body about the long axis (x)
-        const hang = 0.92 * hover + 0.3 * (1 - hover) * (1 - cruiseFold) + 0.35 * F.brake;
-        B.hangQ ??= new THREE.Quaternion().setFromUnitVectors(B.out, new THREE.Vector3(0.22, -1, 0.42 * B.side).normalize());
-        _q1.identity().slerp(B.hangQ, Math.min(hang, 1));
-        _q2.setFromAxisAngle(_zAxis, -back * 0.9);                       // + back -> fin sweeps toward the tail
-        _q3.setFromAxisAngle(_xAxis, -open * 0.9 * B.side);                // + open -> away from the body
-        B.base.quaternion.copy(_q2).multiply(_q3).multiply(_q1);
-        B.base.quaternion.multiply(_q1.setFromAxisAngle(B.out, 0.4 * strokeAmp * Math.sin(u * Math.PI * 2) * B.side));   // feathering
-        B.base.quaternion.multiply(B.base.userData.q0);
-        B.base.scale.set(spread, 1, 1);                                                    // rays fan out / close across the fin width
-        B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * (0.3 * strokeAmp * (fwd - 0.5) * -1 + 0.2 * cruiseFold));   // tip trails the stroke
+        const u = ((F.pecPh + (B.side > 0 ? 0 : 0.5)) % 1 + 1) % 1;
+        const stroke = u < 0.28 ? ease(u / 0.28) : 1 - ease((u - 0.28) / 0.72);           // quick drop, slow return
+        const flutter = 0.06 * Math.sin(F.pecPh * 6.283 * 1.7 + B.side);                   // resting fins still tremble
+        let s = 0.12 + drive * 0.75 * stroke + (1 - drive) * flutter;
+        if (B.side === inner) s += 0.35 * turnAmt;                                         // inside fin spreads in a turn
+        s = THREE.MathUtils.clamp(s, 0, 1);
+        B.hangQ ??= new THREE.Quaternion().setFromUnitVectors(B.out, new THREE.Vector3(0.55, -1, 0.32 * B.side).normalize());
+        _q1.identity().slerp(B.hangQ, s);
+        B.base.quaternion.copy(_q1).multiply(_q2.setFromAxisAngle(B.out, 0.15 * drive * Math.sin(u * 6.283) * B.side)).multiply(B.base.userData.q0);
+        B.base.scale.set(0.9 + 0.2 * s, 1, 1);                                             // rays spread as the fin drops
+        B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * 0.18 * drive * (u < 0.28 ? 1 : -0.5) * Math.sin(u * Math.PI));
       } else {                // pelvic: held pointing down, only a small trim
         const p = F.u.uFinPhase.value * 0.55 + (B.side > 0 ? 0 : 0.6) + 1.1;
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));

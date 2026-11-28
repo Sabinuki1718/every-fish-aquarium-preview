@@ -88,5 +88,9 @@ for cpt in np.unique(comp[f]):
     if kb in (3, 4) and len(m) < 500 and abs(P[m, 2].mean()) > 0.004:
         print('paired fin piece', kb, len(m), 'reassigned from', np.bincount(kind[m], minlength=6))
         kind[m] = kb
-np.savez(sys.argv[2], fin=fin, root=rd, kind=kind, th=th)
+for cpt in np.unique(comp[f]):                    # tiny stray pieces (e.g. a patch on the gill cover) are body, not fin
+    m = np.nonzero((comp == cpt) & f)[0]
+    if len(m) < 14 and kind[m[0]] in (3, 4):
+        print('stray piece -> body', len(m), P[m].mean(0).round(3)); fin[m] = 0; kind[m] = 0
+np.savez(sys.argv[2], fin=fin, root=rd, kind=kind, th=th, ed=ed)
 print('fin verts', f.sum(), 'of', len(P), 'kinds', np.bincount(kind, minlength=6), 'bbox', P.min(0).round(3), P.max(0).round(3))

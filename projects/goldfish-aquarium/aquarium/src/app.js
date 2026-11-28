@@ -661,6 +661,16 @@
     // skeleton: root bone + base/tip bone per pectoral and pelvic fin (built from the fin attachments)
     const bones = fishGeo.bones.map(b => { const bone = new THREE.Bone(); bone.name = b.name; bone.position.fromArray(b.pos); return bone; });
     fishGeo.bones.forEach((b, k) => { if (b.parent >= 0) bones[b.parent].add(bones[k]); });
+    // each fin base bone gets its own frame (x = width along the attachment, y = out along the fin, z = fin normal), so
+    // scaling x fans the rays and the tip bone bends about the fin normal
+    fishGeo.bones.forEach((b, k) => {
+      if (!b.name.endsWith('_base')) return;
+      const h = new THREE.Vector3().fromArray(b.axis), o = new THREE.Vector3().fromArray(b.out), n = new THREE.Vector3().crossVectors(h, o).normalize();
+      const q0 = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(h, o, n));
+      bones[k].quaternion.copy(q0); bones[k].userData.q0 = q0;
+      const tipK = fishGeo.bones.findIndex(x => x.name === b.name.replace('_base', '_tip'));
+      bones[tipK].position.applyQuaternion(q0.clone().invert());
+    });
     const rig = new THREE.Group(); rig.add(bones[0], body, finDepth, fin); rig.updateMatrixWorld(true);
     const skeleton = new THREE.Skeleton(bones);
     for (const m of [body, finDepth, fin]) m.bind(skeleton);
@@ -685,7 +695,7 @@
     fishes.push({ id: f.id, root, u, finBones, scale: f.length_cm / 12, mode: 'cruise', nextForage: 14 + i * 11 + Math.random() * 10, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
   }
   const _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
-  const _v = new THREE.Vector3(), _e = new THREE.Euler(0, 0, 0, 'YZX');
+  const _v = new THREE.Vector3(), _e = new THREE.Euler(0, 0, 0, 'YZX'), _zAxis = new THREE.Vector3(0, 0, 1), _xAxis = new THREE.Vector3(1, 0, 0);
   const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
   const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
 
@@ -885,22 +895,28 @@
         const fanned = u < 0.3 ? 0.6 + 0.4 * ease(u / 0.3) : u < 0.75 ? 1 : 1 - (u - 0.75) / 0.25;
         const strokeAmp = hover + 0.25 * (1 - hover);                                      // small strokes now and then when cruising
         const cruiseFold = (1 - hover) * (1 - F.brake);
-        let back = 0.85 * strokeAmp * (0.75 - 2 * fwd) + 0.85 * cruiseFold - 0.7 * F.brake;
-        let open = 0.1 * hover - 0.28 * cruiseFold + 0.55 * F.brake;
+        let back = 0.8 * strokeAmp * (1 - 2 * fwd) - 0.7 * F.brake;
+        let open = 0.2 * hover + 0.05 * Math.sin(u * 6.283) + 0.55 * F.brake;
         let spread = 0.78 + 0.32 * fanned * strokeAmp + 0.3 * F.brake;
         if (B.side === inner) { back -= 0.6 * turnAmt; open += 0.35 * turnAmt; spread += 0.2 * turnAmt; }
         else { back += 0.25 * turnAmt; open -= 0.15 * turnAmt; }
-        const hang = (0.95 * hover + 0.35 * (1 - hover)) * B.downAngle;                    // hang below the gill
-        _q1.setFromAxisAngle(B.hinge, hang); _q2.setFromAxisAngle(B.sweep, back * B.sBack); _q3.setFromAxisAngle(B.hinge, open * B.sOpen);
-        B.base.quaternion.copy(_q1).multiply(_q2).multiply(_q3);
-        B.base.quaternion.multiply(_q1.setFromAxisAngle(B.out, B.sBack * 0.45 * strokeAmp * Math.sin(u * Math.PI * 2)));   // feathering
-        B.base.scale.set(spread, 1, 1);                                                    // rays fan out / close (fin width ~ fish x)
-        B.tip.quaternion.setFromAxisAngle(B.sweep, B.sBack * (0.3 * strokeAmp * (fwd - 0.5) * -1 + 0.2 * cruiseFold));   // tip trails the stroke
+        // fish-space axes: hang the fin from its pressed-back rest pose down below the gill, then row it fore and aft
+        // about the body's side axis (z) and lift it away from the body about the long axis (x)
+        const hang = 0.92 * hover + 0.3 * (1 - hover) * (1 - cruiseFold) + 0.35 * F.brake;
+        B.hangQ ??= new THREE.Quaternion().setFromUnitVectors(B.out, new THREE.Vector3(0.22, -1, 0.42 * B.side).normalize());
+        _q1.identity().slerp(B.hangQ, Math.min(hang, 1));
+        _q2.setFromAxisAngle(_zAxis, -back * 0.9);                       // + back -> fin sweeps toward the tail
+        _q3.setFromAxisAngle(_xAxis, -open * 0.9 * B.side);                // + open -> away from the body
+        B.base.quaternion.copy(_q2).multiply(_q3).multiply(_q1);
+        B.base.quaternion.multiply(_q1.setFromAxisAngle(B.out, 0.4 * strokeAmp * Math.sin(u * Math.PI * 2) * B.side));   // feathering
+        B.base.quaternion.multiply(B.base.userData.q0);
+        B.base.scale.set(spread, 1, 1);                                                    // rays fan out / close across the fin width
+        B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * (0.3 * strokeAmp * (fwd - 0.5) * -1 + 0.2 * cruiseFold));   // tip trails the stroke
       } else {                // pelvic: held pointing down, only a small trim
         const p = F.u.uFinPhase.value * 0.55 + (B.side > 0 ? 0 : 0.6) + 1.1;
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));
-        B.base.quaternion.copy(B.rest).multiply(_q1).multiply(_q2);
-        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.05 * Math.sin(p - 0.7));
+        B.base.quaternion.copy(B.rest).multiply(_q1).multiply(_q2).multiply(B.base.userData.q0);
+        B.tip.quaternion.setFromAxisAngle(_zAxis, 0.05 * Math.sin(p - 0.7));
       }
     }
   }

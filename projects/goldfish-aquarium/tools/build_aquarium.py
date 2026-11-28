@@ -44,9 +44,9 @@ def main():
     # fin attributes
     with tempfile.TemporaryDirectory() as td:
         (Path(td) / 'g.json').write_text(json.dumps(geo)); subprocess.run([sys.executable, '-I', str(ROOT / 'tools/fin_mask.py'), str(Path(td) / 'g.json'), str(Path(td) / 'f.npz')], check=True)
-        fm = np.load(Path(td) / 'f.npz'); fin, root, kind = fm['fin'], fm['root'], fm['kind']
+        fm = np.load(Path(td) / 'f.npz'); fin, root, kind, ed = fm['fin'], fm['root'], fm['kind'], fm['ed']
     sys.path.insert(0, str(ROOT / 'tools')); from fin_rig import rig
-    R = rig(np.array(geo['meshes'][0]['p']).reshape(-1, 3), fin, root, kind)
+    R = rig(np.array(geo['meshes'][0]['p']).reshape(-1, 3), fin, root, kind, ed)
     for b in R['bones'][1:]: print('bone', b['name'], np.round(b['pos'], 4), 'axis', np.round(b['axis'], 2), 'len', round(b.get('len', 0), 4))
     m = geo['meshes'][0]; I = np.array(m['i']).reshape(-1, 3)
     tf = (fin[I].max(1) >= 0.25) | (np.isin(I, np.nonzero((kind == 3) | (kind == 4))[0]).any(1))   # any triangle touching a fin is drawn as fin (two-sided)

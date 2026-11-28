@@ -548,11 +548,11 @@
 
   // ---------- fish ----------
   const INFO = {
-    'fish-azumanishiki': ['白黒東錦（しろくろあずまにしき）', 'Carassius auratus',
+    'fish-azumanishiki': ['白黒東錦（しろくろあずまにしき）', 'Carassius auratus var.',
       '東錦（オランダ獅子頭体形のキャリコ柄）のうち、赤が抜けたタイプ。\n赤が入らないことにより、背の浅葱色がより強調される。\nこの色彩は「水墨」とも呼ばれることがある。流通は少ない。'],
-    'fish-seibun': ['青文魚（せいぶんぎょ）', 'Carassius auratus',
+    'fish-seibun': ['青文魚（せいぶんぎょ）', 'Carassius auratus var.',
       '全身青灰色に染まる、オランダ獅子頭体形の一品種。\n青みがかった体色と、上から見ると「文」の字に見えることが名の由来。\n昭和30年代に中国から輸入されたものがルーツ。'],
-    'fish-kigashira': ['天青（てんせい）', 'Carassius auratus',
+    'fish-kigashira': ['天青（てんせい）', 'Carassius auratus var.',
       '背の浅葱色に着目して改良された、比較的新しい東錦の派生品種。\n上見で文字通り、晴天の如き青く染まる背中が特徴。\n流通の少ない、珍しい品種。'],
   };
 

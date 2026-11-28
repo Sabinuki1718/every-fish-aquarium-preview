@@ -182,13 +182,15 @@
       "oranda-yellowhood-blue": 1
     },
     "counts_quote": "各1匹",
-    "version": 3,
+    "version": 4,
     "files": [
-      "layout/v3/layout.json",
-      "layout/v3/layout-v3-sheet.png"
+      "layout/v4/layout.json",
+      "layout/v4/layout-v4-sheet.png"
     ],
     "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
-    "assumptions": "水槽寸法・背景・底床の指定なし→既定案"
+    "assumptions": "水槽寸法・背景・底床の指定なし→既定案",
+    "stone_route": "まずプログラム生成、仕上がりを見てTripoを検討",
+    "stone_route_quote": "一旦プログラムで作り、仕上がり見てtripoを検討"
   },
   "aquarium": {
     "status": "not_started"
@@ -270,6 +272,12 @@
       "event": "changes_requested",
       "stage": "layout",
       "quote": "カボンバ 今1群植えてありますが、高さが低いものを石の近くにも植えて、3群とします"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "changes_requested",
+      "stage": "layout",
+      "quote": "大磯に戻します"
     }
   ],
   "shared_model": {

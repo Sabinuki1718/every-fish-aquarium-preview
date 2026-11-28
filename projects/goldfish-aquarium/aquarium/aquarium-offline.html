@@ -4492,10 +4492,26 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
         const droop = age > 0.7 ? (rnd() * 0.25) * (age - 0.7) / 0.3 : 0;
         const twist = rnd() * 2, segs = STD ? 36 : 24;
         c.setHSL(0.24 + rnd() * 0.05, 0.55 + rnd() * 0.15, 0.2 + 0.08 * (1 - age) + rnd() * 0.05);
-        const dx = Math.cos(dirA), dz = Math.sin(dirA), base = pos.length / 3;
+        let dx = Math.cos(dirA), dz = Math.sin(dirA);
+        if (o.wall) {                                    // near the glass: lean back into the tank, not through it
+          const wx = o.wall[0], wz = o.wall[1];          // unit vector pointing at the nearest walls (0 if far)
+          const into = dx * wx + dz * wz;
+          if (into > 0) { dx -= 1.6 * into * wx; dz -= 1.6 * into * wz; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l; }
+        }
+        let leanK = o.wall && (o.wall[0] || o.wall[1]) ? 0.55 : 1;   // by the glass the leaves stand more upright
+        for (const st of o.stones || []) {               // and they never grow into a stone of the approved layout
+          for (const tt of [0.25, 0.5, 0.8, 1]) {
+            const ox = px + dx * lean * leanK * h * Math.pow(tt, 1.6), oz = pz + dz * lean * leanK * h * Math.pow(tt, 1.6);
+            const wx2 = o.at[0] + ox - st[0], wz2 = o.at[1] + oz - st[1];
+            if (Math.hypot(wx2, wz2) < st[2] + 0.008 && tt * h < st[3] + 0.01) {
+              const l = Math.hypot(wx2, wz2) || 1; dx = wx2 / l; dz = wz2 / l; leanK *= 0.4; break;
+            }
+          }
+        }
+        const base = pos.length / 3;
         for (let si = 0; si <= segs; si++) {
           const t = si / segs, y = t * h - 0.006;
-          const out = lean * h * Math.pow(t, 1.6) + droop * h * Math.pow(t, 3);
+          const out = lean * leanK * h * Math.pow(t, 1.6) + droop * h * Math.pow(t, 3);
           const yy = y - droop * h * 0.6 * Math.pow(t, 3);
           const tipW = t < 0.94 ? 1 : Math.sqrt(Math.max(0, (1 - t) / 0.06)) * 0.85 + 0.15;
           const ww = w * tipW * (t < 0.06 ? 0.55 + 7.5 * t : 1) * (si % 2 && t > 0.85 ? 1.06 : 1);
@@ -4576,13 +4592,17 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
   function makePlant(o) {
     const isVal = o.species.startsWith('バリス');
     // leaves stop 1 cm under the water surface wherever the clump stands (the bed is higher at the back)
-    const geo = isVal ? vallisneria({ ...o, maxH: WL - ground(o.pos[0] * cm, o.pos[2] * cm) - 0.012 }) : cabomba(o);
+    const px = o.pos[0] * cm, pz = o.pos[2] * cm, near = 0.09;
+    const wall = [px < -W / 2 + near ? -1 : px > W / 2 - near ? 1 : 0, pz < -D / 2 + near ? -1 : pz > D / 2 - near ? 1 : 0];
+    const stones = L.objects.filter(s2 => s2.kind === 'stone').map(s2 => [s2.pos[0] * cm, s2.pos[2] * cm, Math.max(s2.size[0], s2.size[2]) * cm * 0.55, s2.size[1] * cm]);
+    const geo = isVal ? vallisneria({ ...o, maxH: WL - ground(px, pz) - 0.012, wall, stones, at: [px, pz] }) : cabomba(o);
     geo.computeBoundingBox();
     const bb = geo.boundingBox, reach = Math.max(-bb.min.x, bb.max.x, -bb.min.z, bb.max.z);   // real horizontal spread
+    const ext = [-bb.min.x, bb.max.x, -bb.min.z, bb.max.z];                                  // spread toward -x, +x, -z, +z
     const mat = isVal ? (makePlant.val ??= plantMaterial('val', true)) : (makePlant.cab ??= plantMaterial('cab', false));
     const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = STD; mesh.frustumCulled = false;
     const root = new THREE.Group(); root.add(mesh); root.userData.id = o.id; scene.add(root);
-    editables.set(o.id, { root, mesh, kind: 'plant', radius: reach, label: (isVal ? 'バリスネリア' : 'カボンバ') + '（' + (o.role || o.id.replace('plant-', '')) + '）', sink: 0 });
+    editables.set(o.id, { root, mesh, kind: 'plant', radius: reach, ext, label: (isVal ? 'バリスネリア' : 'カボンバ') + '（' + (o.role || o.id.replace('plant-', '')) + '）', sink: 0 });
   }
 
   // ---------- layout state (approved layout -> aquarium-state) ----------
@@ -4594,8 +4614,11 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
   const SAVE_KEY = 'karesansui-goldfish:aquarium:' + REVISION;
   const state = LIB.createAquariumState(approved, { palette: ['blue', 'black'], revision: REVISION });
   function clampPos(id, x, z) {
-    const e = editables.get(id), r = e.radius + 0.004;
-    return [Math.min(W / 2 - r, Math.max(-W / 2 + r, x)), Math.min(D / 2 - r, Math.max(-D / 2 + r, z))];
+    const e = editables.get(id), m = 0.004;
+    const rot = state.snapshot().objects.find(o => o.id === id)?.rotation[1] || 0;
+    // plants keep inside the glass by their spread in each direction (when not turned); others by their radius
+    const [ax, bx, az, bz] = e.ext && Math.abs(Math.sin(rot)) < 1e-3 && Math.cos(rot) > 0 ? e.ext : [e.radius, e.radius, e.radius, e.radius];
+    return [Math.min(W / 2 - bx - m, Math.max(-W / 2 + ax + m, x)), Math.min(D / 2 - bz - m, Math.max(-D / 2 + az + m, z))];
   }
   function applyState() {
     for (const o of state.snapshot().objects) {

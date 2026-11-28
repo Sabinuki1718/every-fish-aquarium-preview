@@ -70,12 +70,12 @@
           "approved_at": "2026-11-28",
           "approval_quote": "ok",
           "technical_revision": {
-            "version": 3,
-            "file": "species/carassius-auratus-azumanishiki/model/v3/fish.glb",
-            "sha256": "88496f680c3818ee75ae60281899473c95ba6a44467d11706f0afedc01af1d7a",
-            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
-            "status": "waiting_approval",
-            "note": "水槽はこの版で表示。承認済みはv2"
+            "version": 4,
+            "file": "species/carassius-auratus-azumanishiki/model/v4/fish.glb",
+            "sha256": "0e8ce910e548bd4c0ffbcf59d21f18a31e28cce96670af832ade8e6e56e36b5f",
+            "change": "体側下部（えら後方〜腹鰭手前）に描き込まれていた胸鰭を、ユーザー提供の胸鰭なし側面画像（species/source-nofin/）で塗り直し（tools/patch_flank.py、輪郭合わせ・色合わせ・境界ぼかし）",
+            "request_quote": "3匹とも、本体に胸鰭が描き込まれていることに気づきました これを修正したい",
+            "status": "waiting_approval"
           }
         }
       }
@@ -130,11 +130,11 @@
           "approved_at": "2026-11-28",
           "approval_quote": "ok",
           "technical_revision": {
-            "version": 4,
-            "file": "species/carassius-auratus-seibun/model/v4/fish.glb",
-            "sha256": "6fecf3250e73e00cba436c688aa668b41f5e040d3f5d41cb6ef871bfe7f127c4",
-            "change": "写真の眼を消し、モデルの眼の位置（Tripo元テクスチャと同じ位置）へ移して貼付",
-            "request_quote": "青文の顔　よく見ると、モデルとテクスチャの目の位置がずれていることに気づきました",
+            "version": 5,
+            "file": "species/carassius-auratus-seibun/model/v5/fish.glb",
+            "sha256": "33b924d1fe04a0dc341a5858918f34a6e99b3aa76425b439ca7810b7aea60b06",
+            "change": "体側下部（えら後方〜腹鰭手前）に描き込まれていた胸鰭を、ユーザー提供の胸鰭なし側面画像（species/source-nofin/）で塗り直し（tools/patch_flank.py、輪郭合わせ・色合わせ・境界ぼかし）",
+            "request_quote": "3匹とも、本体に胸鰭が描き込まれていることに気づきました これを修正したい",
             "status": "waiting_approval"
           }
         }
@@ -187,12 +187,12 @@
           "approved_at": "2026-11-28",
           "approval_quote": "ok",
           "technical_revision": {
-            "version": 3,
-            "file": "species/carassius-auratus-oranda-yellowhood-blue/model/v3/fish.glb",
-            "sha256": "a530ff03daf53e1bece214a19ae7c00a2d61d340b57d891e2fb2ebdc72dcc88c",
-            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
-            "status": "waiting_approval",
-            "note": "水槽はこの版で表示。承認済みはv2"
+            "version": 4,
+            "file": "species/carassius-auratus-oranda-yellowhood-blue/model/v4/fish.glb",
+            "sha256": "7d6c8501c62082863dbf32679cf9b4a2e31349eb28dbed4e47764f983f64a425",
+            "change": "体側下部（えら後方〜腹鰭手前）に描き込まれていた胸鰭を、ユーザー提供の胸鰭なし側面画像（species/source-nofin/）で塗り直し（tools/patch_flank.py、輪郭合わせ・色合わせ・境界ぼかし）",
+            "request_quote": "3匹とも、本体に胸鰭が描き込まれていることに気づきました これを修正したい",
+            "status": "waiting_approval"
           }
         }
       }
@@ -541,6 +541,12 @@
       "event": "aquarium_updated",
       "quote": "水槽外の背景を、黒からベージュへ変更",
       "note": "部屋の色（描画のクリア色・ページ背景）をベージュに、操作欄の文字色も明るい背景向けに"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "texture_fix",
+      "quote": "3匹とも、本体に胸鰭が描き込まれていることに気づきました",
+      "note": "胸鰭なし画像（青文魚1枚は左右反転で両側、白黒東錦・天青は左右各1枚）で体側を塗り直し"
     }
   ],
   "shared_model": {

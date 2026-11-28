@@ -535,6 +535,12 @@
       "event": "aquarium_updated",
       "quote": "①バックスクリーンこれを反映させてください ②タイトルを変更　青色金魚の水景",
       "note": "背景をユーザー生成の青い雲龍和紙（textures/source/background-unryu-generated.jpg）に、タイトルを『青色金魚の水景』に"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "水槽外の背景を、黒からベージュへ変更",
+      "note": "部屋の色（描画のクリア色・ページ背景）をベージュに、操作欄の文字色も明るい背景向けに"
     }
   ],
   "shared_model": {

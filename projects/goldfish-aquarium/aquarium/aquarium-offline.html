@@ -9,10 +9,10 @@
 /* Layout: the tank fills a dark room; title top-left, controls float along the bottom edge,
    the fish card opens top-right (bottom on phones), and the layout editor opens as a sheet above the controls. */
 :root{
-  --room:#1a2128; --room-2:#2a3540; --ink:#e8ebe8; --ink-soft:#a9b3ba; --accent:#d9a441; --line:#3a444d; --sheet:#171d23;
+  --room:#e6dccb; --room-2:#f2ebdf; --ink:#2c2924; --ink-soft:#6a6256; --accent:#9a6a22; --line:#cbbfa9; --sheet:#f8f4ec;
   --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
   --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
-  color-scheme:dark;
+  color-scheme:light;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -4134,7 +4134,7 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
   canvas.addEventListener('webglcontextlost', e => {
     e.preventDefault(); say('画面の描画が中断されました（メモリー不足など）。再読み込みしてください。軽量表示にすると安定することがあります。', true);
   });
-  const ROOM = 0x1b2229, WATER = 0x2f6070;
+  const ROOM = 0xe6dccb, WATER = 0x2f6070;
   renderer.setClearColor(ROOM, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18;

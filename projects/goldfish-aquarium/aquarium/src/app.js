@@ -43,7 +43,7 @@
   canvas.addEventListener('webglcontextlost', e => {
     e.preventDefault(); say('画面の描画が中断されました（メモリー不足など）。再読み込みしてください。軽量表示にすると安定することがあります。', true);
   });
-  const ROOM = 0x1b2229, WATER = 0x2f6070;
+  const ROOM = 0xe6dccb, WATER = 0x2f6070;
   renderer.setClearColor(ROOM, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18;

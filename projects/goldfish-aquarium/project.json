@@ -182,10 +182,10 @@
       "oranda-yellowhood-blue": 1
     },
     "counts_quote": "各1匹",
-    "version": 2,
+    "version": 3,
     "files": [
-      "layout/v2/layout.json",
-      "layout/v2/layout-v2-sheet.png"
+      "layout/v3/layout.json",
+      "layout/v3/layout-v3-sheet.png"
     ],
     "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
     "assumptions": "水槽寸法・背景・底床の指定なし→既定案"
@@ -264,6 +264,12 @@
       "event": "changes_requested",
       "stage": "layout",
       "quote": "石の配置は枯山水ぽくしてください 流木はいれない 水草はバリスネリアとカボンバを入れます これらも必要ならtripoで作れます"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "changes_requested",
+      "stage": "layout",
+      "quote": "カボンバ 今1群植えてありますが、高さが低いものを石の近くにも植えて、3群とします"
     }
   ],
   "shared_model": {

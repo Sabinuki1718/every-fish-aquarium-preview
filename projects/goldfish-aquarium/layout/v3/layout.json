@@ -1,0 +1,269 @@
+{
+ "version": 3,
+ "units": "cm; tank center at origin, floor y=0, front glass +z, left -x",
+ "tank": {
+  "w": 60,
+  "d": 30,
+  "h": 36,
+  "water": 33,
+  "background": "deep blue-grey back screen (gradient, darker at bottom)",
+  "substrate": "明るい灰色の細かい砂利（枯山水の白砂に見立てる）＋石組みの周りに同心円、その他に平行線の砂紋。手前3cm→奥6cm",
+  "light": "white LED top light with soft caustics"
+ },
+ "style": "枯山水風の石組み：左寄りに三尊石組（立石の主石＋脇石2）、右奥に二石組、散石2。計7石。前景は砂紋の『海』として空ける",
+ "fish": [
+  {
+   "id": "fish-azumanishiki",
+   "model": "species/carassius-auratus-azumanishiki/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    -6,
+    19,
+    4
+   ],
+   "heading_deg": 20
+  },
+  {
+   "id": "fish-seibun",
+   "model": "species/carassius-auratus-seibun/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    12,
+    13,
+    6
+   ],
+   "heading_deg": 195
+  },
+  {
+   "id": "fish-kigashira",
+   "model": "species/carassius-auratus-oranda-yellowhood-blue/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    4,
+    25,
+    -3
+   ],
+   "heading_deg": -15
+  }
+ ],
+ "objects": [
+  {
+   "id": "stone-1",
+   "kind": "stone",
+   "role": "三尊石組・主石（立石）",
+   "pos": [
+    -12,
+    0,
+    -6
+   ],
+   "size": [
+    9,
+    18,
+    8
+   ],
+   "tilt": [
+    0,
+    25,
+    6
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-2",
+   "kind": "stone",
+   "role": "三尊石組・左脇石",
+   "pos": [
+    -19,
+    0,
+    -4
+   ],
+   "size": [
+    8,
+    10,
+    7
+   ],
+   "tilt": [
+    0,
+    -30,
+    -10
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-3",
+   "kind": "stone",
+   "role": "三尊石組・右脇石",
+   "pos": [
+    -5,
+    0,
+    -2.5
+   ],
+   "size": [
+    6,
+    6,
+    6
+   ],
+   "tilt": [
+    0,
+    60,
+    8
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-4",
+   "kind": "stone",
+   "role": "二石組・主",
+   "pos": [
+    16,
+    0,
+    -8
+   ],
+   "size": [
+    8,
+    11,
+    7
+   ],
+   "tilt": [
+    0,
+    -20,
+    -7
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-5",
+   "kind": "stone",
+   "role": "二石組・従",
+   "pos": [
+    21.5,
+    0,
+    -5
+   ],
+   "size": [
+    5,
+    4.5,
+    5
+   ],
+   "tilt": [
+    0,
+    40,
+    0
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-6",
+   "kind": "stone",
+   "role": "散石（平石）",
+   "pos": [
+    4,
+    0,
+    3
+   ],
+   "size": [
+    4.5,
+    2,
+    4
+   ],
+   "tilt": [
+    0,
+    15,
+    0
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-7",
+   "kind": "stone",
+   "role": "散石",
+   "pos": [
+    -24,
+    0,
+    7
+   ],
+   "size": [
+    3.5,
+    2.5,
+    3
+   ],
+   "tilt": [
+    0,
+    70,
+    0
+   ],
+   "color": "blue-grey"
+  },
+  {
+   "id": "plant-vallisneria-L",
+   "kind": "plant",
+   "species": "バリスネリア",
+   "pos": [
+    -25,
+    0,
+    -11
+   ],
+   "count": 18,
+   "height": 28
+  },
+  {
+   "id": "plant-vallisneria-R",
+   "kind": "plant",
+   "species": "バリスネリア",
+   "pos": [
+    26,
+    0,
+    -11
+   ],
+   "count": 14,
+   "height": 27
+  },
+  {
+   "id": "plant-cabomba-1",
+   "kind": "plant",
+   "species": "カボンバ",
+   "role": "中央奥の高い群",
+   "pos": [
+    5,
+    0,
+    -11
+   ],
+   "count": 11,
+   "height": 24
+  },
+  {
+   "id": "plant-cabomba-2",
+   "kind": "plant",
+   "species": "カボンバ",
+   "role": "三尊石組の右後ろの低い群",
+   "pos": [
+    -4,
+    0,
+    -8
+   ],
+   "count": 5,
+   "height": 12
+  },
+  {
+   "id": "plant-cabomba-3",
+   "kind": "plant",
+   "species": "カボンバ",
+   "role": "二石組の左後ろの低い群",
+   "pos": [
+    11,
+    0,
+    -9.5
+   ],
+   "count": 4,
+   "height": 10
+  }
+ ],
+ "notes": [
+  "流木なし（ユーザー指定）",
+  "水草はバリスネリアとカボンバ（ユーザー指定）。カボンバは金魚が食べることがある",
+  "カボンバは高さ違いで3群（ユーザー指定）"
+ ],
+ "assumptions": [
+  "底床を大磯砂から明るい灰色の砂利＋砂紋に変更（枯山水に合わせた提案。大磯砂に戻すことも可）"
+ ]
+}

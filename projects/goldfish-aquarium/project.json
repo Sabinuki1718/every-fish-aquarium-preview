@@ -245,7 +245,22 @@
       "back_screen": "片面（裏からは非表示）"
     },
     "checks": "Chromium(SwiftShader)でPC幅・スマホ幅(390px, 軽量)・観察・配置変更・色変更・裏から・下からを確認、コンソールエラーなし。実機スマホ・公開ページのCDN読込みは未確認",
-    "stones": "Tripoで作り直す予定（複数形状を1回で生成し切り出す）",
+    "stones": {
+      "route": "Tripo（ユーザー生成、4形状を1回で生成）",
+      "source": "stones/source/rock_set.glb",
+      "source_sha256": "c98f775527bbf0533aab8ef59f6bf33ad9ddfea17e15cfd311a75083423a2b52",
+      "processing": "tools/make_stones.py: 連結部品で4形状に分割、頂点クラスタリングで36万→約3万面、テクスチャ2048",
+      "assignment": {
+        "stone-1": "tall",
+        "stone-2": "crouch",
+        "stone-3": "mound",
+        "stone-4": "crouch",
+        "stone-5": "mound",
+        "stone-6": "slab",
+        "stone-7": "slab"
+      },
+      "note": "承認済み配置の位置・大きさ・向きを維持（形状比を保つため一様拡大）"
+    },
     "substrate": "写真ベースの大磯砂（aquarium/textures/source の生成画像）"
   },
   "history": [
@@ -404,6 +419,11 @@
       "at": "2026-11-28",
       "event": "stones_pending",
       "note": "ドライブ『金魚岩』フォルダ: テクスチャ類は10MB未満だが FBX が62MBで連携上限(10MB)超え"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "stones_replaced",
+      "quote": "軽くしました"
     }
   ],
   "shared_model": {

@@ -27,7 +27,8 @@ def lib_js():
 def main():
     L = json.load(open(ROOT / 'layout' / f"v{json.load(open(ROOT / 'project.json'))['layout']['version']}" / 'layout.json'))
     md = AQ / 'models'; md.mkdir(parents=True, exist_ok=True)
-    for old in md.glob('*'): old.unlink()
+    for old in md.glob('*'):
+        if old.name != 'stones.json': old.unlink()
     models, geo = {}, None
     for f in L['fish']:
         name = f['id'].removeprefix('fish-')
@@ -54,15 +55,15 @@ def main():
            'iBody': I[~tf].ravel().tolist(), 'iFin': I[tf].ravel().tolist(),
            'bones': R['bones'], 'skinIndex': R['skinIndex'], 'skinWeight': R['skinWeight']}
     (md / 'oranda.json').write_text(json.dumps(out, separators=(',', ':')), encoding='utf8')
-    textures = {n: f'textures/{n}.jpg' for n in ['background', 'gravel-oiso', 'gravel-oiso-n', 'gravel-oiso-h', 'gravel-side', 'stone-blue', 'stone-red']}
+    textures = {n: f'textures/{n}.jpg' for n in ['background', 'gravel-oiso', 'gravel-oiso-n', 'gravel-oiso-h', 'gravel-side', 'stone-tripo', 'stone-tripo-n', 'stone-tripo-rm']}
     (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')
     shutil.copy(AQ / 'src' / 'app.js', AQ / 'app.js')
     page = (AQ / 'src' / 'page.html').read_text(encoding='utf8')
-    assets = {'layout': L, 'geometry': 'models/oranda.json', 'models': models, 'textures': textures}
+    assets = {'layout': L, 'geometry': 'models/oranda.json', 'stones': 'models/stones.json', 'models': models, 'textures': textures}
     online = page.replace('__SCRIPTS__', '<script>window.AQUARIUM_ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';</script>\n'
                           + online_three_loader(['lib.js', 'app.js']))
     (AQ / 'index.html').write_text(online, encoding='utf8')
-    off = {'layout': L, 'geometry': data_uri(md / 'oranda.json', 'application/json'),
+    off = {'layout': L, 'geometry': data_uri(md / 'oranda.json', 'application/json'), 'stones': data_uri(md / 'stones.json', 'application/json'),
            'textures': {k: data_uri(AQ / v) for k, v in textures.items()},
            'models': {k: {'standard': data_uri(AQ / v['standard'])} for k, v in models.items()}}
     for v in off['models'].values(): v['light'] = v['standard']

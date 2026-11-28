@@ -296,13 +296,42 @@
     }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); return g;
   }
+  // Stones: four shapes the user made with Tripo in one generation (tall / crouch / mound / slab), cut apart and
+  // simplified offline (tools/make_stones.py). Each layout stone uses one shape, scaled uniformly to its approved size.
+  const STONE_SHAPE = { 'stone-1': 'tall', 'stone-2': 'crouch', 'stone-3': 'mound', 'stone-4': 'crouch', 'stone-5': 'mound', 'stone-6': 'slab', 'stone-7': 'slab' };
+  let stoneShapes = {};
+  async function loadStoneShapes() {
+    const res = await fetch(A.stones); if (!res.ok) throw new Error('石のモデルを読み込めませんでした');
+    const d = await res.json();
+    for (const [k, v] of Object.entries(d.shapes)) {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(v.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(v.n, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(v.uv, 2)); g.setIndex(v.i); g.computeBoundingSphere();
+      stoneShapes[k] = { geo: g, size: v.size };
+    }
+  }
+  function tripoStoneMaterial(map, normalMap, rmMap, warm) {
+    const m = new THREE.MeshStandardMaterial({ map, normalMap, roughnessMap: rmMap, roughness: 1, metalness: 0 });
+    m.onBeforeCompile = sh => {
+      injectCaustics(sh);
+      sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+        { float l = dot(diffuseColor.rgb, vec3(.3,.59,.11));
+          diffuseColor.rgb = ${warm ? 'mix(vec3(l), diffuseColor.rgb, 0.2) * vec3(1.25, 0.95, 0.8)' : 'mix(vec3(l), diffuseColor.rgb, 0.42) * vec3(0.95, 0.98, 1.0)'}; }`);
+    };
+    m.customProgramCacheKey = () => 'stone-tripo-' + (warm ? 'red' : 'blue');
+    return m;
+  }
   function makeStone(o) {
-    const mesh = new THREE.Mesh(stoneGeometry(o), stoneMats[o.color === 'red' ? 'red' : 'blue']);
-    mesh.scale.set(o.size[0] / 2 * cm, o.size[1] / 2 * cm, o.size[2] / 2 * cm);
-    mesh.rotation.set(THREE.MathUtils.degToRad(o.tilt?.[0] || 0), THREE.MathUtils.degToRad(o.tilt?.[1] || 0), THREE.MathUtils.degToRad(o.tilt?.[2] || 0));
-    mesh.position.y = o.size[1] * 0.25 * cm; mesh.castShadow = mesh.receiveShadow = STD;
+    const shape = stoneShapes[STONE_SHAPE[o.id] || 'crouch'];
+    const mesh = new THREE.Mesh(shape.geo, stoneMats[o.color === 'red' ? 'red' : 'blue']);
+    const want = o.size.map(v => v * cm), sc = Math.cbrt(want[0] / shape.size[0] * want[1] / shape.size[1] * want[2] / shape.size[2]);
+    mesh.scale.setScalar(sc);
+    mesh.rotation.y = THREE.MathUtils.degToRad(o.tilt?.[1] || 0);
+    mesh.position.y = -0.004;                   // bedded a few millimetres into the gravel
+    mesh.castShadow = mesh.receiveShadow = STD;
     const root = new THREE.Group(); root.add(mesh); root.userData.id = o.id; scene.add(root);
-    editables.set(o.id, { root, mesh, kind: 'stone', radius: Math.max(o.size[0], o.size[2]) * cm / 2, label: '石' + o.id.split('-')[1] + '（' + (o.role || '石') + '）', sink: 0 });
+    const r = Math.max(shape.size[0], shape.size[2]) * sc / 2;
+    editables.set(o.id, { root, mesh, kind: 'stone', radius: r, label: '石' + o.id.split('-')[1] + '（' + (o.role || '石') + '）', sink: 0 });
   }
 
   // Plants: procedural geometry, merged per clump; aSway (0 at the base .. 1 at the tip) drives a slow sway in the vertex shader.
@@ -901,8 +930,10 @@
   (async () => {
     try {
       say('水槽を準備しています…');
-      const [blueT, redT] = await Promise.all([tex(A.textures['stone-blue'], { repeat: [1, 1] }), tex(A.textures['stone-red'], { repeat: [1, 1] })]);
-      stoneMats = { blue: stoneMaterial(blueT), red: stoneMaterial(redT) };
+      const [sT, sN, sR] = await Promise.all([tex(A.textures['stone-tripo']), tex(A.textures['stone-tripo-n'], { srgb: false }), tex(A.textures['stone-tripo-rm'], { srgb: false })]);
+      for (const t of [sT, sN, sR]) t.flipY = false;       // glTF UVs
+      stoneMats = { blue: tripoStoneMaterial(sT, sN, sR, false), red: tripoStoneMaterial(sT, sN, sR, true) };
+      await loadStoneShapes();
       await buildTank();
       for (const o of L.objects) { if (o.kind === 'stone') makeStone(o); if (o.kind === 'plant') makePlant(o); }
       const sel = $('obj-select');

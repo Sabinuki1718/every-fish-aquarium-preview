@@ -54,7 +54,7 @@ def main():
            'iBody': I[~tf].ravel().tolist(), 'iFin': I[tf].ravel().tolist(),
            'bones': R['bones'], 'skinIndex': R['skinIndex'], 'skinWeight': R['skinWeight']}
     (md / 'oranda.json').write_text(json.dumps(out, separators=(',', ':')), encoding='utf8')
-    textures = {n: f'textures/{n}.jpg' for n in ['background', 'gravel-oiso', 'gravel-oiso-n', 'stone-blue', 'stone-red']}
+    textures = {n: f'textures/{n}.jpg' for n in ['background', 'gravel-oiso', 'gravel-oiso-n', 'gravel-oiso-h', 'gravel-side', 'stone-blue', 'stone-red']}
     (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')
     shutil.copy(AQ / 'src' / 'app.js', AQ / 'app.js')
     page = (AQ / 'src' / 'page.html').read_text(encoding='utf8')

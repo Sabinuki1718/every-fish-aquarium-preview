@@ -245,7 +245,8 @@
       "back_screen": "片面（裏からは非表示）"
     },
     "checks": "Chromium(SwiftShader)でPC幅・スマホ幅(390px, 軽量)・観察・配置変更・色変更・裏から・下からを確認、コンソールエラーなし。実機スマホ・公開ページのCDN読込みは未確認",
-    "stones": "Tripoで作り直す予定（複数形状を1回で生成し切り出す）"
+    "stones": "Tripoで作り直す予定（複数形状を1回で生成し切り出す）",
+    "substrate": "写真ベースの大磯砂（aquarium/textures/source の生成画像）"
   },
   "history": [
     {
@@ -392,6 +393,17 @@
       "at": "2026-11-28",
       "event": "stones_received",
       "note": "Google ドライブ『金魚岩.zip』67MB。ドライブ連携の上限10MBを超え取得できず"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "①砂利の画像　生成しました",
+      "note": "ユーザー生成の大磯砂画像（上面・断面）から、継ぎ目なしの色・高さ・法線テクスチャと前面の断面テクスチャを作成（tools/make_gravel.py）。視差、広域の色ムラ、標準画質で立体小石5200粒"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "stones_pending",
+      "note": "ドライブ『金魚岩』フォルダ: テクスチャ類は10MB未満だが FBX が62MBで連携上限(10MB)超え"
     }
   ],
   "shared_model": {

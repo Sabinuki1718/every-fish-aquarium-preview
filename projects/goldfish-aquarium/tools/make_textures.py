@@ -71,4 +71,4 @@ def background(w=1024, hgt=512):
     Image.fromarray(np.clip(c, 0, 255).astype(np.uint8)).save(OUT / 'background.jpg', quality=90)
 
 if __name__ == '__main__':
-    OUT.mkdir(parents=True, exist_ok=True); gravel(); stone(); background(); print(sorted(p.name for p in OUT.iterdir()))
+    OUT.mkdir(parents=True, exist_ok=True); stone(); background()   # gravel: tools/make_gravel.py (photo based); print(sorted(p.name for p in OUT.iterdir()))

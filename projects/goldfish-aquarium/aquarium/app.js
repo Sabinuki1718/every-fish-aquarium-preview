@@ -98,12 +98,33 @@
 
   async function buildTank() {
     const [bgT, gravelT, gravelN] = await Promise.all([
-      tex(A.textures.background), tex(A.textures['gravel-oiso'], { repeat: [6, 3] }), tex(A.textures['gravel-oiso-n'], { repeat: [6, 3], srgb: false })]);
+      tex(A.textures.background), tex(A.textures['gravel-oiso'], { repeat: [3.2, 1.6] }), tex(A.textures['gravel-oiso-n'], { repeat: [3.2, 1.6], srgb: false })]);
+    const [gravelH, sideT] = await Promise.all([tex(A.textures['gravel-oiso-h'], { repeat: [3.2, 1.6], srgb: false }), tex(A.textures['gravel-side'], { repeat: [2, 1] })]);
     // back screen: one-sided, facing the front (seen through the back glass from behind: hidden)
     const bg = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: bgT, side: THREE.FrontSide, toneMapped: false }));
     bg.position.set(0, H / 2, -D / 2 - 0.003); scene.add(bg);
     // gravel bed: top surface + sides + bottom (closed, opaque)
-    const gm = withCaustics(new THREE.MeshStandardMaterial({ map: gravelT, normalMap: gravelN, normalScale: new THREE.Vector2(1.2, 1.2), roughness: 0.92 }), 'gravel');
+    const gm = new THREE.MeshStandardMaterial({ map: gravelT, normalMap: gravelN, normalScale: new THREE.Vector2(1.4, 1.4), roughness: 0.8 });
+    // parallax (pebbles stand out when seen at a slant) + large-scale colour drift so the tile repeat does not show
+    gm.onBeforeCompile = sh => {
+      injectCaustics(sh);
+      sh.fragmentShader = sh.fragmentShader.replace('diffuseColor.rgb *= 1. + uCaustic *', 'diffuseColor.rgb *= 1. + 0.6 * uCaustic *');
+      sh.uniforms.uHeight = { value: gravelH };
+      const PUV = `vec2 pUv = vMapUv;
+        {
+          vec3 Vw = normalize(cameraPosition - vWorldC);
+          vec2 dir = vec2(Vw.x, -Vw.z) / max(Vw.y, 0.25);
+          for (int i = 0; i < ${STD ? 4 : 2}; i++) { float hh = texture2D(uHeight, pUv).r; pUv = vMapUv + dir * (hh - 0.55) * 0.006; }
+        }`;
+      sh.fragmentShader = 'uniform sampler2D uHeight;\n' + sh.fragmentShader
+        .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + PUV)
+        .replace('#include <map_fragment>', THREE.ShaderChunk.map_fragment.replace(/vMapUv/g, 'pUv') + `
+          float drift = 0.5 + 0.5 * sin(vWorldC.x * 13. + 1.7) * sin(vWorldC.z * 17. + 0.4) * sin((vWorldC.x - vWorldC.z) * 7.);
+          diffuseColor.rgb *= 0.86 + 0.28 * drift;`)
+        .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps.replace(/vNormalMapUv/g, 'pUv'));
+      // caustics already applied above; injectCaustics added its own after map_fragment, which we replaced
+    };
+    gm.customProgramCacheKey = () => 'gravel-pom';
     const g = new THREE.PlaneGeometry(W - 0.001, D - 0.001, 120, 60); g.rotateX(-Math.PI / 2);
     const p = g.attributes.position;
     for (let i = 0; i < p.count; i++) {
@@ -112,18 +133,17 @@
     }
     g.computeVertexNormals();
     const floor = new THREE.Mesh(g, gm); floor.receiveShadow = STD; scene.add(floor);
-    const sideMat = new THREE.MeshStandardMaterial({ map: gravelT.clone(), roughness: 0.95, color: 0xb9b2a8 });
-    sideMat.map.repeat.set(6, 0.6); sideMat.map.needsUpdate = true;
+    const sideMat = { map: sideT };     // photo of the gravel layer seen through the front glass
     const skirt = (x0, z0, x1, z1) => {               // vertical strip from the floor of the tank up to the bed surface
       const n = 60, pos = [], uv = [], idx = [];
       for (let i = 0; i <= n; i++) {
         const t = i / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
-        pos.push(x, 0, z, x, ground(x, z), z); uv.push(t, 0, t, ground(x, z) / 0.06);
+        pos.push(x, 0, z, x, ground(x, z), z); uv.push(t * (Math.abs(x1 - x0) + Math.abs(z1 - z0)) / W, 0, t * (Math.abs(x1 - x0) + Math.abs(z1 - z0)) / W, ground(x, z) / 0.06);
         if (i < n) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
       }
       const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
       sg.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); sg.setIndex(idx); sg.computeVertexNormals();
-      scene.add(new THREE.Mesh(sg, new THREE.MeshStandardMaterial({ map: sideMat.map, roughness: 0.95, side: THREE.DoubleSide })));
+      scene.add(new THREE.Mesh(sg, new THREE.MeshStandardMaterial({ map: sideMat.map, roughness: 0.9, side: THREE.DoubleSide })));
     };
     const hx = W / 2 - 0.0005, hz = D / 2 - 0.0005;
     skirt(-hx, hz, hx, hz); skirt(hx, -hz, -hx, -hz); skirt(-hx, -hz, -hx, hz); skirt(hx, hz, hx, -hz);
@@ -147,6 +167,33 @@
     for (const o of [edges, cab]) o.material.fog = false;
     trim.fog = false; glassMat.fog = false;
     buildWaterLife();
+    if (STD) scatterPebbles(gravelT);
+  }
+
+  // ---------- loose 3D pebbles on the bed (standard quality): colours picked from the gravel photo ----------
+  function scatterPebbles(gravelT) {
+    const img = gravelT.image, c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0, 64, 64); const px = g.getImageData(0, 0, 64, 64).data;
+    const geo = new THREE.IcosahedronGeometry(1, 2);
+    const p = geo.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); v.y *= 0.62; v.multiplyScalar(1 + 0.06 * Math.sin(v.x * 5 + v.z * 3)); p.setXYZ(i, v.x, v.y, v.z); }
+    geo.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0 });
+    mat.onBeforeCompile = sh => { injectCaustics(sh, '#include <color_fragment>'); sh.fragmentShader = sh.fragmentShader.replace('diffuseColor.rgb *= 1. + uCaustic *', 'diffuseColor.rgb *= 1. + 0.45 * uCaustic *'); };
+    mat.customProgramCacheKey = () => 'pebble';
+    const N = 5200, mesh = new THREE.InstancedMesh(geo, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), col = new THREE.Color();
+    const rnd = seeded('pebbles');
+    for (let i = 0; i < N; i++) {
+      const front = i < 2600;                    // half of them along the front glass, where you look closest
+      const x = (rnd() - 0.5) * (W - 0.006), z = front ? D / 2 - 0.003 - rnd() * 0.07 : (rnd() - 0.5) * (D - 0.006);
+      const r = 0.0011 + rnd() * rnd() * 0.0014;
+      q.setFromEuler(new THREE.Euler(rnd() * 0.5, rnd() * 6.3, rnd() * 0.5));
+      m4.compose(new THREE.Vector3(x, ground(x, z) + r * 0.15, z), q, new THREE.Vector3(r * (0.8 + rnd() * 0.5), r, r * (0.8 + rnd() * 0.5)));
+      mesh.setMatrixAt(i, m4);
+      const k = ((rnd() * 64) | 0) * 4 + ((rnd() * 64) | 0) * 256;
+      col.setRGB(px[k] / 255, px[k + 1] / 255, px[k + 2] / 255, THREE.SRGBColorSpace).multiplyScalar(0.8); mesh.setColorAt(i, col);
+    }
+    mesh.receiveShadow = true; scene.add(mesh);
   }
 
   // ---------- in-water atmosphere: haze, suspended specks, light shafts ----------

@@ -182,10 +182,10 @@
       "oranda-yellowhood-blue": 1
     },
     "counts_quote": "各1匹",
-    "version": 1,
+    "version": 2,
     "files": [
-      "layout/v1/layout.json",
-      "layout/v1/layout-v1-sheet.png"
+      "layout/v2/layout.json",
+      "layout/v2/layout-v2-sheet.png"
     ],
     "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
     "assumptions": "水槽寸法・背景・底床の指定なし→既定案"
@@ -258,6 +258,12 @@
       "stage": "model",
       "note": "東錦v2・青文魚v2・黄頭v2",
       "quote": "ok"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "changes_requested",
+      "stage": "layout",
+      "quote": "石の配置は枯山水ぽくしてください 流木はいれない 水草はバリスネリアとカボンバを入れます これらも必要ならtripoで作れます"
     }
   ],
   "shared_model": {

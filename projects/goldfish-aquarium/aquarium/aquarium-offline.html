@@ -4464,28 +4464,52 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
     g.setAttribute('aLeaf', new THREE.Float32BufferAttribute(leaf, 2));
     g.setIndex(idx); g.computeVertexNormals(); return g;
   }
-  // Vallisneria: long ribbon leaves with a blunt, finely toothed tip; veins are drawn in the shader.
+  // Vallisneria: a rosette plant. Each plant is a crown at the gravel from which ribbon leaves rise (young leaves in the
+  // centre, shorter and upright; older ones outside, longer and leaning out); plants stand in short rows along runners.
   function vallisneria(o) {
     const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], leaf = [], c = new THREE.Color();
-    for (let b = 0; b < o.count; b++) {
-      const h = o.height * cm * (0.6 + rnd() * 0.42), w = 0.008 + rnd() * 0.003;
-      const bx = (rnd() - 0.5) * 0.07, bz = (rnd() - 0.5) * 0.05, rot = rnd() * Math.PI * 2;
-      const bend = (rnd() - 0.35) * 0.07, twist = rnd() * 2, segs = STD ? 40 : 26;
-      c.setHSL(0.25 + rnd() * 0.05, 0.55 + rnd() * 0.15, 0.2 + rnd() * 0.08);
-      const cr = Math.cos(rot), sr = Math.sin(rot), base = pos.length / 3;
-      for (let s = 0; s <= segs; s++) {
-        const t = s / segs, y = t * h - 0.012;
-        const tipW = t < 0.94 ? 1 : Math.sqrt(Math.max(0, (1 - t) / 0.06)) * 0.85 + 0.15;
-        const teeth = t > 0.85 ? 1 + 0.08 * (s % 2 ? 1 : -1) : 1;
-        const ww = w * tipW * teeth * (0.9 + 0.1 * Math.sin(t * 9 + b));
-        const off = bend * t * t, tw = Math.sin(t * 3 + twist) * 1.1;
-        for (const side of [-0.5, 0.5]) {
-          const lx = side * ww * Math.cos(tw) + off, lz = side * ww * Math.sin(tw) + 0.012 * Math.sin(t * 2.5 + twist);
-          pos.push(bx + lx * cr - lz * sr, y, bz + lx * sr + lz * cr);
-          const sh = 0.72 + 0.4 * t; col.push(c.r * sh, c.g * sh, c.b * sh); sway.push(t); leaf.push(side + 0.5, t);
+    const nPlants = Math.max(3, Math.round(o.count / 4.5)), plants = [];
+    let rx = (rnd() - 0.5) * 0.02, rz = (rnd() - 0.5) * 0.02, ra = rnd() * Math.PI * 2;
+    for (let k = 0; k < nPlants; k++) {                  // walk along a wandering runner, 1.5-3 cm per daughter plant
+      plants.push([rx, rz, 0.65 + 0.4 * rnd() * (k === 0 ? 0 : 1) + (k === 0 ? 0.4 : 0)]);
+      ra += (rnd() - 0.5) * 1.6; const step = 0.015 + rnd() * 0.015;
+      rx = THREE.MathUtils.clamp(rx + Math.cos(ra) * step, -0.045, 0.045); rz = THREE.MathUtils.clamp(rz + Math.sin(ra) * step, -0.035, 0.035);
+    }
+    const strip = (pts, w, color, t0) => {               // flat ribbon through pts (used for runners)
+      const base = pos.length / 3;
+      pts.forEach((q, i) => { for (const sd of [-0.5, 0.5]) { pos.push(q[0], q[1], q[2] + sd * w); col.push(color.r, color.g, color.b); sway.push(t0); leaf.push(sd + 0.5, 0); } if (i) { const a2 = base + (i - 1) * 2; idx.push(a2, a2 + 2, a2 + 1, a2 + 1, a2 + 2, a2 + 3); } });
+    };
+    const runC = new THREE.Color().setHSL(0.2, 0.35, 0.42);
+    for (let k = 1; k < plants.length; k++) strip([[plants[k - 1][0], -0.001, plants[k - 1][1]], [plants[k][0], -0.0005, plants[k][1]]], 0.0012, runC, 0);
+    for (const [px, pz, vigor] of plants) {
+      const nLeaves = 4 + Math.floor(rnd() * 4 + vigor * 2), spin = rnd() * Math.PI * 2;
+      for (let lf = 0; lf < nLeaves; lf++) {
+        const age = (lf + 0.5) / nLeaves;               // 0 = youngest (centre) .. 1 = oldest (outside)
+        const h = o.height * cm * vigor * (0.45 + 0.6 * age) * (0.85 + 0.25 * rnd());
+        const w = (0.0055 + 0.004 * age) * (0.9 + 0.2 * rnd());
+        const dirA = spin + lf * 2.4;                    // leaves spiral out of the crown (golden angle)
+        const lean = 0.05 + 0.32 * age * (0.6 + 0.6 * rnd());
+        const droop = age > 0.7 ? (rnd() * 0.5) * (age - 0.7) / 0.3 : 0;
+        const twist = rnd() * 2, segs = STD ? 36 : 24;
+        c.setHSL(0.24 + rnd() * 0.05, 0.55 + rnd() * 0.15, 0.2 + 0.08 * (1 - age) + rnd() * 0.05);
+        const dx = Math.cos(dirA), dz = Math.sin(dirA), base = pos.length / 3;
+        for (let si = 0; si <= segs; si++) {
+          const t = si / segs, y = t * h - 0.006;
+          const out = lean * h * Math.pow(t, 1.6) + droop * h * Math.pow(t, 3);
+          const yy = y - droop * h * 0.6 * Math.pow(t, 3);
+          const tipW = t < 0.94 ? 1 : Math.sqrt(Math.max(0, (1 - t) / 0.06)) * 0.85 + 0.15;
+          const ww = w * tipW * (t < 0.06 ? 0.55 + 7.5 * t : 1) * (si % 2 && t > 0.85 ? 1.06 : 1);
+          const tw = Math.sin(t * 3 + twist) * 1.2 + dirA + Math.PI / 2;
+          for (const sd of [-0.5, 0.5]) {
+            pos.push(px + dx * out + Math.cos(tw) * sd * ww, yy, pz + dz * out + Math.sin(tw) * sd * ww);
+            const sh = 0.7 + 0.42 * t; col.push(c.r * sh, c.g * sh, c.b * sh); sway.push(t * Math.min(1, h / 0.15)); leaf.push(sd + 0.5, t);
+          }
+          if (si < segs) { const a2 = base + si * 2; idx.push(a2, a2 + 2, a2 + 1, a2 + 1, a2 + 2, a2 + 3); }
         }
-        if (s < segs) { const a = base + s * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
       }
+      // pale crown at the gravel
+      const crown = new THREE.Color().setHSL(0.17, 0.3, 0.55);
+      strip([[px - 0.003, 0.0005, pz], [px + 0.003, 0.0005, pz]], 0.004, crown, 0);
     }
     return geometryFrom(pos, col, sway, idx, leaf);
   }
@@ -4658,6 +4682,10 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
     attrs.skinWeight = new THREE.Float32BufferAttribute(d.skinWeight, 4);
     const mk = index => { const g = new THREE.BufferGeometry(); for (const [k, v] of Object.entries(attrs)) g.setAttribute(k, v); g.setIndex(index); g.computeBoundingSphere(); return g; };
     fishGeo = { body: mk(d.iBody), fin: mk(d.iFin), bones: d.bones };
+    let minX = Infinity; for (let i = 0; i < d.p.length; i += 3) minX = Math.min(minX, d.p[i]);
+    const m = [0, 0, 0]; let n = 0;
+    for (let i = 0; i < d.p.length; i += 3) if (d.p[i] < minX + 0.004 && Math.abs(d.p[i + 2]) < 0.006) { m[0] += d.p[i]; m[1] += d.p[i + 1]; m[2] += d.p[i + 2]; n++; }
+    fishGeo.mouth = new THREE.Vector3(m[0] / n, m[1] / n - 0.002, 0);      // lips, a little below the snout tip
   }
   // Rounded loops (a "stadium": two straights joined by half circles of radius R, about half a body length or more) in front
   // of the stones, each fish in its own depth band so they never meet. Speed breathes so the fish drift and pause.
@@ -4709,45 +4737,152 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
       let best = 0, lowest = Infinity;
       for (let a = -1.4; a <= 1.4; a += 0.02) { const y = out.clone().applyAxisAngle(hinge, a).y; if (y < lowest) { lowest = y; best = a; } }
       const rest = new THREE.Quaternion().setFromAxisAngle(hinge, best * 0.7);
-      finBones.push({ base: bones[k], tip, hinge, sweep, rest, pec: b.name.startsWith('pectoral'), side: b.name.includes('_L_') ? 1 : -1 });
+      const side = b.name.includes('_L_') ? 1 : -1;
+      // signs so that +open moves the fin away from the body and +back sweeps it toward the tail
+      const sOpen = Math.sign((out.clone().applyAxisAngle(hinge, 0.1).z - out.z) * side) || 1;
+      const sBack = Math.sign(out.clone().applyAxisAngle(sweep, 0.1).x - out.x) || 1;
+      finBones.push({ base: bones[k], tip, hinge, sweep, out, rest, sOpen, sBack, pec: b.name.startsWith('pectoral'), side });
     });
     const root = new THREE.Group(); root.add(rig); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
     root.userData.fishId = f.id; scene.add(root);
-    fishes.push({ id: f.id, root, u, finBones, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
+    fishes.push({ id: f.id, root, u, finBones, scale: f.length_cm / 12, mode: 'cruise', nextForage: 14 + i * 11 + Math.random() * 10, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
   }
-  const _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion();
+  const _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
+  const _v = new THREE.Vector3(), _e = new THREE.Euler(0, 0, 0, 'YZX');
+  const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+  const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+
+  // ---- foraging: now and then a fish leaves its loop, glides down, tips nose-down and pecks the gravel, then returns ----
+  // (Goldfish forage in many short bouts on the bottom, picking up grains and spitting them out: Smith & Gray 2011.)
+  const PECK_PITCH = 0.95;                       // ~55 deg nose-down
+  function mouthWorldOffset(F, yaw, pitch) {     // where the lips are relative to the fish origin for a given pose
+    _e.set(0, yaw, pitch); return _v.copy(fishGeo.mouth).multiplyScalar(F.scale).applyEuler(_e).clone();
+  }
+  function pickForageSpot(F, from) {
+    const stones = [...editables.values()].filter(e => e.kind === 'stone'), plants = [...editables.values()].filter(e => e.kind === 'plant');
+    for (let k = 0; k < 40; k++) {
+      const x = THREE.MathUtils.clamp(from[0] + (Math.random() - 0.5) * 0.16, -W / 2 + 0.07, W / 2 - 0.07);
+      const z = 0.025 + Math.random() * (D / 2 - 0.055);
+      const ok = stones.every(e => Math.hypot(e.root.position.x - x, e.root.position.z - z) > e.radius + 0.075)
+              && plants.every(e => Math.hypot(e.root.position.x - x, e.root.position.z - z) > e.radius + 0.03)
+              && fishes.every(o => o === F || o.mode === 'cruise' || Math.hypot(o.forage.spot[0] - x, o.forage.spot[2] - z) > 0.12);
+      if (ok) return [x, ground(x, z) + 0.002, z];
+    }
+    return null;
+  }
+  function startForage(F, start) {
+    const spot = pickForageSpot(F, start); if (!spot) { F.nextForage = F.clock + 8; return; }
+    const yaw = Math.atan2(spot[2] - start[2], -(spot[0] - start[0]));
+    F.mode = 'descend'; F.forage = { spot, start, yaw0: F.yawS, yaw, t: 0, pecks: 3 + Math.floor(Math.random() * 4), k: 0, dur: 4.5 };
+  }
+  function foragePose(F, dt) {                   // returns { p, yaw, pitch, speed, hover, pump, brake }
+    const G = F.forage; G.t += dt;
+    const perch = (pitch, reach) => {          // fish origin that puts the lips `reach` metres above the spot
+      const m = mouthWorldOffset(F, G.yaw, pitch);
+      return [G.spot[0] - m.x, G.spot[1] + reach - m.y, G.spot[2] - m.z];
+    };
+    if (F.mode === 'descend') {
+      const s = ease(G.t / G.dur), sv = ease((G.t / G.dur - 0.15) / 0.85);
+      const end = perch(PECK_PITCH * 0.7, 0.012);
+      const p = [G.start[0] + (end[0] - G.start[0]) * s, G.start[1] + (end[1] - G.start[1]) * sv, G.start[2] + (end[2] - G.start[2]) * s];
+      if (G.t >= G.dur) { F.mode = 'peck'; G.t = 0; }
+      return { p, yaw: G.yaw, pitch: PECK_PITCH * 0.7 * ease((G.t / G.dur - 0.3) / 0.7), speed: 0.02 * (1 - s), hover: s, brake: s > 0.8 ? 1 : 0, pump: 0 };
+    }
+    if (F.mode === 'peck') {
+      const CYC = 1.15, c = G.t / CYC, ph = c - Math.floor(c);
+      // one peck: lean in and touch (0-0.3), suck with the mouth working (0.3-0.6), pull back and spit (0.6-1)
+      const touch = ph < 0.3 ? ease(ph / 0.3) : ph < 0.6 ? 1 : 1 - ease((ph - 0.6) / 0.4);
+      const pitch = PECK_PITCH * (0.82 + 0.18 * touch);
+      const p = perch(pitch, 0.012 * (1 - touch) + 0.0005);
+      if (ph > 0.6 && !G.spat && Math.random() < 0.8) { G.spat = true; spitGravel(F, G); }
+      if (ph < 0.3) G.spat = false;
+      if (c >= G.pecks) { F.mode = 'ascend'; G.t = 0; G.from = p; G.pitchFrom = pitch; }
+      return { p, yaw: G.yaw + 0.08 * Math.sin(Math.floor(c) * 2.3), pitch, speed: 0, hover: 1, brake: 0, pump: ph > 0.25 && ph < 0.65 ? 1 : 0.2 };
+    }
+    // ascend: back up to the loop (the loop's time was held while foraging)
+    const s = ease(G.t / G.dur), back = pathAt(F.path, F.t).p;
+    const p = [G.from[0] + (back[0] - G.from[0]) * ease((G.t / G.dur - 0.1) / 0.9), G.from[1] + (back[1] - G.from[1]) * s, G.from[2] + (back[2] - G.from[2]) * ease((G.t / G.dur - 0.1) / 0.9)];
+    if (G.t >= G.dur) { F.mode = 'cruise'; F.nextForage = F.clock + 30 + Math.random() * 40; }
+    const v = pathAt(F.path, F.t).v;
+    return { p, yaw: s < 0.5 ? G.yaw : Math.atan2(v[2], -v[0]), pitch: G.pitchFrom * (1 - ease(G.t / (G.dur * 0.6))) - 0.25 * Math.sin(s * Math.PI), speed: 0.015 * s, hover: 1 - s, brake: 0, pump: 0 };
+  }
+  // a little puff of grit spat back out after a peck
+  let grit;
+  function buildGrit() {
+    const n = 120, g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3).fill(-9), 3));
+    grit = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.0022, color: 0x5d5448, transparent: true, opacity: 0.9, depthWrite: false }));
+    grit.userData = { v: new Float32Array(n * 3), life: new Float32Array(n), next: 0 }; grit.frustumCulled = false; scene.add(grit);
+  }
+  function spitGravel(F, G) {
+    if (!grit) buildGrit();
+    const P = grit.geometry.attributes.position, U = grit.userData;
+    const m = mouthWorldOffset(F, G.yaw, PECK_PITCH * 0.82).add(F.root.position);
+    for (let k = 0; k < 6; k++) {
+      const i = U.next = (U.next + 1) % U.life.length;
+      P.setXYZ(i, m.x + (Math.random() - .5) * 0.003, m.y, m.z + (Math.random() - .5) * 0.003);
+      U.v[i * 3] = (Math.random() - .5) * 0.04; U.v[i * 3 + 1] = 0.02 + Math.random() * 0.03; U.v[i * 3 + 2] = (Math.random() - .5) * 0.04; U.life[i] = 1.6;
+    }
+  }
+  function updateGrit(dt) {
+    if (!grit) return;
+    const P = grit.geometry.attributes.position, U = grit.userData;
+    for (let i = 0; i < U.life.length; i++) {
+      if (U.life[i] <= 0) continue;
+      U.life[i] -= dt; U.v[i * 3 + 1] -= 0.09 * dt; for (const a of [0, 1, 2]) U.v[i * 3 + a] *= 1 - 2.2 * dt;
+      const x = P.getX(i) + U.v[i * 3] * dt, z = P.getZ(i) + U.v[i * 3 + 2] * dt; let y = P.getY(i) + U.v[i * 3 + 1] * dt;
+      if (y < ground(x, z) + 0.001) { y = ground(x, z) + 0.001; U.v[i * 3] = U.v[i * 3 + 1] = U.v[i * 3 + 2] = 0; }
+      P.setXYZ(i, x, y, z); if (U.life[i] <= 0) P.setXYZ(i, -9, -9, -9);
+    }
+    P.needsUpdate = true;
+  }
+
   function updateFish(F, dt) {
-    if (!F.paused) F.t += dt;
-    const { p, v } = pathAt(F.path, F.t), hs = Math.hypot(v[0], v[2]);
-    F.root.position.set(...p);
-    // heading eases toward the path direction (no snapping); the body stays level (no banking) and curves into the turn
-    const yaw = Math.atan2(v[2], -v[0]);
-    if (F.yawS === undefined) F.yawS = yaw;
-    let dy = Math.atan2(Math.sin(yaw - F.yawS), Math.cos(yaw - F.yawS));
-    const prev = F.yawS; F.yawS += dy * Math.min(1, dt * 2.2);
-    const rate = dt > 0 && !F.paused ? Math.atan2(Math.sin(F.yawS - prev), Math.cos(F.yawS - prev)) / dt : 0;
+    F.clock = (F.clock ?? 0) + (F.paused ? 0 : dt);
+    let pose;
+    if (F.mode === 'cruise') {
+      if (!F.paused) F.t += dt;
+      const { p, v } = pathAt(F.path, F.t), hs = Math.hypot(v[0], v[2]), sp = Math.hypot(...v);
+      pose = { p, yaw: Math.atan2(v[2], -v[0]), pitch: -Math.atan2(v[1], hs) * 0.6, speed: F.paused ? 0 : sp, hover: F.paused ? 1 : 1 - ease((sp - 0.017) / 0.012), brake: 0, pump: 0 };
+      if (!F.paused && F.clock > F.nextForage) startForage(F, p);
+    } else pose = F.paused ? { ...F.lastPose, speed: 0, hover: 1, brake: 0 } : foragePose(F, dt);
+    F.lastPose = pose;
+    F.root.position.set(...pose.p);
+    // heading eases toward the wanted direction (rate-limited, no snapping); the body stays level and arcs into turns
+    if (F.yawS === undefined) F.yawS = pose.yaw;
+    const prev = F.yawS; F.yawS += THREE.MathUtils.clamp(angDiff(pose.yaw, F.yawS) * Math.min(1, dt * 2.2), -0.9 * dt, 0.9 * dt);
+    const rate = dt > 0 && !F.paused ? angDiff(F.yawS, prev) / dt : 0;
     F.turn = (F.turn ?? 0) + (rate - (F.turn ?? 0)) * Math.min(1, dt * 3);
-    F.pitch = (F.pitch ?? 0) + (-Math.atan2(v[1], hs) * 0.6 - (F.pitch ?? 0)) * Math.min(1, dt * 1.5);
+    F.pitch = (F.pitch ?? 0) + (pose.pitch - (F.pitch ?? 0)) * Math.min(1, dt * (F.mode === 'peck' ? 8 : 1.8));
     F.root.rotation.set(0, F.yawS, F.pitch);
     F.u.uCurve.value = THREE.MathUtils.clamp(F.turn * 0.05, -0.03, 0.03);
-    const speed = F.paused ? 0 : Math.hypot(...v);
-    F.u.uSwimPhase.value += dt * (F.paused ? 1.2 : 5.5 + 55 * speed + 4 * Math.abs(F.turn));
-    F.u.uSwimAmp.value = F.paused ? 0.0012 : 0.0035 + 0.011 * Math.min(Math.abs(F.turn), 0.4) + 0.03 * speed;
-    F.u.uFinPhase.value += dt * (F.paused ? 1.6 : 3.2 + 30 * speed);
-    F.u.uFinAmp.value = F.paused ? 0.1 : 0.16 + 1.2 * speed;
-    F.u.uPecOpen.value = F.paused ? 0.75 : 0.55 + 0.5 * Math.min(Math.abs(F.turn), 0.6);
-    F.u.uBreath.value = Math.sin(performance.now() * 0.0042 + F.path.ph);
-    // paired fins: the base bone rows (sweep) and opens/closes (about the attachment line); the tip bone lags behind
-    const ph = F.u.uFinPhase.value, open = F.u.uPecOpen.value;
+    const speed = pose.speed, hover = THREE.MathUtils.clamp(pose.hover, 0, 1);
+    F.u.uSwimPhase.value += dt * (5.5 * (1 - 0.6 * hover) + 55 * speed + 4 * Math.abs(F.turn));
+    F.u.uSwimAmp.value = 0.0012 + 0.0025 * (1 - hover) + 0.011 * Math.min(Math.abs(F.turn), 0.4) + 0.03 * speed;
+    F.u.uFinPhase.value += dt * (3.2 + 30 * speed);
+    F.u.uFinAmp.value = 0.12 + 1.2 * speed;
+    F.brake = Math.max((F.brake ?? 0) - dt * 1.5, pose.brake);
+    // breathing; while pecking the mouth works fast (sucking up grit)
+    F.breathPh = (F.breathPh ?? F.path.ph) + dt * (4.2 + 10 * pose.pump);
+    F.u.uBreath.value = Math.sin(F.breathPh) * (1 + 0.6 * pose.pump);
+    // ---- pectoral fins (bones). Goldfish use them for slow manoeuvring: folded back while cruising, sculling
+    // alternately while hovering, both flared to brake, the inside fin spread in a turn (cf. Drucker & Lauder, Gibb et al.)
+    F.pecPh = (F.pecPh ?? Math.random() * 6) + dt * (5.2 + 2.5 * hover);
+    const inner = Math.sign(F.turn), turnAmt = Math.min(Math.abs(F.turn) / 0.5, 1);
     for (const B of F.finBones) {
-      const p = ph * (B.pec ? 0.9 : 0.55) + (B.side > 0 ? 0 : 0.6) + (B.pec ? 0 : 1.1);
-      if (B.pec) {            // pectoral: big rowing strokes, opening wide on the forward stroke
-        const row = (0.55 + 0.6 * open) * Math.sin(p);
-        const abd = (0.35 + 0.6 * open) * (0.5 + 0.5 * Math.sin(p + 1.57));
-        _q1.setFromAxisAngle(B.sweep, row); _q2.setFromAxisAngle(B.hinge, abd * B.side);
-        B.base.quaternion.multiplyQuaternions(_q1, _q2);
-        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.3 * (0.4 + open) * Math.sin(p - 0.9));
+      if (B.pec) {
+        const alt = F.pecPh + (B.side > 0 ? 0 : Math.PI);           // left and right beat alternately
+        const scull = hover * (0.65 * Math.sin(alt));                  // fore-aft sculling
+        const cruiseFold = (1 - hover) * (1 - F.brake);
+        let back = 0.75 * cruiseFold + scull - 0.55 * F.brake;
+        let open = -0.3 * cruiseFold + hover * (0.35 + 0.22 * Math.cos(alt)) + 0.75 * F.brake + 0.06 * Math.sin(alt) * (1 - hover);
+        if (B.side === inner) { open += 0.55 * turnAmt; back -= 0.4 * turnAmt; } else { open -= 0.25 * turnAmt; back += 0.25 * turnAmt; }
+        _q1.setFromAxisAngle(B.sweep, back * B.sBack); _q2.setFromAxisAngle(B.hinge, open * B.sOpen);
+        _q3.setFromAxisAngle(B.out, 0.5 * hover * Math.cos(alt));      // feathering: the blade twists on each stroke
+        B.base.quaternion.multiplyQuaternions(_q1, _q2).multiply(_q3);
+        B.tip.quaternion.setFromAxisAngle(B.sweep, B.sBack * (0.35 * hover * Math.sin(alt - 0.9) + 0.25 * cruiseFold));
       } else {                // pelvic: held pointing down, only a small trim
+        const p = F.u.uFinPhase.value * 0.55 + (B.side > 0 ? 0 : 0.6) + 1.1;
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));
         B.base.quaternion.copy(B.rest).multiply(_q1).multiply(_q2);
         B.tip.quaternion.setFromAxisAngle(B.sweep, 0.05 * Math.sin(p - 0.7));
@@ -5002,6 +5137,7 @@ window.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawi
   function step(dt) {
     t += dt; uniformsCommon.uTime.value = t;
     for (const F of fishes) updateFish(F, dt);
+    updateGrit(dt);
     updateWaterLife(t);
     followWatched();
   }

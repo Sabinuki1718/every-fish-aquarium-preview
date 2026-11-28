@@ -424,6 +424,18 @@
       "at": "2026-11-28",
       "event": "stones_replaced",
       "quote": "軽くしました"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "バリスネリア 本来はロゼット状の水草のはずです 植え方を調整 金魚のモーション 特に胸鰭の使いかた ネット上の動画などで確認して調整 時々底層に降りてきて、砂利をつつく動作を再現してください",
+      "note": "バリスネリアをロゼット株（冠部から若葉が中心、古葉が外へ傾く螺旋配置）とランナーでつながる株立ちに。胸鰭は巡航で後ろへたたみ、ゆっくり/停止で左右交互のスカリング＋羽のひねり、減速で両側を広げ、旋回で内側を開く。30〜70秒ごとに底へ降りて頭を約55°下げ、3〜6回つついて砂を吐き出し、ループへ戻る",
+      "sources": [
+        "https://sites.harvard.edu/glauder/files/2022/03/Gibb.et_.alPect.fin1994.pdf",
+        "https://sites.harvard.edu/glauder/files/2022/03/LauderMadden2006.pdf",
+        "https://www.cambridge.org/core/journals/animal-welfare/article/abs/goldfish-in-a-tank-the-effect-of-substrate-on-foraging-behaviour-in-aquarium-fish/61C7E3892450B1EC2AE7643877808210",
+        "https://www.hepper.com/why-do-goldfish-eat-rocks-gravel/"
+      ]
     }
   ],
   "shared_model": {

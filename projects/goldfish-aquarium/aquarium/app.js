@@ -885,24 +885,38 @@
     // ---- pectoral fins (bones), re-measured from the user's reference video (8 fps, 3 s):
     // the fin rests folded back along the belly; in bursts of a few strokes it drops quickly down-and-back to ~50 deg and
     // eases back (one stroke ~0.7 s), never swinging forward; left and right alternate. Between bursts it rests, barely moving.
-    F.pecPh = (F.pecPh ?? Math.random()) + dt / 0.72;
-    F.burstPh = (F.burstPh ?? Math.random() * 6) + dt;
+    // Two clear states: REST (fins pressed flat against the belly, still) and ROW (a set of full strokes, then back to rest).
+    // A set is always finished: each side's last stroke ends folded, so the switch is crisp.
+    const P_ = F.pec ??= { mode: 'rest', t: 0, dur: 1 + Math.random() * 2, n: 0 };
+    P_.t += dt;
+    const STROKE = 0.72;
+    if (P_.mode === 'rest') {
+      const wantNow = F.brake > 0.5 || hover > 0.6 && P_.t > P_.dur * 0.5;
+      if (P_.t >= P_.dur || wantNow) {
+        P_.mode = 'row'; P_.t = 0;
+        P_.n = hover > 0.5 || F.brake > 0.5 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 2);
+        P_.amp = hover > 0.5 || F.brake > 0.5 ? 1 : 0.65;
+      }
+    } else if (P_.t >= (P_.n + 0.5) * STROKE) {
+      P_.mode = 'rest'; P_.t = 0;
+      P_.dur = hover > 0.5 ? 0.8 + Math.random() * 1.4 : 2.5 + Math.random() * 3.5;
+    }
     const inner = Math.sign(F.turn), turnAmt = Math.min(Math.abs(F.turn) / 0.5, 1);
-    const burst = THREE.MathUtils.smoothstep(Math.sin(F.burstPh * 0.75), -0.2, 0.35);      // ~4 s on, ~4 s off
-    const drive = Math.min(1, hover * (0.35 + 0.65 * burst) + 0.8 * F.brake);
     for (const B of F.finBones) {
       if (B.pec) {
-        const u = ((F.pecPh + (B.side > 0 ? 0 : 0.5)) % 1 + 1) % 1;
-        const stroke = u < 0.28 ? ease(u / 0.28) : 1 - ease((u - 0.28) / 0.72);           // quick drop, slow return
-        const flutter = 0.06 * Math.sin(F.pecPh * 6.283 * 1.7 + B.side);                   // resting fins still tremble
-        let s = 0.12 + drive * 0.75 * stroke + (1 - drive) * flutter;
-        if (B.side === inner) s += 0.35 * turnAmt;                                         // inside fin spreads in a turn
+        let s = 0, u = 0;
+        if (P_.mode === 'row') {
+          const c = P_.t / STROKE - (B.side > 0 ? 0 : 0.5);                                 // left leads, right half a stroke later
+          if (c >= 0 && c < P_.n) { u = c - Math.floor(c); s = P_.amp * (u < 0.28 ? ease(u / 0.28) : 1 - ease((u - 0.28) / 0.72)); }
+        }
+        if (B.side === inner) s = Math.max(s, 0.3 * turnAmt);                                // inside fin held out as a rudder
         s = THREE.MathUtils.clamp(s, 0, 1);
+        const drive = P_.mode === 'row' ? P_.amp : 0;
         B.hangQ ??= new THREE.Quaternion().setFromUnitVectors(B.out, new THREE.Vector3(0.55, -1, 0.32 * B.side).normalize());
         _q1.identity().slerp(B.hangQ, s);
         B.base.quaternion.copy(_q1).multiply(_q2.setFromAxisAngle(B.out, 0.15 * drive * Math.sin(u * 6.283) * B.side)).multiply(B.base.userData.q0);
-        B.base.scale.set(0.9 + 0.2 * s, 1, 1);                                             // rays spread as the fin drops
-        B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * 0.18 * drive * (u < 0.28 ? 1 : -0.5) * Math.sin(u * Math.PI));
+        B.base.scale.set(0.85 + 0.25 * s, 1, 1);                                           // rays close at rest, spread as the fin drops
+        B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * 0.18 * s * (u < 0.28 ? 1 : -0.5));
       } else {                // pelvic: held pointing down, only a small trim
         const p = F.u.uFinPhase.value * 0.55 + (B.side > 0 ? 0 : 0.6) + 1.1;
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));

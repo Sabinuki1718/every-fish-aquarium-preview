@@ -49,17 +49,38 @@ def main():
     R = rig(np.array(geo['meshes'][0]['p']).reshape(-1, 3), fin, root, kind, ed)
     for b in R['bones'][1:]: print('bone', b['name'], np.round(b['pos'], 4), 'axis', np.round(b['axis'], 2), 'len', round(b.get('len', 0), 4))
     m = geo['meshes'][0]; I = np.array(m['i']).reshape(-1, 3)
-    # Tripo fused the paired fins to the body along their rear edge: those webbing triangles would stretch like threads
-    # when the fin moves. Drop triangles that join a moving fin vertex to a fixed body vertex away from the fin's root.
-    si_ = np.array(R['skinIndex']).reshape(-1, 4); sw_ = np.array(R['skinWeight']).reshape(-1, 4); Pm = np.array(m['p']).reshape(-1, 3)
-    keep = np.ones(len(I), bool)
+    # Tripo fused the paired fins to the body along their rear edge. Those joining triangles would stretch like threads
+    # when the fin moves, but some of them are real membrane, so they are kept: their body-side corners away from the
+    # fin root are duplicated, and the copies move with the fin (the body keeps the originals, so its surface stays whole).
+    Pm = np.array(m['p']).reshape(-1, 3); Nm = np.array(m['n']).reshape(-1, 3); UVm = np.array(m['uv']).reshape(-1, 2)
+    si_ = np.array(R['skinIndex']).reshape(-1, 4); sw_ = np.array(R['skinWeight']).reshape(-1, 4)
+    fin = fin.copy(); root = root.copy(); kind = kind.copy()
+    add = {'p': [], 'n': [], 'uv': [], 'f': [], 'r': [], 'k': [], 'si': [], 'sw': []}
     for bi, b in enumerate(R['bones']):
         if not b['name'].endswith('_base'): continue
+        piv = np.array(b['pos']); Lf = b['len']; kk = 3 if b['name'].startswith('pectoral') else 4
         w = sum(np.where(np.isin(si_[:, j], [bi, bi + 1]), sw_[:, j], 0) for j in range(4))
+        w = np.concatenate([w, np.zeros(len(add['f']))])                 # copies made for other fins: not this bone
+        Pall = np.concatenate([Pm, np.array(add['p']).reshape(-1, 3)])
         tw = w[I]; mixed = (tw.max(1) > 0.5) & (tw.min(1) < 0.2)
-        far = np.linalg.norm(Pm[I].mean(1) - np.array(b['pos']), axis=1) > 0.006
-        keep &= ~(mixed & far); print('drop webbing', b['name'], int((mixed & far).sum()))
-    I = I[keep]
+        far = np.linalg.norm(Pall[I].mean(1) - piv, axis=1) > 0.005
+        copies = {}
+        for ti in np.nonzero(mixed & far)[0]:
+            for c in range(3):
+                v = I[ti, c]
+                if w[v] >= 0.5: continue
+                if v not in copies:
+                    copies[v] = len(Pm) + len(add['f'])
+                    d = np.linalg.norm(Pm[v] - piv); wt = min(1, max(0, (d - 0.2 * Lf) / (0.8 * Lf))) ** 1.2
+                    add['p'].append(Pm[v]); add['n'].append(Nm[v]); add['uv'].append(UVm[v]); add['f'].append(1.0); add['r'].append(d); add['k'].append(kk)
+                    add['si'].append([0, bi, bi + 1, 0]); add['sw'].append([0, 1 - wt, wt, 0])
+                I[ti, c] = copies[v]
+        print('detached', b['name'], int((mixed & far).sum()), 'triangles,', len(copies), 'vertices copied')
+    if add['p']:
+        m['p'] = np.concatenate([Pm, np.array(add['p'])]).round(6).ravel().tolist(); m['n'] = np.concatenate([Nm, np.array(add['n'])]).round(4).ravel().tolist()
+        m['uv'] = np.concatenate([UVm, np.array(add['uv'])]).round(6).ravel().tolist()
+        fin = np.concatenate([fin, add['f']]); root = np.concatenate([root, add['r']]); kind = np.concatenate([kind, add['k']])
+        R['skinIndex'] = np.concatenate([si_, np.array(add['si'])]).ravel().tolist(); R['skinWeight'] = np.concatenate([sw_, np.array(add['sw'])]).round(4).ravel().tolist()
     tf = (fin[I].max(1) >= 0.25) | (np.isin(I, np.nonzero((kind == 3) | (kind == 4))[0]).any(1))   # any triangle touching a fin is drawn as fin (two-sided)
     out = {'units': 'm', 'forward': '-x', 'up': '+y', 'p': m['p'], 'n': m['n'], 'uv': m['uv'],
            'f': [round(float(v), 3) for v in fin], 'r': [round(float(v), 5) for v in root], 'k': [int(v) for v in kind],

@@ -35,7 +35,7 @@ def rig(P, fin, root, kind, ed=None):
             # weights over all vertices near this fin (its piece plus the body skin right around the attachment)
             idx = np.nonzero(sel)[0]
             d_all = np.linalg.norm(P[idx] - pivot, axis=1)
-            w_on = _ss(0.0006, 0.0035, d_all) * np.clip(fin[idx] * 1.6, 0, 1)
+            w_on = _ss(0.0006, 0.0035, d_all)          # every vertex of the fin piece follows fully past the root
             w_tip = np.clip((d_all - 0.2 * L) / (0.8 * L), 0, 1) ** 1.2 * w_on
             si[idx] = np.stack([np.zeros(len(idx), int), np.full(len(idx), b_base), np.full(len(idx), b_tip), np.zeros(len(idx), int)], 1)
             sw[idx] = np.stack([1 - w_on, w_on - w_tip, w_tip, np.zeros(len(idx))], 1)

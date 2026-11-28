@@ -43,18 +43,19 @@
   canvas.addEventListener('webglcontextlost', e => {
     e.preventDefault(); say('画面の描画が中断されました（メモリー不足など）。再読み込みしてください。軽量表示にすると安定することがあります。', true);
   });
-  const ROOM = 0x11161b, WATER = 0x1d3a47;
+  const ROOM = 0x1b2229, WATER = 0x2f6070;
   renderer.setClearColor(ROOM, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18;
   if (STD) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.01, 10);
-  scene.add(new THREE.HemisphereLight(0xd8ecff, 0x3a3328, 1.15));
-  const sun = new THREE.DirectionalLight(0xfffbf2, 2.4);       // aquarium LED above the water
+  scene.add(new THREE.HemisphereLight(0xeaf6ff, 0x6a5c48, 1.75));
+  const fill = new THREE.DirectionalLight(0xcfe6ff, 0.75); fill.position.set(0, 0.3, 1); scene.add(fill);   // room light through the front glass
+  const sun = new THREE.DirectionalLight(0xfffbf2, 3.4);       // aquarium LED above the water
   sun.position.set(0.05, 0.9, 0.12); sun.target.position.set(0, 0, 0); scene.add(sun, sun.target);
   if (STD) {
-    sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.radius = 5; sun.shadow.bias = -0.0008;
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 5; sun.shadow.bias = -0.0008;
     Object.assign(sun.shadow.camera, { left: -0.34, right: 0.34, top: 0.2, bottom: -0.2, near: 0.3, far: 1.2 });
   }
 
@@ -63,7 +64,7 @@
   const W = L.tank.w * cm, D = L.tank.d * cm, H = L.tank.h * cm, WL = L.tank.water * cm;
   const ground = (x, z) => { const t = (D / 2 - z) / D; return 0.03 + 0.03 * t * t; };
 
-  const uniformsCommon = { uTime: { value: 0 }, uCaustic: { value: STD ? 0.55 : 0.35 } };
+  const uniformsCommon = { uTime: { value: 0 }, uCaustic: { value: STD ? 0.9 : 0.6 } };
   const loader = new THREE.TextureLoader();
   const tex = (url, { repeat, srgb = true } = {}) => new Promise((ok, fail) => loader.load(url, t => {
     if (srgb) t.colorSpace = THREE.SRGBColorSpace;
@@ -75,14 +76,16 @@
   const CAUSTIC = `
     uniform float uTime; uniform float uCaustic; varying vec3 vWorldC;
     float causticAt(vec2 p, float t){
-      float c = 0.;
-      c += sin(p.x*61. + t*0.9 + sin(p.y*47. - t*0.7)*1.7);
-      c += sin(p.y*69. - t*0.8 + sin(p.x*53. + t*0.6)*1.5);
-      c += 0.6*sin((p.x+p.y)*83. + t*1.1);
-      c = 1. - abs(c*0.42);
-      return pow(clamp(c,0.,1.), 7.);
+      vec2 q = p * 150.; vec2 i = q; float c = 1.; const float inten = .005;
+      for (int n = 0; n < 4; n++) {
+        float tt = t * 0.32 * (1. - (3.5 / float(n + 1)));
+        i = q + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+        c += 1. / length(vec2(q.x / (sin(i.x + tt) / inten), q.y / (cos(i.y + tt) / inten)));
+      }
+      c /= 4.; c = 1.17 - pow(c, 1.4);
+      return clamp(pow(abs(c), 8.), 0., 1.6);
     }
-`;
+`
   function injectCaustics(sh, mapChunk = '#include <map_fragment>') {
     Object.assign(sh.uniforms, uniformsCommon);
     sh.vertexShader = 'varying vec3 vWorldC;\n' + sh.vertexShader.replace('#include <worldpos_vertex>',
@@ -141,6 +144,60 @@
     }
     const cab = new THREE.Mesh(new THREE.BoxGeometry(W + 0.06, 0.05, D + 0.06), new THREE.MeshStandardMaterial({ color: 0x24201c, roughness: 0.7 }));
     cab.position.y = -0.025; scene.add(cab);
+    for (const o of [edges, cab]) o.material.fog = false;
+    trim.fog = false; glassMat.fog = false;
+    buildWaterLife();
+  }
+
+  // ---------- in-water atmosphere: haze, suspended specks, light shafts ----------
+  scene.fog = new THREE.FogExp2(0x6fa3b2, 0.2);          // slight blue-green haze: the back of the tank recedes
+  let specks, shafts = [];
+  function buildWaterLife() {
+    const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
+    const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+    const n = STD ? 600 : 260, pos = new Float32Array(n * 3), seed = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (Math.random() - .5) * (W - 0.02), z = (Math.random() - .5) * (D - 0.02);
+      pos.set([x, ground(x, z) + 0.01 + Math.random() * (WL - ground(x, z) - 0.02), z], i * 3); seed[i] = Math.random() * 100;
+    }
+    const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    specks = new THREE.Points(g2, new THREE.PointsMaterial({ size: 0.0016, map: new THREE.CanvasTexture(c), transparent: true, opacity: 0.55, depthWrite: false, color: 0xe6f4f2, fog: false }));
+    specks.userData.seed = seed; specks.frustumCulled = false; scene.add(specks);
+    // god rays: additive soft planes hanging from the surface, slowly drifting and flickering
+    const rayMat = seed => new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+      uniforms: { uTime: uniformsCommon.uTime, uSeed: { value: seed }, uI: { value: STD ? 0.085 : 0.06 } },
+      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
+      fragmentShader: `uniform float uTime; uniform float uSeed; uniform float uI; varying vec2 vUv;
+        void main(){
+          float x = vUv.x;
+          float band = 0.5 + 0.5 * sin(x * 9. + uTime * 0.23 + uSeed) * sin(x * 23. - uTime * 0.17 + uSeed * 2.);
+          float edge = smoothstep(0., .35, x) * smoothstep(1., .65, x);
+          float flick = 0.65 + 0.35 * sin(uTime * 0.4 + uSeed * 3.1);
+          float a = uI * band * edge * flick * pow(vUv.y, 1.6);
+          gl_FragColor = vec4(vec3(0.85, 0.95, 1.0) * a, 1.);
+        }`,
+    });
+    for (let k = 0; k < 9; k++) {
+      const w = 0.05 + Math.random() * 0.06, h = WL - 0.03;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), rayMat(k * 1.7));
+      m.position.set(-0.26 + k * 0.065 + (Math.random() - .5) * 0.02, WL - h / 2, (Math.random() - .5) * 0.16);
+      m.rotation.set(0, (Math.random() - .5) * 0.8, 0.12 + (Math.random() - .5) * 0.1); m.renderOrder = 6; m.frustumCulled = false;
+      scene.add(m); shafts.push(m);
+    }
+  }
+  function updateWaterLife(t) {
+    if (!specks) return;
+    const p = specks.geometry.attributes.position, s = specks.userData.seed;
+    for (let i = 0; i < p.count; i++) {
+      const k = s[i];
+      p.setX(i, p.getX(i) + 0.00003 * Math.sin(t * 0.3 + k));
+      p.setY(i, p.getY(i) + 0.00002 * Math.sin(t * 0.21 + k * 1.3) - 0.000004);
+      p.setZ(i, p.getZ(i) + 0.00002 * Math.cos(t * 0.27 + k));
+      if (p.getY(i) < ground(p.getX(i), p.getZ(i)) + 0.004) p.setY(i, WL - 0.01);
+    }
+    p.needsUpdate = true;
   }
 
   // ---------- stones & plants (editable) ----------
@@ -327,12 +384,12 @@
 
   // ---------- fish ----------
   const INFO = {
-    'fish-azumanishiki': ['東錦（あずまにしき）', 'Carassius auratus（金魚の改良品種）',
-      'キャリコ柄（浅葱・黒・赤・白とモザイク透明鱗）のオランダ獅子頭。頭の肉瘤、背鰭、長い四つ尾をもつ。この個体は赤みが少なく、青地に大小の黒斑が散り、鰭には鰭条に沿う黒い筋が入る。全長12 cm（仮の大きさ）。'],
-    'fish-seibun': ['青文魚（せいぶんぎょ）', 'Carassius auratus（金魚の改良品種）',
+    'fish-azumanishiki': ['白黒東錦（しろくろあずまにしき）', 'Carassius auratus（金魚の改良品種）',
+      '東錦（キャリコ柄のオランダ獅子頭）のうち、赤が抜けたタイプ。浅葱色の地に大小の黒斑が散り、モザイク透明鱗が真珠のように光る。肉瘤、背鰭、長い四つ尾をもち、鰭には鰭条に沿って黒い筋が入る。全長12 cm（仮の大きさ）。'],
+    'fish-seibun': ['青文（せいぶん）', 'Carassius auratus（金魚の改良品種）',
       '青灰色のオランダ獅子頭。体も肉瘤も鉄色がかった青で、腹はやや淡い。背鰭と長い四つ尾をもつ。全長12 cm（仮の大きさ）。'],
-    'fish-kigashira': ['黄頭の青白オランダ', 'Carassius auratus（金魚の改良品種）',
-      '山吹色の肉瘤に、背が青灰・腹が白い体のオランダ獅子頭。この配色を指す決まった品種名は確認できなかったため、色柄で呼んでいる。鰭は白く透ける。全長12 cm（仮の大きさ）。'],
+    'fish-kigashira': ['天青（てんせい）', 'Carassius auratus（金魚の改良品種）',
+      '山吹色の肉瘤に、背が青灰・腹が白い体のオランダ獅子頭型の金魚。鰭は白く透ける。全長12 cm（仮の大きさ）。'],
   };
   const fishes = [];
   const FISH_VERT = `
@@ -374,7 +431,11 @@
     m.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, u);
       sh.vertexShader = FISH_VERT + sh.vertexShader.replace('#include <begin_vertex>', FISH_BEGIN);
-      sh.fragmentShader = 'varying float vFin; varying float vRoot;\n' + sh.fragmentShader;
+      Object.assign(sh.uniforms, uniformsCommon);
+      sh.vertexShader = 'varying vec3 vWorldC; varying float vUp;\n' + sh.vertexShader.replace('#include <worldpos_vertex>',
+        '#include <worldpos_vertex>\nvWorldC = (modelMatrix * vec4(transformed, 1.0)).xyz; vUp = normalize(mat3(modelMatrix) * objectNormal).y;');
+      sh.fragmentShader = 'varying float vFin; varying float vRoot; varying float vUp;\n' + CAUSTIC + sh.fragmentShader.replace('#include <color_fragment>',
+        '#include <color_fragment>\n diffuseColor.rgb *= 1. + uCaustic * 0.55 * causticAt(vWorldC.xz, uTime) * smoothstep(0.0, 0.8, vUp);');
       if (kind === 'fin') sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
         // translucent membrane: pale membrane lets the water through, dark rays/streaks stay dense; opaque at the root
         float lum = dot(diffuseColor.rgb, vec3(.299, .587, .114));
@@ -453,7 +514,7 @@
       uniforms: {
         uTime: uniformsCommon.uTime, uRefr: { value: STD ? rtRefr.texture : null }, uRefl: { value: STD ? rtRefl.texture : null },
         uReflVP: { value: new THREE.Matrix4() }, uRes: { value: res }, uUseRT: { value: STD ? 1 : 0 },
-        uTint: { value: new THREE.Color(0x7fa9b4) }, uSky: { value: new THREE.Color(0x2a3138) }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) },
+        uTint: { value: new THREE.Color(0x9cc9d3) }, uSky: { value: new THREE.Color(0x46525d) }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) },
       },
       vertexShader: `
         uniform float uTime; uniform mat4 uReflVP; varying vec3 vW; varying vec4 vReflClip; varying vec3 vN;
@@ -486,11 +547,11 @@
             vec2 rUV = vReflClip.xy / vReflClip.w * .5 + .5;
             vec3 refl = uUseRT > .5 ? texture2D(uRefl, clamp(rUV + off, 0.001, .999)).rgb : uTint * .7;
             float tir = 1. - smoothstep(0.6, 0.72, cosT);          // total internal reflection past ~48.6 deg
-            col = mix(refr * 0.85 + uTint * 0.15, max(refl, uTint * 0.55), max(tir, 0.3) * 0.8);
+            col = mix(refr * 0.85 + uTint * 0.15, max(refl, uTint * 0.8), max(tir, 0.3) * 0.8);
           }
           vec3 L = normalize(vec3(0.05, 1., 0.12));
           float spec = pow(max(dot(reflect(-L, vN), V), 0.), 120.);
-          col += spec * 0.6;
+          col += spec * 0.9 + pow(max(dot(reflect(-L, vN), V), 0.), 900.) * 2.5;   // broad sheen + sharp glints
           vec2 edge = uHalf - abs(vW.xz);                          // meniscus along the glass
           col += 0.14 * (1. - smoothstep(0.0, 0.004, min(edge.x, edge.y)));
           gl_FragColor = vec4(col, uUseRT > .5 ? 1. : 0.25 + 0.4 * (1. - cosT));
@@ -686,6 +747,7 @@
   function step(dt) {
     t += dt; uniformsCommon.uTime.value = t;
     for (const F of fishes) updateFish(F, dt);
+    updateWaterLife(t);
     followWatched();
   }
   function draw() { controls.update(); if (STD && surface) renderWaterPasses(); renderer.render(scene, camera); }

@@ -22,9 +22,9 @@
   "species": [
     {
       "id": "carassius-auratus-azumanishiki",
-      "name_ja": "東錦",
+      "name_ja": "白黒東錦",
       "scientific_name": "Carassius auratus (domesticated goldfish)",
-      "variant": "オランダ型キャリコ。この個体は浅葱地＋黒斑＋白、赤なし",
+      "variant": "東錦の赤抜きタイプ（浅葱地＋黒斑＋白）",
       "photos": [
         "species/carassius-auratus-azumanishiki/photos/01-oblique-dorsal.jpg",
         "species/carassius-auratus-azumanishiki/photos/02-dorsal.jpg",
@@ -82,7 +82,7 @@
     },
     {
       "id": "carassius-auratus-seibun",
-      "name_ja": "青文魚（ブルーオランダ）",
+      "name_ja": "青文",
       "scientific_name": "Carassius auratus (domesticated goldfish)",
       "variant": "青一色のオランダ型",
       "photos": [
@@ -142,9 +142,9 @@
     },
     {
       "id": "carassius-auratus-oranda-yellowhood-blue",
-      "name_ja": "黄頭の青白オランダ（固有の品種名は未確定）",
+      "name_ja": "天青",
       "scientific_name": "Carassius auratus (domesticated goldfish)",
-      "variant": "黄〜橙の肉瘤、背側青灰・腹側白〜淡桃のオランダ型",
+      "variant": "黄〜山吹の肉瘤、背側青灰・腹側白のオランダ型",
       "photos": [
         "species/carassius-auratus-oranda-yellowhood-blue/photos/set-tensei/left.jpg",
         "species/carassius-auratus-oranda-yellowhood-blue/photos/set-tensei/right.jpg",
@@ -245,7 +245,7 @@
       "back_screen": "片面（裏からは非表示）"
     },
     "checks": "Chromium(SwiftShader)でPC幅・スマホ幅(390px, 軽量)・観察・配置変更・色変更・裏から・下からを確認、コンソールエラーなし。実機スマホ・公開ページのCDN読込みは未確認",
-    "stones": "プログラム生成（Tripoは仕上がりを見て検討）"
+    "stones": "Tripoで作り直す予定（複数形状を1回で生成し切り出す）"
   },
   "history": [
     {
@@ -347,6 +347,17 @@
       "at": "2026-11-28",
       "event": "aquarium_published",
       "url": "https://claude.ai/artifact/DmXGUiZxPiCP4NsAnDTSRh"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "names_changed",
+      "quote": "今回の金魚は 青文 白黒東錦　東錦の赤抜きタイプ 天青 とします"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "水槽が暗いので明るくしてください 水と光の描画品質を上げたい",
+      "note": "露出・環境光・正面の補助光・明るい背景、集光模様（反復式）を魚にも適用、光の筋、浮遊する微粒子、水の霞、水面のきらめき、影2048"
     }
   ],
   "shared_model": {

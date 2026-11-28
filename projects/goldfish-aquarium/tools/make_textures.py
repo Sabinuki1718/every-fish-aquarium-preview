@@ -64,7 +64,7 @@ def stone(n=1024):
 
 def background(w=1024, hgt=512):
     y = np.linspace(0, 1, hgt)[:, None, None]
-    top = np.array([66, 98, 118.]); mid = np.array([34, 62, 80.]); bot = np.array([14, 28, 38.])
+    top = np.array([150, 196, 208.]); mid = np.array([92, 146, 162.]); bot = np.array([48, 86, 102.])
     c = np.where(y < 0.6, top * (1 - y / 0.6) + mid * (y / 0.6), mid * (1 - (y - 0.6) / 0.4) + bot * ((y - 0.6) / 0.4))
     c = np.broadcast_to(c, (hgt, w, 3)).copy()
     c *= (1 + 0.05 * fbm(1024, 1.4, 21)[:hgt, :w, None])

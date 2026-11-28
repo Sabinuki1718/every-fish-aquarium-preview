@@ -334,11 +334,11 @@
       for (const [p, t] of [[a.clone().sub(side), t0], [a.clone().add(side), t0], [b.clone().sub(side), t1], [b.clone().add(side), t1]]) { pos.push(p.x, p.y, p.z); col.push(color.r, color.g, color.b); sway.push(t); leaf.push(0.5, t); }
       idx.push(i, i + 2, i + 1, i + 1, i + 2, i + 3);
     };
-    const up = new THREE.Vector3(0, 1, 0), PRI = STD ? 4 : 3, LEVELS = STD ? 3 : 2;
+    const up = new THREE.Vector3(0, 1, 0), PRI = STD ? 6 : 3, LEVELS = STD ? 3 : 2;
     const fork = (from, ang, dy, len, level, nrm, t, color) => {   // recursive dichotomous fork, threads curve slightly
       const d = new THREE.Vector3(Math.cos(ang), dy, Math.sin(ang)).normalize();
       const to = from.clone().addScaledVector(d, len);
-      quad(from, to, 0.0008 - level * 0.0001, nrm, t, t + 0.004, color);
+      quad(from, to, 0.0009 - level * 0.0001, nrm, t, t + 0.004, color);
       if (level + 1 < LEVELS) for (const k of [-1, 1]) fork(to, ang + k * (0.24 - level * 0.07) + (rnd() - 0.5) * 0.08, dy + 0.1 + (rnd() - 0.5) * 0.12, len * (0.85 + rnd() * 0.15), level + 1, nrm, t + 0.004, color);
     };
     for (let s = 0; s < o.count; s++) {
@@ -349,14 +349,14 @@
       let y0 = 0, rot = rnd() * Math.PI;
       while (y0 < h) {
         const r = y0 / h;
-        const gap = 0.0085 * (1 - 0.72 * THREE.MathUtils.smoothstep(r, 0.62, 1)) + 0.0015;   // nodes crowd toward the tip
+        const gap = 0.0125 * (1 - 0.62 * THREE.MathUtils.smoothstep(r, 0.45, 1)) + 0.0006;   // nodes crowd toward the tip
         const a = at(y0), b = at(Math.min(h, y0 + gap)), ta = (y0 + 0.01) / (h + 0.01), tb = Math.min(1, (y0 + gap + 0.01) / (h + 0.01));
         quad(a, b, 0.0014, new THREE.Vector3(0, 0, 1), ta, tb, stemC);
         quad(a, b, 0.0014, new THREE.Vector3(1, 0, 0), ta, tb, stemC);
-        if (r > 0.08) {                                // lowest stem bare (old leaves lost)
-          const size = 0.015 * (1 - 0.8 * THREE.MathUtils.smoothstep(r, 0.5, 1)) * (0.9 + 0.2 * rnd());
-          const lift = -0.12 + 0.25 * rnd() + 1.5 * Math.pow(THREE.MathUtils.smoothstep(r, 0.6, 1), 1.5);   // old leaves spread or droop, young ones fold up
-          c.setHSL(0.24 + rnd() * 0.03, 0.62, 0.24 + 0.12 * r);
+        if (r > 0.05) {                                // lowest stem bare (old leaves lost)
+          const size = 0.026 * (1 - 0.32 * THREE.MathUtils.smoothstep(r, 0.45, 1)) * (0.9 + 0.2 * rnd());   // big fans below, smaller up top
+          const lift = -0.1 + 0.14 * rnd() + 0.95 * Math.pow(THREE.MathUtils.smoothstep(r, 0.35, 1), 1.1);   // lower fans open flat; upper ones tilt up into a cup
+          c.setHSL(0.24 + rnd() * 0.025, 0.7, 0.26 + 0.1 * r);
           rot += Math.PI / 2 + (rnd() - 0.5) * 0.2;
           for (const half of [0, Math.PI]) {           // opposite leaves
             const ang = rot + half;
@@ -365,7 +365,7 @@
             if (nrm.y < 0) nrm.negate();
             const pet = a.clone().addScaledVector(dir, size * 0.25);
             quad(a, pet, 0.0009, nrm, ta, ta + 0.004, c);
-            const spread = 1.5 - 0.6 * THREE.MathUtils.smoothstep(r, 0.7, 1);              // kidney-shaped fan, narrower when young
+            const spread = 1.45 - 0.2 * THREE.MathUtils.smoothstep(r, 0.6, 1);            // two half-disc fans close the circle; narrower when young
             for (let f = -PRI; f <= PRI; f++) fork(pet, ang + f * (spread / PRI) + (rnd() - 0.5) * 0.1, lift + 0.06 * Math.abs(f) + (rnd() - 0.5) * 0.2, size * 0.34 * (1 - 0.04 * Math.abs(f)), 0, nrm, ta + 0.004, c);
           }
         }
@@ -446,15 +446,7 @@
       transformed.y += fw * aRoot * uFinAmp * 0.3 * sin(uFinPhase * 0.7 - aRoot * 60. + 1.2);
     } else if (aKind > 1.5 && aKind < 2.5 || aKind > 4.5) {        // dorsal / anal: sideways ripple along the fin
       transformed.z += fw * aRoot * uFinAmp * 0.8 * sin(uFinPhase * 1.1 - aRoot * 110. - transformed.x * 50.);
-    } else if (aKind > 2.5 && aKind < 3.5) {                        // pectoral: paddle about the root (swing along the fin's normal)
-      vec3 fn = objectNormal * (objectNormal.z * side >= 0. ? 1. : -1.);
-      float a = uPecOpen * sin(uFinPhase * 0.9 + side * 0.7);
-      transformed += fw * aRoot * (fn * a * 1.3 + vec3(0.45 * a, 0.15 * a, 0.));
-    } else if (aKind > 3.5) {                                       // pelvic: open and close in a slower rhythm
-      vec3 fn = objectNormal * (objectNormal.z * side >= 0. ? 1. : -1.);
-      float b = (0.5 * uPecOpen + 0.12) * sin(uFinPhase * 0.62 + 0.8 + side * 0.5);
-      transformed += fw * aRoot * (fn * b * 1.2 + vec3(0.25 * b, 0., 0.));
-    }
+    }                                                               // pectoral & pelvic: moved by bones (skinning)
     // breathing: gill covers flare and the mouth pumps
     float gill = smoothstep(-0.05, -0.043, transformed.x) * (1. - smoothstep(-0.034, -0.026, transformed.x)) * smoothstep(0.008, 0.016, abs(transformed.z)) * (1. - aFin);
     transformed.z += side * gill * 0.0011 * (0.5 + 0.5 * uBreath);
@@ -496,8 +488,10 @@
       position: new THREE.Float32BufferAttribute(d.p, 3), normal: new THREE.Float32BufferAttribute(d.n, 3), uv: new THREE.Float32BufferAttribute(d.uv, 2),
       aFin: new THREE.Float32BufferAttribute(d.f, 1), aRoot: new THREE.Float32BufferAttribute(d.r, 1), aKind: new THREE.Float32BufferAttribute(d.k, 1),
     };
+    attrs.skinIndex = new THREE.Uint16BufferAttribute(d.skinIndex, 4);
+    attrs.skinWeight = new THREE.Float32BufferAttribute(d.skinWeight, 4);
     const mk = index => { const g = new THREE.BufferGeometry(); for (const [k, v] of Object.entries(attrs)) g.setAttribute(k, v); g.setIndex(index); g.computeBoundingSphere(); return g; };
-    fishGeo = { body: mk(d.iBody), fin: mk(d.iFin) };
+    fishGeo = { body: mk(d.iBody), fin: mk(d.iFin), bones: d.bones };
   }
   // Calm loops in front of the stones at each fish's swimming height; speed breathes so the fish drift and pause.
   const PATHS = {                     // separate depth bands (8 cm apart) so the three never meet
@@ -518,17 +512,32 @@
     const map = await tex(M[quality.name === 'light' ? 'light' : 'standard']);
     map.flipY = false;                         // glTF-style UVs (v = 0 at the top of the atlas)
     const u = { uSwimPhase: { value: i * 2.1 }, uSwimAmp: { value: 0.005 }, uFinPhase: { value: i * 1.3 }, uFinAmp: { value: 0.35 }, uBreath: { value: 0 }, uPecOpen: { value: 0.3 } };
-    const body = new THREE.Mesh(fishGeo.body, fishMaterial('body', map, u));
+    const body = new THREE.SkinnedMesh(fishGeo.body, fishMaterial('body', map, u));
     // fins: first write their depth only, then draw the colour over that depth. Only the nearest fin layer is blended,
     // so lobes crossing each other or the body never pop in front/behind as the view turns.
-    const finDepth = new THREE.Mesh(fishGeo.fin, fishMaterial('finDepth', map, u)); finDepth.renderOrder = 1;
-    const fin = new THREE.Mesh(fishGeo.fin, fishMaterial('fin', map, u)); fin.renderOrder = 2;
+    const finDepth = new THREE.SkinnedMesh(fishGeo.fin, fishMaterial('finDepth', map, u)); finDepth.renderOrder = 1;
+    const fin = new THREE.SkinnedMesh(fishGeo.fin, fishMaterial('fin', map, u)); fin.renderOrder = 2;
     for (const m of [body, finDepth, fin]) { m.frustumCulled = false; m.userData.fishId = f.id; }
     body.castShadow = STD; finDepth.castShadow = STD;
-    const root = new THREE.Group(); root.add(body, finDepth, fin); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
+    // skeleton: root bone + base/tip bone per pectoral and pelvic fin (built from the fin attachments)
+    const bones = fishGeo.bones.map(b => { const bone = new THREE.Bone(); bone.name = b.name; bone.position.fromArray(b.pos); return bone; });
+    fishGeo.bones.forEach((b, k) => { if (b.parent >= 0) bones[b.parent].add(bones[k]); });
+    const rig = new THREE.Group(); rig.add(bones[0], body, finDepth, fin); rig.updateMatrixWorld(true);
+    const skeleton = new THREE.Skeleton(bones);
+    for (const m of [body, finDepth, fin]) m.bind(skeleton);
+    const finBones = [];
+    fishGeo.bones.forEach((b, k) => {
+      if (!b.name.endsWith('_base')) return;
+      const hinge = new THREE.Vector3().fromArray(b.axis), out = new THREE.Vector3().fromArray(b.out);
+      const sweep = new THREE.Vector3().crossVectors(hinge, out).normalize();       // normal to the fin: rowing fore and aft
+      const tip = bones[fishGeo.bones.findIndex(x => x.name === b.name.replace('_base', '_tip'))];
+      finBones.push({ base: bones[k], tip, hinge, sweep, pec: b.name.startsWith('pectoral'), side: b.name.includes('_L_') ? 1 : -1 });
+    });
+    const root = new THREE.Group(); root.add(rig); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
     root.userData.fishId = f.id; scene.add(root);
-    fishes.push({ id: f.id, root, u, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
+    fishes.push({ id: f.id, root, u, finBones, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
   }
+  const _q1 = new THREE.Quaternion(), _q2 = new THREE.Quaternion();
   function updateFish(F, dt) {
     if (!F.paused) F.t += dt;
     const { p, v } = pathAt(F.path, F.t), hs = Math.hypot(v[0], v[2]);
@@ -544,6 +553,16 @@
     F.u.uFinAmp.value = F.paused ? 0.1 : 0.16 + 1.2 * speed;
     F.u.uPecOpen.value = F.paused ? 0.5 : 0.32 + 0.35 * Math.min(Math.abs(F.turn), 0.5);
     F.u.uBreath.value = Math.sin(performance.now() * 0.0042 + F.path.ph);
+    // paired fins: the base bone rows (sweep) and opens/closes (about the attachment line); the tip bone lags behind
+    const ph = F.u.uFinPhase.value, open = F.u.uPecOpen.value;
+    for (const B of F.finBones) {
+      const rate = B.pec ? 0.9 : 0.62, amp = B.pec ? 1 : 0.7, p = ph * rate + (B.side > 0 ? 0 : 0.6) + (B.pec ? 0 : 1.1);
+      const row = amp * (0.45 + 0.6 * open) * Math.sin(p);
+      const abd = amp * (0.25 + 0.5 * open) * (0.5 + 0.5 * Math.sin(p + 1.57));
+      _q1.setFromAxisAngle(B.sweep, row); _q2.setFromAxisAngle(B.hinge, abd * B.side);
+      B.base.quaternion.multiplyQuaternions(_q1, _q2);
+      B.tip.quaternion.setFromAxisAngle(B.sweep, 0.45 * amp * (0.4 + open) * Math.sin(p - 0.9));
+    }
   }
 
   // ---------- water surface ----------

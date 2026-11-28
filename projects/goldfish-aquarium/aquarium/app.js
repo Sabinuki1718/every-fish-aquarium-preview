@@ -432,7 +432,7 @@
   const fishes = [];
   const FISH_VERT = `
     attribute float aFin; attribute float aRoot; attribute float aKind;
-    uniform float uSwimPhase; uniform float uSwimAmp; uniform float uFinPhase; uniform float uFinAmp; uniform float uBreath; uniform float uPecOpen;
+    uniform float uSwimPhase; uniform float uSwimAmp; uniform float uFinPhase; uniform float uFinAmp; uniform float uBreath; uniform float uPecOpen; uniform float uCurve;
     varying float vFin; varying float vRoot;
 `;
   const FISH_BEGIN = `#include <begin_vertex>
@@ -453,6 +453,7 @@
     float mouth = smoothstep(-0.052, -0.059, transformed.x);
     transformed.yz *= 1. + mouth * 0.07 * uBreath;
     // body undulation, stronger toward the tail
+    transformed.z += uCurve * (s - 0.42) * (s - 0.42);              // whole body arcs toward the inside of a turn
     float bend = uSwimAmp * pow(smoothstep(0.25, 1., s), 1.4);
     transformed.z += bend * sin(uSwimPhase - s * 4.6);`;
   function fishMaterial(kind, map, u) {
@@ -493,25 +494,33 @@
     const mk = index => { const g = new THREE.BufferGeometry(); for (const [k, v] of Object.entries(attrs)) g.setAttribute(k, v); g.setIndex(index); g.computeBoundingSphere(); return g; };
     fishGeo = { body: mk(d.iBody), fin: mk(d.iFin), bones: d.bones };
   }
-  // Calm loops in front of the stones at each fish's swimming height; speed breathes so the fish drift and pause.
-  const PATHS = {                     // separate depth bands (8 cm apart) so the three never meet
-    'fish-azumanishiki': { c: [-0.02, 0.18, 0.045], a: [0.165, 0.012, 0.035], w: 0.2, ph: 0.4 },
-    'fish-seibun': { c: [0.03, 0.105, 0.055], a: [0.15, 0.01, 0.03], w: -0.17, ph: 2.6 },
-    'fish-kigashira': { c: [0.0, 0.258, 0.03], a: [0.17, 0.012, 0.036], w: 0.15, ph: 4.4 },
+  // Rounded loops (a "stadium": two straights joined by half circles of radius R, about half a body length or more) in front
+  // of the stones, each fish in its own depth band so they never meet. Speed breathes so the fish drift and pause.
+  const PATHS = {
+    'fish-azumanishiki': { c: [-0.02, 0.18, 0.045], hl: 0.11, R: 0.058, dy: 0.012, sp: 0.026, dir: 1, ph: 0.1 },
+    'fish-seibun': { c: [0.03, 0.115, 0.06], hl: 0.1, R: 0.055, dy: 0.01, sp: 0.022, dir: -1, ph: 0.45 },
+    'fish-kigashira': { c: [0.0, 0.258, 0.04], hl: 0.12, R: 0.06, dy: 0.012, sp: 0.024, dir: 1, ph: 0.75 },
   };
   const pathAt = (P, t) => {
-    const u = P.w * t + P.ph + 0.5 * Math.sin(0.11 * t + P.ph);
-    const du = P.w + 0.5 * 0.11 * Math.cos(0.11 * t + P.ph);
-    return {
-      p: [P.c[0] + P.a[0] * Math.sin(u), P.c[1] + P.a[1] * Math.sin(0.5 * u + 1.1), P.c[2] + P.a[2] * Math.cos(u)],
-      v: [P.a[0] * Math.cos(u) * du, P.a[1] * 0.5 * Math.cos(0.5 * u + 1.1) * du, -P.a[2] * Math.sin(u) * du],
-    };
+    const Lp = 4 * P.hl + 2 * Math.PI * P.R;
+    const speed = P.sp * (1 + 0.35 * Math.sin(0.13 * t + P.ph * 9));
+    const dist = P.ph * Lp + P.sp * t - (P.sp * 0.35 / 0.13) * Math.cos(0.13 * t + P.ph * 9);   // integral of speed
+    let u = ((dist % Lp) + Lp) % Lp; if (P.dir < 0) u = Lp - u;
+    const [cx, cy, cz] = P.c, half = Math.PI * P.R, side = 2 * P.hl;
+    let x, z, tx, tz;
+    if (u < side) { x = cx - P.hl + u; z = cz + P.R; tx = 1; tz = 0; }                                      // front straight, +x
+    else if (u < side + half) { const a = Math.PI / 2 - (u - side) / P.R; x = cx + P.hl + P.R * Math.cos(a); z = cz + P.R * Math.sin(a); tx = Math.sin(a); tz = -Math.cos(a); }
+    else if (u < 2 * side + half) { x = cx + P.hl - (u - side - half); z = cz - P.R; tx = -1; tz = 0; }      // back straight, -x
+    else { const a = -Math.PI / 2 - (u - 2 * side - half) / P.R; x = cx - P.hl + P.R * Math.cos(a); z = cz + P.R * Math.sin(a); tx = Math.sin(a); tz = -Math.cos(a); }
+    if (P.dir < 0) { tx = -tx; tz = -tz; }
+    const yb = cy + P.dy * Math.sin(0.21 * t + P.ph * 5), vy = P.dy * 0.21 * Math.cos(0.21 * t + P.ph * 5);
+    return { p: [x, yb, z], v: [tx * speed, vy, tz * speed] };
   };
   async function loadFish(f, i) {
     const M = A.models[f.id];
     const map = await tex(M[quality.name === 'light' ? 'light' : 'standard']);
     map.flipY = false;                         // glTF-style UVs (v = 0 at the top of the atlas)
-    const u = { uSwimPhase: { value: i * 2.1 }, uSwimAmp: { value: 0.005 }, uFinPhase: { value: i * 1.3 }, uFinAmp: { value: 0.35 }, uBreath: { value: 0 }, uPecOpen: { value: 0.3 } };
+    const u = { uSwimPhase: { value: i * 2.1 }, uSwimAmp: { value: 0.005 }, uFinPhase: { value: i * 1.3 }, uFinAmp: { value: 0.35 }, uBreath: { value: 0 }, uPecOpen: { value: 0.3 }, uCurve: { value: 0 } };
     const body = new THREE.SkinnedMesh(fishGeo.body, fishMaterial('body', map, u));
     // fins: first write their depth only, then draw the colour over that depth. Only the nearest fin layer is blended,
     // so lobes crossing each other or the body never pop in front/behind as the view turns.
@@ -531,7 +540,9 @@
       const hinge = new THREE.Vector3().fromArray(b.axis), out = new THREE.Vector3().fromArray(b.out);
       const sweep = new THREE.Vector3().crossVectors(hinge, out).normalize();       // normal to the fin: rowing fore and aft
       const tip = bones[fishGeo.bones.findIndex(x => x.name === b.name.replace('_base', '_tip'))];
-      finBones.push({ base: bones[k], tip, hinge, sweep, pec: b.name.startsWith('pectoral'), side: b.name.includes('_L_') ? 1 : -1 });
+      const down = out.clone().lerp(new THREE.Vector3(0, -1, 0), 0.6).normalize();    // pelvic rest pose: turned toward straight down
+      const rest = new THREE.Quaternion().setFromUnitVectors(out, down);
+      finBones.push({ base: bones[k], tip, hinge, sweep, rest, pec: b.name.startsWith('pectoral'), side: b.name.includes('_L_') ? 1 : -1 });
     });
     const root = new THREE.Group(); root.add(rig); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
     root.userData.fishId = f.id; scene.add(root);
@@ -542,26 +553,38 @@
     if (!F.paused) F.t += dt;
     const { p, v } = pathAt(F.path, F.t), hs = Math.hypot(v[0], v[2]);
     F.root.position.set(...p);
+    // heading eases toward the path direction (no snapping); the body stays level (no banking) and curves into the turn
     const yaw = Math.atan2(v[2], -v[0]);
-    let dyaw = yaw - (F.yaw ?? yaw); dyaw = Math.atan2(Math.sin(dyaw), Math.cos(dyaw));
-    F.yaw = yaw; F.turn = (F.turn ?? 0) * 0.92 + (dt > 0 && !F.paused ? dyaw / dt : 0) * 0.08;
-    F.root.rotation.set(-0.35 * F.turn * 0.25, yaw, -Math.atan2(v[1], hs) * 0.8);
+    if (F.yawS === undefined) F.yawS = yaw;
+    let dy = Math.atan2(Math.sin(yaw - F.yawS), Math.cos(yaw - F.yawS));
+    const prev = F.yawS; F.yawS += dy * Math.min(1, dt * 2.2);
+    const rate = dt > 0 && !F.paused ? Math.atan2(Math.sin(F.yawS - prev), Math.cos(F.yawS - prev)) / dt : 0;
+    F.turn = (F.turn ?? 0) + (rate - (F.turn ?? 0)) * Math.min(1, dt * 3);
+    F.pitch = (F.pitch ?? 0) + (-Math.atan2(v[1], hs) * 0.6 - (F.pitch ?? 0)) * Math.min(1, dt * 1.5);
+    F.root.rotation.set(0, F.yawS, F.pitch);
+    F.u.uCurve.value = THREE.MathUtils.clamp(F.turn * 0.05, -0.03, 0.03);
     const speed = F.paused ? 0 : Math.hypot(...v);
     F.u.uSwimPhase.value += dt * (F.paused ? 1.2 : 5.5 + 55 * speed + 4 * Math.abs(F.turn));
     F.u.uSwimAmp.value = F.paused ? 0.0012 : 0.0035 + 0.011 * Math.min(Math.abs(F.turn), 0.4) + 0.03 * speed;
     F.u.uFinPhase.value += dt * (F.paused ? 1.6 : 3.2 + 30 * speed);
     F.u.uFinAmp.value = F.paused ? 0.1 : 0.16 + 1.2 * speed;
-    F.u.uPecOpen.value = F.paused ? 0.5 : 0.32 + 0.35 * Math.min(Math.abs(F.turn), 0.5);
+    F.u.uPecOpen.value = F.paused ? 0.75 : 0.55 + 0.5 * Math.min(Math.abs(F.turn), 0.6);
     F.u.uBreath.value = Math.sin(performance.now() * 0.0042 + F.path.ph);
     // paired fins: the base bone rows (sweep) and opens/closes (about the attachment line); the tip bone lags behind
     const ph = F.u.uFinPhase.value, open = F.u.uPecOpen.value;
     for (const B of F.finBones) {
-      const rate = B.pec ? 0.9 : 0.62, amp = B.pec ? 1 : 0.7, p = ph * rate + (B.side > 0 ? 0 : 0.6) + (B.pec ? 0 : 1.1);
-      const row = amp * (0.45 + 0.6 * open) * Math.sin(p);
-      const abd = amp * (0.25 + 0.5 * open) * (0.5 + 0.5 * Math.sin(p + 1.57));
-      _q1.setFromAxisAngle(B.sweep, row); _q2.setFromAxisAngle(B.hinge, abd * B.side);
-      B.base.quaternion.multiplyQuaternions(_q1, _q2);
-      B.tip.quaternion.setFromAxisAngle(B.sweep, 0.45 * amp * (0.4 + open) * Math.sin(p - 0.9));
+      const p = ph * (B.pec ? 0.9 : 0.55) + (B.side > 0 ? 0 : 0.6) + (B.pec ? 0 : 1.1);
+      if (B.pec) {            // pectoral: big rowing strokes, opening wide on the forward stroke
+        const row = (0.55 + 0.6 * open) * Math.sin(p);
+        const abd = (0.35 + 0.6 * open) * (0.5 + 0.5 * Math.sin(p + 1.57));
+        _q1.setFromAxisAngle(B.sweep, row); _q2.setFromAxisAngle(B.hinge, abd * B.side);
+        B.base.quaternion.multiplyQuaternions(_q1, _q2);
+        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.55 * (0.4 + open) * Math.sin(p - 0.9));
+      } else {                // pelvic: held pointing down, only a small trim
+        _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));
+        B.base.quaternion.copy(B.rest).multiply(_q1).multiply(_q2);
+        B.tip.quaternion.setFromAxisAngle(B.sweep, 0.08 * Math.sin(p - 0.7));
+      }
     }
   }
 
@@ -657,7 +680,7 @@
     for (const f of fishes) f.paused = false;
     watchId = id;
     F.root.getWorldPosition(watchNow);
-    const s = LIB.watchStart([watchNow.x, watchNow.y, watchNow.z], F.yaw ?? 0, { aspect: camera.aspect, distance: watchDistance() });
+    const s = LIB.watchStart([watchNow.x, watchNow.y, watchNow.z], F.yawS ?? 0, { aspect: camera.aspect, distance: watchDistance() });
     camera.position.set(...LIB.clampWatchCamera(s.camera, { w: W, d: D }, { floorY: 0.07 })); controls.target.set(...s.target);
     controls.minDistance = 0.06; controls.update(); watchPrev.copy(watchNow);
     const [name, sci, text] = INFO[id];

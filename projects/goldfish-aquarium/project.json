@@ -206,17 +206,17 @@
       "oranda-yellowhood-blue": 1
     },
     "counts_quote": "各1匹",
-    "version": 4,
+    "version": 5,
     "files": [
-      "layout/v4/layout.json",
-      "layout/v4/layout-v4-sheet.png"
+      "layout/v5/layout.json"
     ],
     "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
     "assumptions": "水槽寸法・背景・底床の指定なし→既定案",
     "stone_route": "まずプログラム生成、仕上がりを見てTripoを検討",
     "stone_route_quote": "一旦プログラムで作り、仕上がり見てtripoを検討",
     "approved_at": "2026-11-28",
-    "approval_quote": "ok"
+    "approval_quote": "①水草の配置を変更 カボンバを両脇に寄せて、中央は開けるようにしてください",
+    "note": "ユーザー指示による改訂。v4は履歴"
   },
   "aquarium": {
     "status": "done",
@@ -500,6 +500,12 @@
       "event": "aquarium_updated",
       "quote": "浮上潜航を含む魚の進行方向と、胸鰭の漕ぐ向きを一致させてください まっすぐ推進中は、胸鰭を動かさないことも多いと思います 先程提供した動画を参照。",
       "note": "動画再確認: 直進の0〜4秒・9〜10秒は胸鰭をたたんだまま、漕ぐのは低速・方向転換・底付近。魚の実際の速度を体の座標で計測し、直進巡航中は漕がない。漕ぐ条件=停止/低速・減速・浮上/潜航・旋回。漕ぐ向き: 前進=斜め後ろ下、浮上=真下、潜航=前上方、減速=前方。向きは漕ぎの合間に滑らかに切替、振れ角は最大約57°"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "layout_revised",
+      "version": 5,
+      "quote": "カボンバを両脇に寄せて、中央は開けるようにしてください"
     }
   ],
   "shared_model": {

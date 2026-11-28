@@ -512,6 +512,12 @@
       "event": "layout_revised",
       "version": 5,
       "quote": "カボンバとバリスネリア　両方数を増やしてボリュームアップしてください"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "layout_revised",
+      "version": 5,
+      "quote": "バリスネリアの株数を2倍に増やして、右側のカボンバは根元が石の裏に隠れるよう配置してください"
     }
   ],
   "shared_model": {

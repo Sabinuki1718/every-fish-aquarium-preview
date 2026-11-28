@@ -379,12 +379,12 @@
   // centre, shorter and upright; older ones outside, longer and leaning out); plants stand in short rows along runners.
   function vallisneria(o) {
     const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], leaf = [], c = new THREE.Color();
-    const nPlants = Math.max(3, Math.round(o.count / 3.6)), plants = [];
+    const nPlants = Math.max(6, Math.round(o.count / 1.8)), plants = [];
     let rx = (rnd() - 0.5) * 0.02, rz = (rnd() - 0.5) * 0.02, ra = rnd() * Math.PI * 2;
     for (let k = 0; k < nPlants; k++) {                  // walk along a wandering runner, 1.5-3 cm per daughter plant
       plants.push([rx, rz, 0.65 + 0.4 * rnd() * (k === 0 ? 0 : 1) + (k === 0 ? 0.4 : 0)]);
       ra += (rnd() - 0.5) * 1.6; const step = 0.015 + rnd() * 0.015;
-      rx = THREE.MathUtils.clamp(rx + Math.cos(ra) * step, -0.03, 0.03); rz = THREE.MathUtils.clamp(rz + Math.sin(ra) * step, -0.025, 0.025);
+      rx = THREE.MathUtils.clamp(rx + Math.cos(ra) * step, -0.035, 0.035); rz = THREE.MathUtils.clamp(rz + Math.sin(ra) * step, -0.028, 0.028);
     }
     const strip = (pts, w, color, t0) => {               // flat ribbon through pts (used for runners)
       const base = pos.length / 3;

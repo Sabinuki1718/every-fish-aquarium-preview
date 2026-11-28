@@ -198,7 +198,7 @@
 
   // ---------- in-water atmosphere: haze, suspended specks, light shafts ----------
   scene.fog = new THREE.FogExp2(0x6fa3b2, 0.2);          // slight blue-green haze: the back of the tank recedes
-  let specks, shafts = [];
+  let specks, shafts = []; const shaftSide = { value: 1 }, _camDir = new THREE.Vector3();   // shafts fade out when seen from above
   function buildWaterLife() {
     const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
     const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -214,15 +214,15 @@
     // god rays: additive soft planes hanging from the surface, slowly drifting and flickering
     const rayMat = seed => new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-      uniforms: { uTime: uniformsCommon.uTime, uSeed: { value: seed }, uI: { value: STD ? 0.085 : 0.06 } },
+      uniforms: { uTime: uniformsCommon.uTime, uSeed: { value: seed }, uI: { value: STD ? 0.085 : 0.06 }, uSide: shaftSide },
       vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
-      fragmentShader: `uniform float uTime; uniform float uSeed; uniform float uI; varying vec2 vUv;
+      fragmentShader: `uniform float uTime; uniform float uSeed; uniform float uI; uniform float uSide; varying vec2 vUv;
         void main(){
           float x = vUv.x;
           float band = 0.5 + 0.5 * sin(x * 9. + uTime * 0.23 + uSeed) * sin(x * 23. - uTime * 0.17 + uSeed * 2.);
           float edge = smoothstep(0., .35, x) * smoothstep(1., .65, x);
           float flick = 0.65 + 0.35 * sin(uTime * 0.4 + uSeed * 3.1);
-          float a = uI * band * edge * flick * pow(vUv.y, 1.6);
+          float a = uI * uSide * band * edge * flick * pow(vUv.y, 1.6);
           gl_FragColor = vec4(vec3(0.85, 0.95, 1.0) * a, 1.);
         }`,
     });
@@ -316,14 +316,14 @@
       injectCaustics(sh);
       sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
         { float l = dot(diffuseColor.rgb, vec3(.3,.59,.11));
-          diffuseColor.rgb = ${warm ? 'mix(vec3(l), diffuseColor.rgb, 0.2) * vec3(1.25, 0.95, 0.8)' : 'mix(vec3(l), diffuseColor.rgb, 0.42) * vec3(0.95, 0.98, 1.0)'}; }`);
+          diffuseColor.rgb = ${warm ? 'mix(vec3(l), diffuseColor.rgb, 0.12) * (0.32 + 0.35 * l)' : 'mix(vec3(l), diffuseColor.rgb, 0.42) * vec3(0.95, 0.98, 1.0)'}; }`);
     };
-    m.customProgramCacheKey = () => 'stone-tripo-' + (warm ? 'red' : 'blue');
+    m.customProgramCacheKey = () => 'stone-tripo-' + (warm ? 'black' : 'blue');
     return m;
   }
   function makeStone(o) {
     const shape = stoneShapes[STONE_SHAPE[o.id] || 'crouch'];
-    const mesh = new THREE.Mesh(shape.geo, stoneMats[o.color === 'red' ? 'red' : 'blue']);
+    const mesh = new THREE.Mesh(shape.geo, stoneMats[o.color === 'black' ? 'black' : 'blue']);
     const want = o.size.map(v => v * cm), sc = Math.cbrt(want[0] / shape.size[0] * want[1] / shape.size[1] * want[2] / shape.size[2]);
     mesh.scale.setScalar(sc);
     mesh.rotation.y = THREE.MathUtils.degToRad(o.tilt?.[1] || 0);
@@ -384,7 +384,7 @@
     for (let k = 0; k < nPlants; k++) {                  // walk along a wandering runner, 1.5-3 cm per daughter plant
       plants.push([rx, rz, 0.65 + 0.4 * rnd() * (k === 0 ? 0 : 1) + (k === 0 ? 0.4 : 0)]);
       ra += (rnd() - 0.5) * 1.6; const step = 0.015 + rnd() * 0.015;
-      rx = THREE.MathUtils.clamp(rx + Math.cos(ra) * step, -0.045, 0.045); rz = THREE.MathUtils.clamp(rz + Math.sin(ra) * step, -0.035, 0.035);
+      rx = THREE.MathUtils.clamp(rx + Math.cos(ra) * step, -0.03, 0.03); rz = THREE.MathUtils.clamp(rz + Math.sin(ra) * step, -0.025, 0.025);
     }
     const strip = (pts, w, color, t0) => {               // flat ribbon through pts (used for runners)
       const base = pos.length / 3;
@@ -396,11 +396,11 @@
       const nLeaves = 4 + Math.floor(rnd() * 4 + vigor * 2), spin = rnd() * Math.PI * 2;
       for (let lf = 0; lf < nLeaves; lf++) {
         const age = (lf + 0.5) / nLeaves;               // 0 = youngest (centre) .. 1 = oldest (outside)
-        const h = o.height * cm * vigor * (0.45 + 0.6 * age) * (0.85 + 0.25 * rnd());
+        const h = Math.min(o.height * cm * vigor * (0.45 + 0.6 * age) * (0.85 + 0.25 * rnd()), o.maxH ?? 1);
         const w = (0.0055 + 0.004 * age) * (0.9 + 0.2 * rnd());
         const dirA = spin + lf * 2.4;                    // leaves spiral out of the crown (golden angle)
-        const lean = 0.05 + 0.32 * age * (0.6 + 0.6 * rnd());
-        const droop = age > 0.7 ? (rnd() * 0.5) * (age - 0.7) / 0.3 : 0;
+        const lean = 0.04 + 0.16 * age * (0.6 + 0.6 * rnd());
+        const droop = age > 0.7 ? (rnd() * 0.25) * (age - 0.7) / 0.3 : 0;
         const twist = rnd() * 2, segs = STD ? 36 : 24;
         c.setHSL(0.24 + rnd() * 0.05, 0.55 + rnd() * 0.15, 0.2 + 0.08 * (1 - age) + rnd() * 0.05);
         const dx = Math.cos(dirA), dz = Math.sin(dirA), base = pos.length / 3;
@@ -486,21 +486,24 @@
   }
   function makePlant(o) {
     const isVal = o.species.startsWith('バリス');
-    const geo = isVal ? vallisneria(o) : cabomba(o);
+    // leaves stop 1 cm under the water surface wherever the clump stands (the bed is higher at the back)
+    const geo = isVal ? vallisneria({ ...o, maxH: WL - ground(o.pos[0] * cm, o.pos[2] * cm) - 0.012 }) : cabomba(o);
+    geo.computeBoundingBox();
+    const bb = geo.boundingBox, reach = Math.max(-bb.min.x, bb.max.x, -bb.min.z, bb.max.z);   // real horizontal spread
     const mat = isVal ? (makePlant.val ??= plantMaterial('val', true)) : (makePlant.cab ??= plantMaterial('cab', false));
     const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = STD; mesh.frustumCulled = false;
     const root = new THREE.Group(); root.add(mesh); root.userData.id = o.id; scene.add(root);
-    editables.set(o.id, { root, mesh, kind: 'plant', radius: isVal ? 0.045 : 0.035, label: (isVal ? 'バリスネリア' : 'カボンバ') + '（' + (o.role || o.id.replace('plant-', '')) + '）', sink: 0 });
+    editables.set(o.id, { root, mesh, kind: 'plant', radius: reach, label: (isVal ? 'バリスネリア' : 'カボンバ') + '（' + (o.role || o.id.replace('plant-', '')) + '）', sink: 0 });
   }
 
   // ---------- layout state (approved layout -> aquarium-state) ----------
   const approved = L.objects.filter(o => o.kind === 'stone' || o.kind === 'plant').map(o => ({
     id: o.id, kind: o.kind, position: [o.pos[0] * cm, 0, o.pos[2] * cm], rotation: [0, 0, 0],
-    ...(o.kind === 'stone' ? { colorId: o.color === 'red' ? 'red' : 'blue' } : {}),
+    ...(o.kind === 'stone' ? { colorId: o.color === 'black' ? 'black' : 'blue' } : {}),
   }));
   const REVISION = 'layout-v' + L.version;
   const SAVE_KEY = 'karesansui-goldfish:aquarium:' + REVISION;
-  const state = LIB.createAquariumState(approved, { palette: ['blue', 'red'], revision: REVISION });
+  const state = LIB.createAquariumState(approved, { palette: ['blue', 'black'], revision: REVISION });
   function clampPos(id, x, z) {
     const e = editables.get(id), r = e.radius + 0.004;
     return [Math.min(W / 2 - r, Math.max(-W / 2 + r, x)), Math.min(D / 2 - r, Math.max(-D / 2 + r, z))];
@@ -889,7 +892,7 @@
       },
       vertexShader: `
         uniform float uTime; uniform mat4 uReflVP; varying vec3 vW; varying vec4 vReflClip; varying vec3 vN;
-        float wave(vec2 p, float t){ return 0.0010*sin(p.x*31.+t*1.3) + 0.0007*sin(p.y*43.-t*1.1+p.x*9.) + 0.0004*sin((p.x+p.y)*71.+t*2.1) + 0.00025*sin(p.x*131.-p.y*97.+t*2.7); }
+        float wave(vec2 p, float t){ return 0.0006*sin(p.x*31.+t*1.1) + 0.0004*sin(p.y*43.-t*0.9+p.x*9.) + 0.0002*sin((p.x+p.y)*71.+t*1.8) + 0.0001*sin(p.x*131.-p.y*97.+t*2.3); }
         void main(){
           vec4 w = modelMatrix * vec4(position,1.);
           float e = 0.0006;
@@ -906,7 +909,7 @@
             float age = t - uRip[i].z; if (age < 0. || age > 3.) continue;
             float r = length(p - uRip[i].xy), front = age * 0.09;
             float env = exp(-pow((r - front) / 0.012, 2.)) * exp(-age * 1.3) * uRip[i].w;
-            h += 0.00022 * env * cos((r - front) * 420.);
+            h += 0.00011 * env * cos((r - front) * 420.);
           }
           return h;
         }
@@ -922,12 +925,12 @@
           vec3 N = above ? nW : -nW;
           float cosT = clamp(abs(dot(V, N)), 0., 1.);
           vec2 sUV = gl_FragCoord.xy / uRes;
-          vec2 off = nW.xz * 0.25;
+          vec2 off = nW.xz * 0.12;
           vec3 refr = uUseRT > .5 ? texture2D(uRefr, clamp(sUV + off, 0.001, .999)).rgb : uTint;
           vec3 col;
           if (above) {
             float fres = 0.03 + 0.55 * pow(1. - cosT, 5.);
-            col = mix(refr * mix(vec3(1.), uTint, .2), uSky, fres);
+            col = mix(refr * mix(vec3(1.), uTint, .12), uSky, fres * mix(1., 0.4, smoothstep(0.55, 0.95, abs(V.y))));
           } else {
             vec2 rUV = vReflClip.xy / vReflClip.w * .5 + .5;
             vec3 refl = uUseRT > .5 ? texture2D(uRefl, clamp(rUV + off, 0.001, .999)).rgb : uTint * .7;
@@ -935,8 +938,10 @@
             col = mix(refr * 0.85 + uTint * 0.15, max(refl, uTint * 0.8), max(tir, 0.3) * 0.8);
           }
           vec3 L = normalize(vec3(0.05, 1., 0.12));
+          // glare: full at grazing angles, faint when looking straight down so the fish stay visible from above
+          float topView = smoothstep(0.55, 0.95, abs(V.y));
           float spec = pow(max(dot(reflect(-L, nW), V), 0.), 120.);
-          col += spec * 0.9 + pow(max(dot(reflect(-L, nW), V), 0.), 900.) * 2.5;   // broad sheen + sharp glints
+          col += (spec * 0.6 + pow(max(dot(reflect(-L, nW), V), 0.), 900.) * 1.4) * mix(1., 0.15, topView);
           vec2 edge = uHalf - abs(vW.xz);                          // meniscus along the glass
           col += 0.14 * (1. - smoothstep(0.0, 0.004, min(edge.x, edge.y)));
           gl_FragColor = vec4(col, uUseRT > .5 ? 1. : 0.25 + 0.4 * (1. - cosT));
@@ -1136,7 +1141,7 @@
     updateWaterLife(t);
     followWatched();
   }
-  function draw() { controls.update(); if (STD && surface) renderWaterPasses(); renderer.render(scene, camera); }
+  function draw() { controls.update(); camera.getWorldDirection(_camDir); shaftSide.value = 1 - THREE.MathUtils.smoothstep(-_camDir.y, 0.45, 0.85); if (STD && surface) renderWaterPasses(); renderer.render(scene, camera); }
   function loop() {
     requestAnimationFrame(loop);
     if (document.hidden) { clock.getDelta(); return; }
@@ -1152,7 +1157,7 @@
       say('水槽を準備しています…');
       const [sT, sN, sR] = await Promise.all([tex(A.textures['stone-tripo']), tex(A.textures['stone-tripo-n'], { srgb: false }), tex(A.textures['stone-tripo-rm'], { srgb: false })]);
       for (const t of [sT, sN, sR]) t.flipY = false;       // glTF UVs
-      stoneMats = { blue: tripoStoneMaterial(sT, sN, sR, false), red: tripoStoneMaterial(sT, sN, sR, true) };
+      stoneMats = { blue: tripoStoneMaterial(sT, sN, sR, false), black: tripoStoneMaterial(sT, sN, sR, true) };
       await loadStoneShapes();
       await buildTank();
       for (const o of L.objects) { if (o.kind === 'stone') makeStone(o); if (o.kind === 'plant') makePlant(o); }
@@ -1171,7 +1176,7 @@
       step(0.016); loop();
       window.__aquarium = {                    // for automated checks
         advance(sec) { for (let k = 0; k < Math.round(sec * 30); k++) step(1 / 30); draw(); },
-        watch: startWatching, view: setView, mode: setMode, state, fishes, select, camera, controls,
+        watch: startWatching, view: setView, mode: setMode, state, fishes, select, camera, controls, scene,
       };
     } catch (e) {
       console.error(e);

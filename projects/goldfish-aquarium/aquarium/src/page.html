@@ -45,7 +45,8 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
   #info.open #info-text{display:block}}
 body[data-mode="edit"] #info{display:none}
 #status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center}
-#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em;pointer-events:auto}
+#status{z-index:20;pointer-events:none}
 #status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
 #toast{position:absolute;left:50%;top:76px;transform:translateX(-50%);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink)}
 .q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
@@ -86,6 +87,6 @@ body[data-mode="edit"] #info{display:none}
     <span id="views"><button type="button" data-view="front">正面</button> <button type="button" data-view="oblique">斜め</button> <button type="button" data-view="top">上から</button></span>
     <span class="q"><span id="quality-now"></span><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準（水面の反射・屈折と影あり）</option><option value="light">軽量（スマホ向け）</option></select></span>
   </div>
-  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button><button type="button" id="to-light" hidden>軽量表示で開き直す</button></div></div>
 </div>
 __SCRIPTS__

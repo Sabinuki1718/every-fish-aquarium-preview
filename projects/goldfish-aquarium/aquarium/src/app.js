@@ -11,6 +11,7 @@
   const say = (text, retry) => {
     status.hidden = false; status.querySelector('p').textContent = text;
     status.querySelector('button').hidden = !retry;
+    $('to-light').hidden = !retry;                    // whenever something failed, offer the light mode
   };
   status.querySelector('button').addEventListener('click', () => location.reload());
 
@@ -19,17 +20,27 @@
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* storage unavailable: keep running */ } },
   };
-  const QUALITY_KEY = 'karesansui-goldfish:quality';
-  const requested = store.get(QUALITY_KEY) || 'auto';
+  const QUALITY_KEY = 'karesansui-goldfish:quality', TRY_KEY = 'karesansui-goldfish:quality-trying';
+  let requested = store.get(QUALITY_KEY) || 'auto';
+  // A standard-quality start that never finished (the phone ran out of GPU memory and the tab crashed or froze) leaves
+  // TRY_KEY behind: the next visit starts in light mode instead of failing again.
+  let fellBack = false;
+  if (store.get(TRY_KEY) === 'standard' && requested !== 'light') { requested = 'light'; store.set(QUALITY_KEY, 'light'); fellBack = true; }
+  store.set(TRY_KEY, '');
+  const goLight = () => { store.set(QUALITY_KEY, 'light'); store.set(TRY_KEY, ''); location.reload(); };
+  $('to-light').addEventListener('click', goLight);
   const quality = LIB.chooseAquariumQuality({
     userAgent: navigator.userAgent, userAgentMobile: navigator.userAgentData?.mobile,
     maxTouchPoints: navigator.maxTouchPoints, coarsePointer: matchMedia('(pointer:coarse)').matches,
     requestedQuality: requested,
   });
   $('quality').value = requested;
-  $('quality').addEventListener('change', e => { store.set(QUALITY_KEY, e.target.value); location.reload(); });
+  $('quality').addEventListener('change', e => { store.set(QUALITY_KEY, e.target.value); store.set(TRY_KEY, ''); location.reload(); });
   $('quality-now').textContent = quality.name === 'light' ? '軽量で表示中' : '標準で表示中';
   const STD = quality.name === 'standard';
+  if (STD) store.set(TRY_KEY, 'standard');            // cleared once the tank has drawn a few seconds without trouble
+  // a standard start that is still not ready after 25 s: offer the light mode right away
+  const slowTimer = STD ? setTimeout(() => { if (!status.hidden) { say('標準表示の準備に時間がかかっています。この端末では軽量表示をおすすめします。', true); } }, 25000) : 0;
 
   // ---------- renderer ----------
   const canvas = $('view'), stage = $('stage');
@@ -41,7 +52,9 @@
     return;
   }
   canvas.addEventListener('webglcontextlost', e => {
-    e.preventDefault(); say('画面の描画が中断されました（メモリー不足など）。再読み込みしてください。軽量表示にすると安定することがあります。', true);
+    e.preventDefault();
+    if (STD) { store.set(QUALITY_KEY, 'light'); store.set(TRY_KEY, ''); }   // next start is light even if the user just reloads
+    say(STD ? '標準表示では描画が中断されました（メモリー不足など）。次回から軽量表示で開きます。' : '画面の描画が中断されました（メモリー不足など）。再読み込みしてください。', true);
   });
   const ROOM = 0xe6dccb, WATER = 0x2f6070;
   renderer.setClearColor(ROOM, 1);
@@ -1260,8 +1273,10 @@
       await loadFishGeometry();
       for (const [i, f] of L.fish.entries()) await loadFish(f, i);   // one at a time: lower peak memory on phones
       for (const f of L.fish) $('watch-select').append(new Option('観察：' + INFO[f.id][0], f.id));
-      status.hidden = true;
+      status.hidden = true; clearTimeout(slowTimer);
       step(0.016); loop();
+      if (STD) setTimeout(() => store.set(TRY_KEY, ''), 6000);         // survived the first seconds: standard works here
+      if (fellBack) flash('前回、標準表示を開けなかったため軽量表示で開きました');
       window.__aquarium = {                    // for automated checks
         advance(sec) { for (let k = 0; k < Math.round(sec * 30); k++) step(1 / 30); draw(); },
         watch: startWatching, view: setView, mode: setMode, state, fishes, select, camera, controls, scene,

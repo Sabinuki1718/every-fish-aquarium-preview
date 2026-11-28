@@ -45,7 +45,7 @@ def main():
         (Path(td) / 'g.json').write_text(json.dumps(geo)); subprocess.run([sys.executable, '-I', str(ROOT / 'tools/fin_mask.py'), str(Path(td) / 'g.json'), str(Path(td) / 'f.npz')], check=True)
         fm = np.load(Path(td) / 'f.npz'); fin, root, kind = fm['fin'], fm['root'], fm['kind']
     m = geo['meshes'][0]; I = np.array(m['i']).reshape(-1, 3)
-    tf = fin[I].mean(1) >= 0.5
+    tf = fin[I].mean(1) >= 0.35
     out = {'units': 'm', 'forward': '-x', 'up': '+y', 'p': m['p'], 'n': m['n'], 'uv': m['uv'],
            'f': [round(float(v), 3) for v in fin], 'r': [round(float(v), 5) for v in root], 'k': [int(v) for v in kind],
            'iBody': I[~tf].ravel().tolist(), 'iFin': I[tf].ravel().tolist()}

@@ -35,7 +35,7 @@
   const canvas = $('view'), stage = $('stage');
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: quality.antialias, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   } catch (e) {
     say('この端末・ブラウザでは3D表示（WebGL）を開始できませんでした。別のブラウザで開くか、ほかのアプリを閉じてから再読み込みしてください。', true);
     return;
@@ -259,97 +259,135 @@
   }
 
   // Plants: procedural geometry, merged per clump; aSway (0 at the base .. 1 at the tip) drives a slow sway in the vertex shader.
+  // aLeaf = (across the blade 0..1, along the blade 0..1) for the vein pattern of Vallisneria.
   const plantMats = [];
-  function plantMaterial(color, key) {
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide, color });
+  function plantMaterial(key, veins) {
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide });
     m.onBeforeCompile = sh => {
       injectCaustics(sh, '#include <color_fragment>');
-      sh.vertexShader = 'attribute float aSway; uniform float uTime;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+      sh.fragmentShader = sh.fragmentShader.replace('diffuseColor.rgb *= 1. + uCaustic *', 'diffuseColor.rgb *= 1. + 0.3 * uCaustic *');
+      sh.vertexShader = 'attribute float aSway; attribute vec2 aLeaf; varying vec2 vLeaf; uniform float uTime;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+        vLeaf = aLeaf;
         vec4 wp0 = modelMatrix * vec4(position, 1.);
         float k = aSway * aSway;
         transformed.x += k * 0.010 * sin(uTime * 0.75 + wp0.x * 23. + wp0.z * 17.);
         transformed.z += k * 0.006 * sin(uTime * 0.55 + wp0.x * 11. + 1.3);`);
+      sh.fragmentShader = 'varying vec2 vLeaf;\n' + sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        totalEmissiveRadiance += diffuseColor.rgb * 0.1;          // thin leaves glow when the light passes through`);
+      if (veins) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+        {
+          float u = vLeaf.x, v = vLeaf.y;
+          float mid = 1. - smoothstep(0.0, 0.03, abs(u - 0.5));                       // midrib
+          float lat = 0.;                                                              // parallel side veins
+          for (int i = 0; i < 4; i++) { float c = (i < 2) ? 0.14 + 0.16 * float(i) : 0.7 + 0.16 * float(i - 2); lat = max(lat, 1. - smoothstep(0.0, 0.018, abs(u - c))); }
+          float xv = 1. - smoothstep(0.0, 0.12, abs(fract(v * 160. + u * 0.6) - 0.5) * 2.);  // fine cross veins
+          float edge = smoothstep(0.4, 0.5, abs(u - 0.5));
+          float cell = 0.5 + 0.5 * sin(v * 2100.) * sin(u * 70.);
+          diffuseColor.rgb *= 0.92 + 0.08 * cell;
+          diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 1.45 + vec3(0.03, 0.05, 0.0), mid * 0.75 + lat * 0.45);
+          diffuseColor.rgb *= 1. - 0.12 * xv * (1. - mid) - 0.2 * edge;
+        }`);
     };
     m.customProgramCacheKey = () => 'plant-' + key;
     plantMats.push(m); return m;
   }
-  function geometryFrom(pos, col, sway, idx) {
+  function geometryFrom(pos, col, sway, idx, leaf) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
     g.setAttribute('aSway', new THREE.Float32BufferAttribute(sway, 1));
+    g.setAttribute('aLeaf', new THREE.Float32BufferAttribute(leaf, 2));
     g.setIndex(idx); g.computeVertexNormals(); return g;
   }
+  // Vallisneria: long ribbon leaves with a blunt, finely toothed tip; veins are drawn in the shader.
   function vallisneria(o) {
-    const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], c = new THREE.Color();
+    const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], leaf = [], c = new THREE.Color();
     for (let b = 0; b < o.count; b++) {
-      const h = o.height * cm * (0.6 + rnd() * 0.42), w = 0.0075 + rnd() * 0.003;
+      const h = o.height * cm * (0.6 + rnd() * 0.42), w = 0.008 + rnd() * 0.003;
       const bx = (rnd() - 0.5) * 0.07, bz = (rnd() - 0.5) * 0.05, rot = rnd() * Math.PI * 2;
-      const bend = (rnd() - 0.35) * 0.07, twist = rnd() * 2, segs = 22;
-      c.setHSL(0.25 + rnd() * 0.05, 0.5 + rnd() * 0.15, 0.24 + rnd() * 0.1);
+      const bend = (rnd() - 0.35) * 0.07, twist = rnd() * 2, segs = STD ? 40 : 26;
+      c.setHSL(0.25 + rnd() * 0.05, 0.55 + rnd() * 0.15, 0.2 + rnd() * 0.08);
       const cr = Math.cos(rot), sr = Math.sin(rot), base = pos.length / 3;
       for (let s = 0; s <= segs; s++) {
         const t = s / segs, y = t * h - 0.012;
-        const ww = w * (t < 0.92 ? 1 : (1 - t) / 0.08 * 0.9 + 0.1) * (0.85 + 0.15 * Math.sin(t * 9));
+        const tipW = t < 0.94 ? 1 : Math.sqrt(Math.max(0, (1 - t) / 0.06)) * 0.85 + 0.15;
+        const teeth = t > 0.85 ? 1 + 0.08 * (s % 2 ? 1 : -1) : 1;
+        const ww = w * tipW * teeth * (0.9 + 0.1 * Math.sin(t * 9 + b));
         const off = bend * t * t, tw = Math.sin(t * 3 + twist) * 1.1;
         for (const side of [-0.5, 0.5]) {
           const lx = side * ww * Math.cos(tw) + off, lz = side * ww * Math.sin(tw) + 0.012 * Math.sin(t * 2.5 + twist);
           pos.push(bx + lx * cr - lz * sr, y, bz + lx * sr + lz * cr);
-          const sh = 0.75 + 0.35 * t; col.push(c.r * sh, c.g * sh, c.b * sh); sway.push(t);
+          const sh = 0.72 + 0.4 * t; col.push(c.r * sh, c.g * sh, c.b * sh); sway.push(t); leaf.push(side + 0.5, t);
         }
         if (s < segs) { const a = base + s * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
       }
     }
-    return geometryFrom(pos, col, sway, idx);
+    return geometryFrom(pos, col, sway, idx, leaf);
   }
-  // Cabomba: upright stems with opposite pairs of fan-shaped, finely divided leaves at each node.
+  // Cabomba: opposite pairs of fan-shaped leaves, each split into forked threads; nodes crowd and leaves shrink toward
+  // the tip, which ends in a small closed apical bud.
   function cabomba(o) {
-    const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], c = new THREE.Color();
+    const rnd = seeded(o.id), pos = [], col = [], sway = [], idx = [], leaf = [], c = new THREE.Color();
     const quad = (a, b, w, nrm, t0, t1, color) => {   // thin strip from a to b, width w, facing roughly nrm
       const d = new THREE.Vector3().subVectors(b, a), side = new THREE.Vector3().crossVectors(d, nrm).normalize().multiplyScalar(w / 2);
       const i = pos.length / 3;
-      for (const [p, t] of [[a.clone().sub(side), t0], [a.clone().add(side), t0], [b.clone().sub(side), t1], [b.clone().add(side), t1]]) { pos.push(p.x, p.y, p.z); col.push(color.r, color.g, color.b); sway.push(t); }
+      for (const [p, t] of [[a.clone().sub(side), t0], [a.clone().add(side), t0], [b.clone().sub(side), t1], [b.clone().add(side), t1]]) { pos.push(p.x, p.y, p.z); col.push(color.r, color.g, color.b); sway.push(t); leaf.push(0.5, t); }
       idx.push(i, i + 2, i + 1, i + 1, i + 2, i + 3);
     };
-    const up = new THREE.Vector3(0, 1, 0);
+    const up = new THREE.Vector3(0, 1, 0), PRI = STD ? 4 : 3, LEVELS = STD ? 3 : 2;
+    const fork = (from, ang, dy, len, level, nrm, t, color) => {   // recursive dichotomous fork, threads curve slightly
+      const d = new THREE.Vector3(Math.cos(ang), dy, Math.sin(ang)).normalize();
+      const to = from.clone().addScaledVector(d, len);
+      quad(from, to, 0.0008 - level * 0.0001, nrm, t, t + 0.004, color);
+      if (level + 1 < LEVELS) for (const k of [-1, 1]) fork(to, ang + k * (0.24 - level * 0.07) + (rnd() - 0.5) * 0.08, dy + 0.1 + (rnd() - 0.5) * 0.12, len * (0.85 + rnd() * 0.15), level + 1, nrm, t + 0.004, color);
+    };
     for (let s = 0; s < o.count; s++) {
       const h = o.height * cm * (0.7 + rnd() * 0.35), x0 = (rnd() - 0.5) * 0.055, z0 = (rnd() - 0.5) * 0.035;
       const lean = new THREE.Vector3((rnd() - 0.5) * 0.12, 1, (rnd() - 0.5) * 0.12).normalize();
-      const stemC = new THREE.Color().setHSL(0.27, 0.45, 0.28);
-      const nodeGap = 0.0095 + rnd() * 0.002, nodes = Math.floor(h / nodeGap);
-      let rot = rnd() * Math.PI;
-      for (let n = 0; n < nodes; n++) {
-        const y0 = n * nodeGap, a = new THREE.Vector3(x0, -0.01, z0).addScaledVector(lean, y0 + 0.01), b = new THREE.Vector3(x0, -0.01, z0).addScaledVector(lean, y0 + 0.01 + nodeGap);
-        const ta = (y0 + 0.01) / (h + 0.01), tb = (y0 + 0.01 + nodeGap) / (h + 0.01);
-        quad(a, b, 0.0013, new THREE.Vector3(0, 0, 1), ta, tb, stemC);
-        if (y0 < 0.012) continue;                     // lower stem bare (old leaves lost)
-        const tip = (h - y0) / h, size = 0.011 + 0.008 * Math.sin(Math.min(1, (y0 / h) * 1.3) * Math.PI) * (tip < 0.12 ? tip / 0.12 : 1);
-        c.setHSL(0.24 + rnd() * 0.04, 0.55, 0.32 + 0.1 * (y0 / h));
-        rot += Math.PI / 2;
-        for (const sgn of [1, -1]) {                  // opposite leaves
-          const ang = rot + (sgn > 0 ? 0 : Math.PI);
-          const dir = new THREE.Vector3(Math.cos(ang), 0.35 + 0.25 * (y0 / h), Math.sin(ang)).normalize();
-          const nrm = new THREE.Vector3().crossVectors(dir, up).normalize().cross(dir);
-          const petiole = a.clone().addScaledVector(dir, size * 0.22);
-          quad(a, petiole, 0.0008, nrm, ta, ta + 0.01, c);
-          for (let f = -3; f <= 3; f++) {               // fan of forked segments
-            const fa = ang + f * 0.22, fd = new THREE.Vector3(Math.cos(fa), dir.y + 0.04 * Math.abs(f), Math.sin(fa)).normalize();
-            const mid = petiole.clone().addScaledVector(fd, size * 0.42 * (1 - 0.07 * Math.abs(f)));
-            quad(petiole, mid, 0.0007, nrm, ta + 0.01, ta + 0.02, c);
-            for (const fk of [-0.16, 0.16]) {
-              const fd2 = new THREE.Vector3(Math.cos(fa + fk), fd.y + 0.05, Math.sin(fa + fk)).normalize();
-              quad(mid, mid.clone().addScaledVector(fd2, size * 0.38), 0.0006, nrm, ta + 0.02, ta + 0.03, c);
-            }
+      const stemC = new THREE.Color().setHSL(0.27, 0.45, 0.24);
+      const at = y => new THREE.Vector3(x0, -0.01, z0).addScaledVector(lean, y + 0.01);
+      let y0 = 0, rot = rnd() * Math.PI;
+      while (y0 < h) {
+        const r = y0 / h;
+        const gap = 0.0085 * (1 - 0.72 * THREE.MathUtils.smoothstep(r, 0.62, 1)) + 0.0015;   // nodes crowd toward the tip
+        const a = at(y0), b = at(Math.min(h, y0 + gap)), ta = (y0 + 0.01) / (h + 0.01), tb = Math.min(1, (y0 + gap + 0.01) / (h + 0.01));
+        quad(a, b, 0.0014, new THREE.Vector3(0, 0, 1), ta, tb, stemC);
+        quad(a, b, 0.0014, new THREE.Vector3(1, 0, 0), ta, tb, stemC);
+        if (r > 0.08) {                                // lowest stem bare (old leaves lost)
+          const size = 0.015 * (1 - 0.8 * THREE.MathUtils.smoothstep(r, 0.5, 1)) * (0.9 + 0.2 * rnd());
+          const lift = -0.12 + 0.25 * rnd() + 1.5 * Math.pow(THREE.MathUtils.smoothstep(r, 0.6, 1), 1.5);   // old leaves spread or droop, young ones fold up
+          c.setHSL(0.24 + rnd() * 0.03, 0.62, 0.24 + 0.12 * r);
+          rot += Math.PI / 2 + (rnd() - 0.5) * 0.2;
+          for (const half of [0, Math.PI]) {           // opposite leaves
+            const ang = rot + half;
+            const dir = new THREE.Vector3(Math.cos(ang), lift, Math.sin(ang)).normalize();
+            const nrm = new THREE.Vector3().crossVectors(dir, up).normalize().cross(dir);
+            if (nrm.y < 0) nrm.negate();
+            const pet = a.clone().addScaledVector(dir, size * 0.25);
+            quad(a, pet, 0.0009, nrm, ta, ta + 0.004, c);
+            const spread = 1.5 - 0.6 * THREE.MathUtils.smoothstep(r, 0.7, 1);              // kidney-shaped fan, narrower when young
+            for (let f = -PRI; f <= PRI; f++) fork(pet, ang + f * (spread / PRI) + (rnd() - 0.5) * 0.1, lift + 0.06 * Math.abs(f) + (rnd() - 0.5) * 0.2, size * 0.34 * (1 - 0.04 * Math.abs(f)), 0, nrm, ta + 0.004, c);
           }
         }
+        y0 += gap;
+      }
+      // apical bud: tiny folded leaves packed at the tip, opening outward from the centre
+      const tip = at(h);
+      for (let k = 0; k < 4; k++) {
+        const budC = new THREE.Color().setHSL(0.22, 0.6, 0.44 - k * 0.03);
+        const ang = rot + k * Math.PI / 2 + 0.4;
+        const dir = new THREE.Vector3(Math.cos(ang), 2.4 - k * 0.35, Math.sin(ang)).normalize();
+        const nrm = new THREE.Vector3().crossVectors(dir, up).normalize().cross(dir); if (nrm.y < 0) nrm.negate();
+        const base = tip.clone().addScaledVector(lean, -0.0012 * k);
+        for (let f = -2; f <= 2; f++) fork(base, ang + f * 0.32, 2.2 - k * 0.3, 0.0016 + 0.0009 * k, 1, nrm, 1, budC);
       }
     }
-    return geometryFrom(pos, col, sway, idx);
+    return geometryFrom(pos, col, sway, idx, leaf);
   }
   function makePlant(o) {
     const isVal = o.species.startsWith('バリス');
     const geo = isVal ? vallisneria(o) : cabomba(o);
-    const mat = isVal ? (makePlant.val ??= plantMaterial(0xffffff, 'val')) : (makePlant.cab ??= plantMaterial(0xffffff, 'cab'));
+    const mat = isVal ? (makePlant.val ??= plantMaterial('val', true)) : (makePlant.cab ??= plantMaterial('cab', false));
     const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = STD; mesh.frustumCulled = false;
     const root = new THREE.Group(); root.add(mesh); root.userData.id = o.id; scene.add(root);
     editables.set(o.id, { root, mesh, kind: 'plant', radius: isVal ? 0.045 : 0.035, label: (isVal ? 'バリスネリア' : 'カボンバ') + '（' + (o.role || o.id.replace('plant-', '')) + '）', sink: 0 });
@@ -408,12 +446,14 @@
       transformed.y += fw * aRoot * uFinAmp * 0.3 * sin(uFinPhase * 0.7 - aRoot * 60. + 1.2);
     } else if (aKind > 1.5 && aKind < 2.5 || aKind > 4.5) {        // dorsal / anal: sideways ripple along the fin
       transformed.z += fw * aRoot * uFinAmp * 0.8 * sin(uFinPhase * 1.1 - aRoot * 110. - transformed.x * 50.);
-    } else if (aKind > 2.5 && aKind < 3.5) {                        // pectoral: open and close, paddling
-      float a = uPecOpen * sin(uFinPhase * 0.85 + side);
-      transformed.z += side * fw * aRoot * a;
-      transformed.y += fw * aRoot * 0.4 * a;
-    } else if (aKind > 3.5) {                                       // pelvic: gentle open/close
-      transformed.z += side * fw * aRoot * 0.18 * sin(uFinPhase * 0.6 + 0.8);
+    } else if (aKind > 2.5 && aKind < 3.5) {                        // pectoral: paddle about the root (swing along the fin's normal)
+      vec3 fn = objectNormal * (objectNormal.z * side >= 0. ? 1. : -1.);
+      float a = uPecOpen * sin(uFinPhase * 0.9 + side * 0.7);
+      transformed += fw * aRoot * (fn * a * 1.3 + vec3(0.45 * a, 0.15 * a, 0.));
+    } else if (aKind > 3.5) {                                       // pelvic: open and close in a slower rhythm
+      vec3 fn = objectNormal * (objectNormal.z * side >= 0. ? 1. : -1.);
+      float b = (0.5 * uPecOpen + 0.12) * sin(uFinPhase * 0.62 + 0.8 + side * 0.5);
+      transformed += fw * aRoot * (fn * b * 1.2 + vec3(0.25 * b, 0., 0.));
     }
     // breathing: gill covers flare and the mouth pumps
     float gill = smoothstep(-0.05, -0.043, transformed.x) * (1. - smoothstep(-0.034, -0.026, transformed.x)) * smoothstep(0.008, 0.016, abs(transformed.z)) * (1. - aFin);
@@ -425,7 +465,9 @@
     transformed.z += bend * sin(uSwimPhase - s * 4.6);`;
   function fishMaterial(kind, map, u) {
     const m = kind === 'fin'
-      ? new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, side: THREE.DoubleSide, roughness: 0.45 })
+      ? new THREE.MeshStandardMaterial({ map, transparent: true, depthWrite: false, depthFunc: THREE.LessEqualDepth, side: THREE.DoubleSide, roughness: 0.45 })
+      : kind === 'finDepth'
+      ? new THREE.MeshStandardMaterial({ colorWrite: false, depthWrite: true, side: THREE.DoubleSide })
       : (STD ? new THREE.MeshPhysicalMaterial({ map, roughness: 0.38, clearcoat: 0.35, clearcoatRoughness: 0.35, side: THREE.FrontSide })
              : new THREE.MeshStandardMaterial({ map, roughness: 0.42, side: THREE.FrontSide }));
     m.onBeforeCompile = sh => {
@@ -477,9 +519,13 @@
     map.flipY = false;                         // glTF-style UVs (v = 0 at the top of the atlas)
     const u = { uSwimPhase: { value: i * 2.1 }, uSwimAmp: { value: 0.005 }, uFinPhase: { value: i * 1.3 }, uFinAmp: { value: 0.35 }, uBreath: { value: 0 }, uPecOpen: { value: 0.3 } };
     const body = new THREE.Mesh(fishGeo.body, fishMaterial('body', map, u));
+    // fins: first write their depth only, then draw the colour over that depth. Only the nearest fin layer is blended,
+    // so lobes crossing each other or the body never pop in front/behind as the view turns.
+    const finDepth = new THREE.Mesh(fishGeo.fin, fishMaterial('finDepth', map, u)); finDepth.renderOrder = 1;
     const fin = new THREE.Mesh(fishGeo.fin, fishMaterial('fin', map, u)); fin.renderOrder = 2;
-    for (const m of [body, fin]) { m.frustumCulled = false; m.castShadow = STD; m.userData.fishId = f.id; }
-    const root = new THREE.Group(); root.add(body, fin); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
+    for (const m of [body, finDepth, fin]) { m.frustumCulled = false; m.userData.fishId = f.id; }
+    body.castShadow = STD; finDepth.castShadow = STD;
+    const root = new THREE.Group(); root.add(body, finDepth, fin); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
     root.userData.fishId = f.id; scene.add(root);
     fishes.push({ id: f.id, root, u, path: PATHS[f.id] || { c: [0, 0.18, 0.04], a: [0.14, 0.01, 0.03], w: 0.18, ph: i }, t: i * 7.3, paused: false });
   }
@@ -496,7 +542,7 @@
     F.u.uSwimAmp.value = F.paused ? 0.0012 : 0.0035 + 0.011 * Math.min(Math.abs(F.turn), 0.4) + 0.03 * speed;
     F.u.uFinPhase.value += dt * (F.paused ? 1.6 : 3.2 + 30 * speed);
     F.u.uFinAmp.value = F.paused ? 0.1 : 0.16 + 1.2 * speed;
-    F.u.uPecOpen.value = F.paused ? 0.32 : 0.2 + 0.3 * Math.min(Math.abs(F.turn), 0.5);
+    F.u.uPecOpen.value = F.paused ? 0.5 : 0.32 + 0.35 * Math.min(Math.abs(F.turn), 0.5);
     F.u.uBreath.value = Math.sin(performance.now() * 0.0042 + F.path.ph);
   }
 

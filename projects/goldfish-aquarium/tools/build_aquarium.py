@@ -122,11 +122,11 @@ def main():
     (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')
     shutil.copy(AQ / 'src' / 'app.js', AQ / 'app.js')
     page = (AQ / 'src' / 'page.html').read_text(encoding='utf8')
-    assets = {'layout': L, 'geometry': 'models/oranda.json', 'stones': 'models/stones.json', 'models': models, 'textures': textures}
+    assets = {'layout': L, 'geometry': 'models/oranda.json', 'stones': 'models/stones.json', 'models': models, 'textures': textures, 'audio': {'bgm': 'audio/bgm.mp3'}}
     online = page.replace('__SCRIPTS__', '<script>window.AQUARIUM_ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';</script>\n'
                           + online_three_loader(['lib.js', 'app.js']))
     (AQ / 'index.html').write_text(online, encoding='utf8')
-    off = {'layout': L, 'geometry': data_uri(md / 'oranda.json', 'application/json'), 'stones': data_uri(md / 'stones.json', 'application/json'),
+    off = {'layout': L, 'audio': {'bgm': data_uri(AQ / 'audio/bgm.mp3', 'audio/mpeg')}, 'geometry': data_uri(md / 'oranda.json', 'application/json'), 'stones': data_uri(md / 'stones.json', 'application/json'),
            'textures': {k: data_uri(AQ / v) for k, v in textures.items()},
            'models': {k: {'standard': data_uri(AQ / v['standard'])} for k, v in models.items()}}
     for v in off['models'].values(): v['light'] = v['standard']

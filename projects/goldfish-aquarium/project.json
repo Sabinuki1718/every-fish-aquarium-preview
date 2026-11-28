@@ -523,6 +523,12 @@
       "at": "2026-11-28",
       "event": "info_text_replaced",
       "note": "観察パネルの解説をユーザー提供の文面に差し替え（青文→青文魚）"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "添付のBGMを追加してください",
+      "note": "aquarium/audio/bgm.mp3（3分23秒）。ボタンで再生/停止・ループ・音量0.45、タブ非表示で一時停止"
     }
   ],
   "shared_model": {

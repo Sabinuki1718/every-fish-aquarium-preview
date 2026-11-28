@@ -1195,6 +1195,18 @@
   };
   canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', () => { down = null; if (drag) { drag = null; controls.enabled = true; save(); } });
 
+  // ---------- BGM: starts only from the button (browsers block autoplay); loops; remembers the choice per browser ----------
+  const bgm = new Audio(A.audio?.bgm || ''); bgm.loop = true; bgm.volume = 0.45; bgm.preload = 'none';
+  const BGM_KEY = 'karesansui-goldfish:bgm';
+  const setBgm = on => {
+    $('bgm').setAttribute('aria-pressed', on); $('bgm').textContent = on ? '♪ BGM 停止' : '♪ BGM';
+    if (on) bgm.play().catch(() => { $('bgm').setAttribute('aria-pressed', false); $('bgm').textContent = '♪ BGM'; flash('BGMを再生できませんでした'); });
+    else bgm.pause();
+    store.set(BGM_KEY, on ? '1' : '0');
+  };
+  $('bgm').addEventListener('click', () => setBgm(bgm.paused));
+  document.addEventListener('visibilitychange', () => { if (document.hidden && !bgm.paused) { bgm.pause(); bgm.dataset.resume = '1'; } else if (!document.hidden && bgm.dataset.resume) { delete bgm.dataset.resume; bgm.play().catch(() => {}); } });
+
   // ---------- loop ----------
   const clock = new THREE.Clock(); let acc = 0, t = 0;
   const frameMin = 1 / quality.fps;

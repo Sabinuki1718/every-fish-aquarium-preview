@@ -681,12 +681,82 @@
     }
     return null;
   }
+  // ---- surface gulping: rise, tilt nose-up and open/close the mouth at the waterline (ripples + a few bubbles) ----
+  const GULP_PITCH = -0.55;                      // ~30 deg nose-up
+  function startSurface(F, start) {
+    const plants = [...editables.values()].filter(e => e.kind === 'plant');
+    for (let k = 0; k < 30; k++) {
+      const x = THREE.MathUtils.clamp(start[0] + (Math.random() - 0.5) * 0.14, -W / 2 + 0.08, W / 2 - 0.08);
+      const z = THREE.MathUtils.clamp(start[2] + (Math.random() - 0.5) * 0.08, -D / 2 + 0.06, D / 2 - 0.05);
+      if (!plants.every(e => Math.hypot(e.root.position.x - x, e.root.position.z - z) > e.radius + 0.035)) continue;
+      if (!fishes.every(o => o === F || !['rise', 'gulp'].includes(o.mode) || Math.hypot(o.forage.spot[0] - x, o.forage.spot[2] - z) > 0.12)) continue;
+      const yaw = Math.abs(x - start[0]) + Math.abs(z - start[2]) > 0.02 ? Math.atan2(z - start[2], -(x - start[0])) : F.yawS;
+      F.mode = 'rise'; F.forage = { spot: [x, WL - 0.0008, z], start, yaw, t: 0, gulps: 4 + Math.floor(Math.random() * 5), dur: 4.2 };
+      return;
+    }
+    F.nextForage = F.clock + 8;
+  }
+  function surfacePose(F, dt) {
+    const G = F.forage; G.t += dt;
+    const perch = (pitch, below) => { const m = mouthWorldOffset(F, G.yaw, pitch); return [G.spot[0] - m.x, G.spot[1] - below - m.y, G.spot[2] - m.z]; };
+    if (F.mode === 'rise') {
+      const s = ease(G.t / G.dur), sv = ease((G.t / G.dur - 0.1) / 0.9), end = perch(GULP_PITCH, 0.006);
+      const p = [G.start[0] + (end[0] - G.start[0]) * s, G.start[1] + (end[1] - G.start[1]) * sv, G.start[2] + (end[2] - G.start[2]) * s];
+      if (G.t >= G.dur) { F.mode = 'gulp'; G.t = 0; }
+      return { p, yaw: G.yaw, pitch: GULP_PITCH * ease((G.t / G.dur - 0.35) / 0.65), speed: 0.02 * (1 - s), hover: s, brake: s > 0.85 ? 1 : 0, pump: 0 };
+    }
+    if (F.mode === 'gulp') {
+      const CYC = 0.75, c = G.t / CYC, ph = c - Math.floor(c);
+      const up = ph < 0.35 ? ease(ph / 0.35) : 1 - ease((ph - 0.35) / 0.65);     // lips break the surface on each gulp
+      const p = perch(GULP_PITCH - 0.06 * up, 0.004 - 0.0045 * up);
+      if (ph > 0.3 && !G.rippled) { G.rippled = true; addRipple(G.spot[0], G.spot[2], 1); if (Math.random() < 0.6) addBubbles(F, G, 3); }
+      if (ph < 0.2) G.rippled = false;
+      if (c >= G.gulps) { F.mode = 'sink'; G.t = 0; G.from = p; }
+      return { p, yaw: G.yaw + 0.05 * Math.sin(G.t * 0.9), pitch: GULP_PITCH - 0.06 * up, speed: 0, hover: 1, brake: 0, pump: 0, gulp: Math.sin(ph * Math.PI * 2 - 1.2) };
+    }
+    const s = ease(G.t / G.dur), back = pathAt(F.path, F.t).p, sh = ease((G.t / G.dur - 0.1) / 0.9);
+    const p = [G.from[0] + (back[0] - G.from[0]) * sh, G.from[1] + (back[1] - G.from[1]) * s, G.from[2] + (back[2] - G.from[2]) * sh];
+    if (G.t >= G.dur) { F.mode = 'cruise'; F.nextForage = F.clock + 30 + Math.random() * 40; }
+    const v = pathAt(F.path, F.t).v;
+    return { p, yaw: s < 0.5 ? G.yaw : Math.atan2(v[2], -v[0]), pitch: GULP_PITCH * (1 - ease(G.t / (G.dur * 0.6))) + 0.2 * Math.sin(s * Math.PI), speed: 0.015 * s, hover: 1 - s, brake: 0, pump: 0 };
+  }
+  // ripples on the water surface: up to 6 expanding rings (x, z, start time, strength)
+  const ripples = Array.from({ length: 6 }, () => new THREE.Vector4(0, 0, -100, 0)); let ripNext = 0;
+  function addRipple(x, z, k) { ripples[ripNext].set(x, z, uniformsCommon.uTime.value, k); ripNext = (ripNext + 1) % ripples.length; }
+  let bubbles;
+  function addBubbles(F, G, n) {
+    if (!bubbles) {
+      const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
+      const gr = g.createRadialGradient(16, 16, 9, 16, 16, 15); gr.addColorStop(0, 'rgba(255,255,255,0.15)'); gr.addColorStop(0.7, 'rgba(255,255,255,0.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+      const N = 60, geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3).fill(-9), 3));
+      bubbles = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.0028, map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+      bubbles.userData = { life: new Float32Array(N), seed: new Float32Array(N).map(() => Math.random() * 9), next: 0 }; bubbles.frustumCulled = false; scene.add(bubbles);
+    }
+    const P = bubbles.geometry.attributes.position, U = bubbles.userData;
+    const m = mouthWorldOffset(F, G.yaw, GULP_PITCH).add(F.root.position);
+    for (let k = 0; k < n; k++) { const i = U.next = (U.next + 1) % U.life.length; P.setXYZ(i, m.x + (Math.random() - .5) * 0.004, m.y - 0.006 - Math.random() * 0.004, m.z + (Math.random() - .5) * 0.004); U.life[i] = 3; }
+  }
+  function updateBubbles(dt, t) {
+    if (!bubbles) return;
+    const P = bubbles.geometry.attributes.position, U = bubbles.userData;
+    for (let i = 0; i < U.life.length; i++) {
+      if (U.life[i] <= 0) continue;
+      U.life[i] -= dt; let y = P.getY(i) + 0.035 * dt;
+      P.setX(i, P.getX(i) + 0.004 * dt * Math.sin(t * 6 + U.seed[i]));
+      if (y >= WL - 0.001) { U.life[i] = 0; addRipple(P.getX(i), P.getZ(i), 0.25); }
+      if (U.life[i] <= 0) P.setXYZ(i, -9, -9, -9); else P.setY(i, y);
+    }
+    P.needsUpdate = true;
+  }
+
   function startForage(F, start) {
     const spot = pickForageSpot(F, start); if (!spot) { F.nextForage = F.clock + 8; return; }
     const yaw = Math.atan2(spot[2] - start[2], -(spot[0] - start[0]));
     F.mode = 'descend'; F.forage = { spot, start, yaw0: F.yawS, yaw, t: 0, pecks: 3 + Math.floor(Math.random() * 4), k: 0, dur: 4.5 };
   }
   function foragePose(F, dt) {                   // returns { p, yaw, pitch, speed, hover, pump, brake }
+    if (F.mode === 'rise' || F.mode === 'gulp' || F.mode === 'sink') return surfacePose(F, dt);
     const G = F.forage; G.t += dt;
     const perch = (pitch, reach) => {          // fish origin that puts the lips `reach` metres above the spot
       const m = mouthWorldOffset(F, G.yaw, pitch);
@@ -755,7 +825,7 @@
       if (!F.paused) F.t += dt;
       const { p, v } = pathAt(F.path, F.t), hs = Math.hypot(v[0], v[2]), sp = Math.hypot(...v);
       pose = { p, yaw: Math.atan2(v[2], -v[0]), pitch: -Math.atan2(v[1], hs) * 0.6, speed: F.paused ? 0 : sp, hover: F.paused ? 1 : 1 - ease((sp - 0.017) / 0.012), brake: 0, pump: 0 };
-      if (!F.paused && F.clock > F.nextForage) startForage(F, p);
+      if (!F.paused && F.clock > F.nextForage) { if (Math.random() < 0.4) startSurface(F, p); else startForage(F, p); }
     } else pose = F.paused ? { ...F.lastPose, speed: 0, hover: 1, brake: 0 } : foragePose(F, dt);
     F.lastPose = pose;
     F.root.position.set(...pose.p);
@@ -775,7 +845,7 @@
     F.brake = Math.max((F.brake ?? 0) - dt * 1.5, pose.brake);
     // breathing; while pecking the mouth works fast (sucking up grit)
     F.breathPh = (F.breathPh ?? F.path.ph) + dt * (4.2 + 10 * pose.pump);
-    F.u.uBreath.value = Math.sin(F.breathPh) * (1 + 0.6 * pose.pump);
+    F.u.uBreath.value = pose.gulp !== undefined ? 2.6 * pose.gulp : Math.sin(F.breathPh) * (1 + 0.6 * pose.pump);
     // ---- pectoral fins (bones). Goldfish use them for slow manoeuvring: folded back while cruising, sculling
     // alternately while hovering, both flared to brake, the inside fin spread in a turn (cf. Drucker & Lauder, Gibb et al.)
     F.pecPh = (F.pecPh ?? Math.random() * 6) + dt * (5.2 + 2.5 * hover);
@@ -813,7 +883,7 @@
     const mat = new THREE.ShaderMaterial({
       transparent: !STD, side: THREE.DoubleSide, depthWrite: true,
       uniforms: {
-        uTime: uniformsCommon.uTime, uRefr: { value: STD ? rtRefr.texture : null }, uRefl: { value: STD ? rtRefl.texture : null },
+        uRip: { value: ripples }, uTime: uniformsCommon.uTime, uRefr: { value: STD ? rtRefr.texture : null }, uRefl: { value: STD ? rtRefl.texture : null },
         uReflVP: { value: new THREE.Matrix4() }, uRes: { value: res }, uUseRT: { value: STD ? 1 : 0 },
         uTint: { value: new THREE.Color(0x9cc9d3) }, uSky: { value: new THREE.Color(0x46525d) }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) },
       },
@@ -829,16 +899,30 @@
           gl_Position = projectionMatrix * viewMatrix * w;
         }`,
       fragmentShader: `
+        uniform vec4 uRip[6]; uniform float uTime;
+        float ripple(vec2 p, float t){
+          float h = 0.;
+          for (int i = 0; i < 6; i++) {
+            float age = t - uRip[i].z; if (age < 0. || age > 3.) continue;
+            float r = length(p - uRip[i].xy), front = age * 0.09;
+            float env = exp(-pow((r - front) / 0.012, 2.)) * exp(-age * 1.3) * uRip[i].w;
+            h += 0.00022 * env * cos((r - front) * 420.);
+          }
+          return h;
+        }
         uniform sampler2D uRefr; uniform sampler2D uRefl; uniform vec2 uRes; uniform float uUseRT;
         uniform vec3 uTint; uniform vec3 uSky; uniform vec2 uHalf;
         varying vec3 vW; varying vec4 vReflClip; varying vec3 vN;
         void main(){
+          vec3 nW = vN;
+          { float e = 0.0005, r0 = ripple(vW.xz, uTime);                       // expanding rings from gulps and bubbles, per pixel
+            nW = normalize(nW + vec3(-(ripple(vW.xz + vec2(e, 0.), uTime) - r0) / e, 0., -(ripple(vW.xz + vec2(0., e), uTime) - r0) / e)); }
           vec3 V = normalize(cameraPosition - vW);
           bool above = cameraPosition.y > vW.y;
-          vec3 N = above ? vN : -vN;
+          vec3 N = above ? nW : -nW;
           float cosT = clamp(abs(dot(V, N)), 0., 1.);
           vec2 sUV = gl_FragCoord.xy / uRes;
-          vec2 off = vN.xz * 0.25;
+          vec2 off = nW.xz * 0.25;
           vec3 refr = uUseRT > .5 ? texture2D(uRefr, clamp(sUV + off, 0.001, .999)).rgb : uTint;
           vec3 col;
           if (above) {
@@ -851,8 +935,8 @@
             col = mix(refr * 0.85 + uTint * 0.15, max(refl, uTint * 0.8), max(tir, 0.3) * 0.8);
           }
           vec3 L = normalize(vec3(0.05, 1., 0.12));
-          float spec = pow(max(dot(reflect(-L, vN), V), 0.), 120.);
-          col += spec * 0.9 + pow(max(dot(reflect(-L, vN), V), 0.), 900.) * 2.5;   // broad sheen + sharp glints
+          float spec = pow(max(dot(reflect(-L, nW), V), 0.), 120.);
+          col += spec * 0.9 + pow(max(dot(reflect(-L, nW), V), 0.), 900.) * 2.5;   // broad sheen + sharp glints
           vec2 edge = uHalf - abs(vW.xz);                          // meniscus along the glass
           col += 0.14 * (1. - smoothstep(0.0, 0.004, min(edge.x, edge.y)));
           gl_FragColor = vec4(col, uUseRT > .5 ? 1. : 0.25 + 0.4 * (1. - cosT));
@@ -1048,7 +1132,7 @@
   function step(dt) {
     t += dt; uniformsCommon.uTime.value = t;
     for (const F of fishes) updateFish(F, dt);
-    updateGrit(dt);
+    updateGrit(dt); updateBubbles(dt, t);
     updateWaterLife(t);
     followWatched();
   }

@@ -673,12 +673,12 @@
       // pelvic rest pose: swung about its own attachment line (no twist of the fin plane) toward straight down
       let best = 0, lowest = Infinity;
       for (let a = -1.4; a <= 1.4; a += 0.02) { const y = out.clone().applyAxisAngle(hinge, a).y; if (y < lowest) { lowest = y; best = a; } }
-      const rest = new THREE.Quaternion().setFromAxisAngle(hinge, best * 0.7);
+      const rest = new THREE.Quaternion().setFromAxisAngle(hinge, best * 0.7), downAngle = best;
       const side = b.name.includes('_L_') ? 1 : -1;
       // signs so that +open moves the fin away from the body and +back sweeps it toward the tail
       const sOpen = Math.sign((out.clone().applyAxisAngle(hinge, 0.1).z - out.z) * side) || 1;
       const sBack = Math.sign(out.clone().applyAxisAngle(sweep, 0.1).x - out.x) || 1;
-      finBones.push({ base: bones[k], tip, hinge, sweep, out, rest, sOpen, sBack, pec: b.name.startsWith('pectoral'), side });
+      finBones.push({ base: bones[k], tip, hinge, sweep, out, rest, downAngle, sOpen, sBack, pec: b.name.startsWith('pectoral'), side });
     });
     const root = new THREE.Group(); root.add(rig); root.scale.setScalar(f.length_cm / 12); root.rotation.order = 'YZX';
     root.userData.fishId = f.id; scene.add(root);
@@ -872,22 +872,30 @@
     // breathing; while pecking the mouth works fast (sucking up grit)
     F.breathPh = (F.breathPh ?? F.path.ph) + dt * (4.2 + 10 * pose.pump);
     F.u.uBreath.value = pose.gulp !== undefined ? 2.6 * pose.gulp : Math.sin(F.breathPh) * (1 + 0.6 * pose.pump);
-    // ---- pectoral fins (bones). Goldfish use them for slow manoeuvring: folded back while cruising, sculling
-    // alternately while hovering, both flared to brake, the inside fin spread in a turn (cf. Drucker & Lauder, Gibb et al.)
-    F.pecPh = (F.pecPh ?? Math.random() * 6) + dt * (5.2 + 2.5 * hover);
+    // ---- pectoral fins (bones), after the user's reference video of a goldfish:
+    // hovering: both hang down below the gills and row fore and aft like oars, left and right alternately; each stroke is
+    // a quick forward flick with the rays fanned, then a slower sweep back, closing at the end (~0.8 s per cycle).
+    // cruising: folded back along the belly; braking: both swing forward and spread; turning: the inner fin goes forward.
+    F.pecPh = (F.pecPh ?? Math.random()) + dt / (0.8 + 0.35 * (1 - hover));
     const inner = Math.sign(F.turn), turnAmt = Math.min(Math.abs(F.turn) / 0.5, 1);
     for (const B of F.finBones) {
       if (B.pec) {
-        const alt = F.pecPh + (B.side > 0 ? 0 : Math.PI);           // left and right beat alternately
-        const scull = hover * (0.65 * Math.sin(alt));                  // fore-aft sculling
+        const u = ((F.pecPh + (B.side > 0 ? 0 : 0.5)) % 1 + 1) % 1;                         // stroke phase 0..1, sides alternate
+        const fwd = u < 0.3 ? ease(u / 0.3) : 1 - ease((u - 0.3) / 0.7);                 // 1 = fully forward
+        const fanned = u < 0.3 ? 0.6 + 0.4 * ease(u / 0.3) : u < 0.75 ? 1 : 1 - (u - 0.75) / 0.25;
+        const strokeAmp = hover + 0.25 * (1 - hover);                                      // small strokes now and then when cruising
         const cruiseFold = (1 - hover) * (1 - F.brake);
-        let back = 0.75 * cruiseFold + scull - 0.55 * F.brake;
-        let open = -0.3 * cruiseFold + hover * (0.35 + 0.22 * Math.cos(alt)) + 0.75 * F.brake + 0.06 * Math.sin(alt) * (1 - hover);
-        if (B.side === inner) { open += 0.55 * turnAmt; back -= 0.4 * turnAmt; } else { open -= 0.25 * turnAmt; back += 0.25 * turnAmt; }
-        _q1.setFromAxisAngle(B.sweep, back * B.sBack); _q2.setFromAxisAngle(B.hinge, open * B.sOpen);
-        _q3.setFromAxisAngle(B.out, 0.5 * hover * Math.cos(alt));      // feathering: the blade twists on each stroke
-        B.base.quaternion.multiplyQuaternions(_q1, _q2).multiply(_q3);
-        B.tip.quaternion.setFromAxisAngle(B.sweep, B.sBack * (0.35 * hover * Math.sin(alt - 0.9) + 0.25 * cruiseFold));
+        let back = 0.85 * strokeAmp * (0.75 - 2 * fwd) + 0.85 * cruiseFold - 0.7 * F.brake;
+        let open = 0.1 * hover - 0.28 * cruiseFold + 0.55 * F.brake;
+        let spread = 0.78 + 0.32 * fanned * strokeAmp + 0.3 * F.brake;
+        if (B.side === inner) { back -= 0.6 * turnAmt; open += 0.35 * turnAmt; spread += 0.2 * turnAmt; }
+        else { back += 0.25 * turnAmt; open -= 0.15 * turnAmt; }
+        const hang = (0.95 * hover + 0.35 * (1 - hover)) * B.downAngle;                    // hang below the gill
+        _q1.setFromAxisAngle(B.hinge, hang); _q2.setFromAxisAngle(B.sweep, back * B.sBack); _q3.setFromAxisAngle(B.hinge, open * B.sOpen);
+        B.base.quaternion.copy(_q1).multiply(_q2).multiply(_q3);
+        B.base.quaternion.multiply(_q1.setFromAxisAngle(B.out, B.sBack * 0.45 * strokeAmp * Math.sin(u * Math.PI * 2)));   // feathering
+        B.base.scale.set(spread, 1, 1);                                                    // rays fan out / close (fin width ~ fish x)
+        B.tip.quaternion.setFromAxisAngle(B.sweep, B.sBack * (0.3 * strokeAmp * (fwd - 0.5) * -1 + 0.2 * cruiseFold));   // tip trails the stroke
       } else {                // pelvic: held pointing down, only a small trim
         const p = F.u.uFinPhase.value * 0.55 + (B.side > 0 ? 0 : 0.6) + 1.1;
         _q1.setFromAxisAngle(B.sweep, 0.1 * Math.sin(p)); _q2.setFromAxisAngle(B.hinge, 0.06 * B.side * Math.sin(p + 1.2));

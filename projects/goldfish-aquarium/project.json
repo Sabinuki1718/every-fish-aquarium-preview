@@ -82,7 +82,7 @@
     },
     {
       "id": "carassius-auratus-seibun",
-      "name_ja": "青文",
+      "name_ja": "青文魚",
       "scientific_name": "Carassius auratus (domesticated goldfish)",
       "variant": "青一色のオランダ型",
       "photos": [
@@ -518,6 +518,11 @@
       "event": "layout_revised",
       "version": 5,
       "quote": "バリスネリアの株数を2倍に増やして、右側のカボンバは根元が石の裏に隠れるよう配置してください"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "info_text_replaced",
+      "note": "観察パネルの解説をユーザー提供の文面に差し替え（青文→青文魚）"
     }
   ],
   "shared_model": {

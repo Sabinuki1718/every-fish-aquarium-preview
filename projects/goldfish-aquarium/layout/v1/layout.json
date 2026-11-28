@@ -1,0 +1,186 @@
+{
+ "version": 1,
+ "units": "cm; tank center at origin, floor y=0, front glass +z, left -x",
+ "tank": {
+  "w": 60,
+  "d": 30,
+  "h": 36,
+  "water": 33,
+  "background": "deep blue-grey back screen (gradient, darker at bottom)",
+  "substrate": "大磯砂（黒・灰・茶の混じった丸い小砂利）, front 3cm rising to 6cm at back",
+  "light": "white LED top light with soft caustics"
+ },
+ "fish": [
+  {
+   "id": "fish-azumanishiki",
+   "model": "species/carassius-auratus-azumanishiki/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    -10,
+    17,
+    3
+   ],
+   "heading_deg": 20
+  },
+  {
+   "id": "fish-seibun",
+   "model": "species/carassius-auratus-seibun/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    6,
+    13,
+    8
+   ],
+   "heading_deg": 195
+  },
+  {
+   "id": "fish-kigashira",
+   "model": "species/carassius-auratus-oranda-yellowhood-blue/model/v2/fish.glb",
+   "length_cm": 12,
+   "pos": [
+    3,
+    23,
+    -4
+   ],
+   "heading_deg": -15
+  }
+ ],
+ "objects": [
+  {
+   "id": "stone-1",
+   "kind": "stone",
+   "material": "丸みのある川石（青灰）",
+   "pos": [
+    -17,
+    3,
+    -6
+   ],
+   "size": [
+    14,
+    10,
+    10
+   ],
+   "rot": 20,
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-2",
+   "kind": "stone",
+   "material": "丸みのある川石（青灰）",
+   "pos": [
+    -8,
+    3,
+    -9
+   ],
+   "size": [
+    8,
+    6,
+    7
+   ],
+   "rot": -30,
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-3",
+   "kind": "stone",
+   "material": "丸みのある川石（青灰）",
+   "pos": [
+    18,
+    3,
+    -7
+   ],
+   "size": [
+    11,
+    8,
+    9
+   ],
+   "rot": 50,
+   "color": "blue-grey"
+  },
+  {
+   "id": "stone-4",
+   "kind": "stone",
+   "material": "丸みのある川石（青灰）",
+   "pos": [
+    11,
+    3,
+    2
+   ],
+   "size": [
+    5,
+    3.5,
+    4
+   ],
+   "rot": 10,
+   "color": "blue-grey"
+  },
+  {
+   "id": "wood-1",
+   "kind": "driftwood",
+   "material": "流木（角を丸めた枝流木）",
+   "pos": [
+    21,
+    3.5,
+    -6
+   ],
+   "rot": -25,
+   "len": 20
+  },
+  {
+   "id": "plant-vallisneria-L",
+   "kind": "plant",
+   "species": "バリスネリア・スピラリス",
+   "pos": [
+    -25,
+    5,
+    -11
+   ],
+   "count": 18,
+   "height": 28
+  },
+  {
+   "id": "plant-vallisneria-R",
+   "kind": "plant",
+   "species": "バリスネリア・スピラリス",
+   "pos": [
+    26,
+    5,
+    -11
+   ],
+   "count": 14,
+   "height": 26
+  },
+  {
+   "id": "plant-anubias-1",
+   "kind": "plant",
+   "species": "アヌビアス・ナナ（石に活着）",
+   "pos": [
+    -16,
+    10,
+    -5
+   ],
+   "count": 7,
+   "height": 6
+  },
+  {
+   "id": "plant-microsorum-1",
+   "kind": "plant",
+   "species": "ミクロソリウム（流木に活着）",
+   "pos": [
+    20,
+    8,
+    -6
+   ],
+   "count": 8,
+   "height": 10
+  }
+ ],
+ "notes": [
+  "金魚は柔らかい水草を食べるため、硬く食べられにくいアヌビアス・ミクロソリウムと、伸びの早いバリスネリアを選択",
+  "遊泳スペースを前景と中層に広く確保（背の高いオランダ型が泳ぎやすい）",
+  "石は金魚がひれを傷めない丸い川石"
+ ],
+ "assumptions": [
+  "水槽寸法・背景・底床はユーザー指定なし（既定案）"
+ ]
+}

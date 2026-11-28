@@ -43,7 +43,7 @@
           "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 2,
           "files": [
             "species/carassius-auratus-azumanishiki/model/v2/fish.glb"
@@ -66,7 +66,9 @@
           },
           "previous": {
             "version": 1
-          }
+          },
+          "approved_at": "2026-11-28",
+          "approval_quote": "ok"
         }
       }
     },
@@ -92,7 +94,7 @@
           "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 2,
           "files": [
             "species/carassius-auratus-seibun/model/v2/fish.glb"
@@ -116,7 +118,9 @@
           "previous": {
             "version": 1,
             "texture": "Tripo元テクスチャ"
-          }
+          },
+          "approved_at": "2026-11-28",
+          "approval_quote": "ok"
         }
       }
     },
@@ -140,7 +144,7 @@
           "note": "ユーザー提供のTripoモデルを使用するため側面図工程は不要（「すでに生成済みのモデルがあるのでこれ使ってください」）"
         },
         "model": {
-          "status": "waiting_approval",
+          "status": "approved",
           "version": 2,
           "files": [
             "species/carassius-auratus-oranda-yellowhood-blue/model/v2/fish.glb"
@@ -163,19 +167,28 @@
           },
           "previous": {
             "version": 1
-          }
+          },
+          "approved_at": "2026-11-28",
+          "approval_quote": "ok"
         }
       }
     }
   ],
   "layout": {
-    "status": "not_started",
+    "status": "waiting_approval",
     "counts": {
       "azumanishiki": 1,
       "seibun": 1,
       "oranda-yellowhood-blue": 1
     },
-    "counts_quote": "各1匹"
+    "counts_quote": "各1匹",
+    "version": 1,
+    "files": [
+      "layout/v1/layout.json",
+      "layout/v1/layout-v1-sheet.png"
+    ],
+    "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
+    "assumptions": "水槽寸法・背景・底床の指定なし→既定案"
   },
   "aquarium": {
     "status": "not_started"
@@ -238,6 +251,13 @@
       "at": "2026-11-27",
       "event": "changes_requested",
       "quote": "形状はokですが、青文以外、実物よりも目が前方についているようです。その点修正してください"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "approved",
+      "stage": "model",
+      "note": "東錦v2・青文魚v2・黄頭v2",
+      "quote": "ok"
     }
   ],
   "shared_model": {

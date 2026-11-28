@@ -1,5 +1,5 @@
 {
-  "title": "超リアル金魚水槽",
+  "title": "青色金魚の水景",
   "environment": {
     "ai": "claude-code",
     "image_generation": "manual",
@@ -529,6 +529,12 @@
       "event": "aquarium_updated",
       "quote": "添付のBGMを追加してください",
       "note": "aquarium/audio/bgm.mp3（3分23秒）。ボタンで再生/停止・ループ・音量0.45、タブ非表示で一時停止"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_updated",
+      "quote": "①バックスクリーンこれを反映させてください ②タイトルを変更　青色金魚の水景",
+      "note": "背景をユーザー生成の青い雲龍和紙（textures/source/background-unryu-generated.jpg）に、タイトルを『青色金魚の水景』に"
     }
   ],
   "shared_model": {

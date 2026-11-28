@@ -890,9 +890,24 @@
     const P_ = F.pec ??= { mode: 'rest', t: 0, dur: 1 + Math.random() * 2, n: 0 };
     P_.t += dt;
     const STROKE = 0.72;
+    // the fish's own motion, in its body frame (model: forward = -x, up = +y): what the strokes have to produce
+    if (F.prevPos && dt > 0) {
+      _v.copy(F.root.position).sub(F.prevPos).divideScalar(dt).applyQuaternion(_q3.copy(F.root.quaternion).invert());
+      const k = Math.min(1, dt * 1.2);                                                    // ignore the small rocking of each peck
+      const fwd0 = F.mv?.fwd ?? -_v.x;
+      F.mv = { fwd: fwd0 + (-_v.x - fwd0) * k, up: (F.mv?.up ?? _v.y) + (_v.y - (F.mv?.up ?? _v.y)) * k,
+               acc: (F.mv?.acc ?? 0) + (((-_v.x - fwd0) * k) / dt - (F.mv?.acc ?? 0)) * k };
+    }
+    (F.prevPos ??= new THREE.Vector3()).copy(F.root.position);
+    const mv = F.mv ?? { fwd: 0, up: 0, acc: 0 };
+    const rise = THREE.MathUtils.clamp(mv.up / 0.008, -1, 1);                         // + rising, - diving
+    const slowDown = Math.max(F.brake, THREE.MathUtils.clamp(-mv.acc / 0.01, 0, 1));
+    // straight cruising: fins stay folded (as in the reference video); they work when hovering, rising, diving, braking or turning
+    const needRow = hover > 0.4 || slowDown > 0.4 || Math.abs(rise) > 0.45 || Math.abs(F.turn) > 0.35;
     if (P_.mode === 'rest') {
-      const wantNow = F.brake > 0.5 || hover > 0.6 && P_.t > P_.dur * 0.5;
-      if (P_.t >= P_.dur || wantNow) {
+      if (!needRow) P_.t = Math.min(P_.t, P_.dur * 0.6);
+      const wantNow = needRow && (F.brake > 0.5 || P_.t > P_.dur * 0.5);
+      if (needRow && (P_.t >= P_.dur || wantNow)) {
         P_.mode = 'row'; P_.t = 0;
         P_.n = hover > 0.5 || F.brake > 0.5 ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 2);
         P_.amp = hover > 0.5 || F.brake > 0.5 ? 1 : 0.65;
@@ -912,8 +927,16 @@
         if (B.side === inner) s = Math.max(s, 0.3 * turnAmt);                                // inside fin held out as a rudder
         s = THREE.MathUtils.clamp(s, 0, 1);
         const drive = P_.mode === 'row' ? P_.amp : 0;
-        B.hangQ ??= new THREE.Quaternion().setFromUnitVectors(B.out, new THREE.Vector3(0.55, -1, 0.32 * B.side).normalize());
-        _q1.identity().slerp(B.hangQ, s);
+        // stroke direction follows the motion: forward -> sweep down-and-back; rising -> push straight down;
+        // diving -> swing forward-and-up; braking -> swing forward
+        const want = _v.set(0.55 + 0.35 * Math.max(0, rise) * -1 + 0.4 * THREE.MathUtils.clamp(mv.fwd / 0.02, 0, 1) * (1 - slowDown)
+                              - 1.1 * slowDown - 0.9 * Math.max(0, -rise),
+                            -1 + 0.55 * Math.max(0, -rise),
+                            0.32 * B.side).normalize();
+        B.aim = (B.aim ??= want.clone()).lerp(want, Math.min(1, dt * 1.2)).normalize();   // the aim settles between strokes
+        if (P_.mode !== 'row' || s < 0.05) (B.hangQ ??= new THREE.Quaternion()).setFromUnitVectors(B.out, B.aim);
+        B.reach ??= 1; if (P_.mode !== 'row' || s < 0.05) B.reach = Math.min(1, 1.0 / Math.max(0.01, B.out.angleTo(B.aim)));   // never swing more than ~57 deg
+        _q1.identity().slerp(B.hangQ, s * B.reach);
         B.base.quaternion.copy(_q1).multiply(_q2.setFromAxisAngle(B.out, 0.15 * drive * Math.sin(u * 6.283) * B.side)).multiply(B.base.userData.q0);
         B.base.scale.set(0.85 + 0.25 * s, 1, 1);                                           // rays close at rest, spread as the fin drops
         B.tip.quaternion.setFromAxisAngle(_zAxis, B.sBack * 0.18 * s * (u < 0.28 ? 1 : -0.5));

@@ -68,7 +68,15 @@
             "version": 1
           },
           "approved_at": "2026-11-28",
-          "approval_quote": "ok"
+          "approval_quote": "ok",
+          "technical_revision": {
+            "version": 3,
+            "file": "species/carassius-auratus-azumanishiki/model/v3/fish.glb",
+            "sha256": "88496f680c3818ee75ae60281899473c95ba6a44467d11706f0afedc01af1d7a",
+            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
+            "status": "waiting_approval",
+            "note": "水槽はこの版で表示。承認済みはv2"
+          }
         }
       }
     },
@@ -120,7 +128,15 @@
             "texture": "Tripo元テクスチャ"
           },
           "approved_at": "2026-11-28",
-          "approval_quote": "ok"
+          "approval_quote": "ok",
+          "technical_revision": {
+            "version": 3,
+            "file": "species/carassius-auratus-seibun/model/v3/fish.glb",
+            "sha256": "ae097019d1a99d65489c93a8c89849f186f57e6934b04be2e9249c1194b78598",
+            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
+            "status": "waiting_approval",
+            "note": "水槽はこの版で表示。承認済みはv2"
+          }
         }
       }
     },
@@ -169,13 +185,21 @@
             "version": 1
           },
           "approved_at": "2026-11-28",
-          "approval_quote": "ok"
+          "approval_quote": "ok",
+          "technical_revision": {
+            "version": 3,
+            "file": "species/carassius-auratus-oranda-yellowhood-blue/model/v3/fish.glb",
+            "sha256": "a530ff03daf53e1bece214a19ae7c00a2d61d340b57d891e2fb2ebdc72dcc88c",
+            "change": "写真に写らない部分の補完色を、ボクセル最近傍から3次補間（trilinear）に変更し、拡大時のブロック状のにじみを解消。柄・眼の位置・形状はv2と同じ",
+            "status": "waiting_approval",
+            "note": "水槽はこの版で表示。承認済みはv2"
+          }
         }
       }
     }
   ],
   "layout": {
-    "status": "waiting_approval",
+    "status": "approved",
     "counts": {
       "azumanishiki": 1,
       "seibun": 1,
@@ -190,10 +214,38 @@
     "method": "実モデルを使った簡易3Dレンダー（素材は仮）",
     "assumptions": "水槽寸法・背景・底床の指定なし→既定案",
     "stone_route": "まずプログラム生成、仕上がりを見てTripoを検討",
-    "stone_route_quote": "一旦プログラムで作り、仕上がり見てtripoを検討"
+    "stone_route_quote": "一旦プログラムで作り、仕上がり見てtripoを検討",
+    "approved_at": "2026-11-28",
+    "approval_quote": "ok"
   },
   "aquarium": {
-    "status": "not_started"
+    "status": "done",
+    "url": "https://claude.ai/artifact/DmXGUiZxPiCP4NsAnDTSRh",
+    "files": [
+      "aquarium/index.html",
+      "aquarium/aquarium-offline.html",
+      "aquarium/src/app.js",
+      "aquarium/src/page.html",
+      "tools/build_aquarium.py",
+      "tools/make_textures.py",
+      "tools/fin_mask.py"
+    ],
+    "layout_version": 4,
+    "fish_models": "各品種 v3（v2のテクスチャ補完を補間に変えた技術修正版）",
+    "features": {
+      "swim": "実装（経路遊泳・速度変化・旋回のバンク）",
+      "fins": "実装（頂点ごとの鰭マスク: 尾鰭の波打ち・背鰭/臀鰭の揺れ・胸鰭の開閉・腹鰭）",
+      "fin_translucency": "実装（明るい膜は透け、黒い筋・付け根は不透明）",
+      "gill_mouth": "実装（鰓蓋の開閉・口の伸縮、控えめ）",
+      "eye_gaze": "未実装（眼はテクスチャのため）",
+      "watch": "実装（タップ／選択欄で観察、止める・次の魚・全体へ、和名・学名・解説）",
+      "edit": "実装（石・水草の移動と回転、石の個別色・一括色、デフォルトに戻す、localStorage保存）",
+      "water": "標準:反射・屈折・波・メニスカス・集光模様・影／軽量:半透明水面・集光模様",
+      "closed_substrate": "実装（側面・底面を閉じた大磯砂）",
+      "back_screen": "片面（裏からは非表示）"
+    },
+    "checks": "Chromium(SwiftShader)でPC幅・スマホ幅(390px, 軽量)・観察・配置変更・色変更・裏から・下からを確認、コンソールエラーなし。実機スマホ・公開ページのCDN読込みは未確認",
+    "stones": "プログラム生成（Tripoは仕上がりを見て検討）"
   },
   "history": [
     {
@@ -278,6 +330,23 @@
       "event": "changes_requested",
       "stage": "layout",
       "quote": "大磯に戻します"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "approved",
+      "stage": "layout",
+      "version": 4,
+      "quote": "ok"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "technical_revision",
+      "note": "3品種のテクスチャ補完部をtrilinearに（v3）。ユーザー確認待ち"
+    },
+    {
+      "at": "2026-11-28",
+      "event": "aquarium_published",
+      "url": "https://claude.ai/artifact/DmXGUiZxPiCP4NsAnDTSRh"
     }
   ],
   "shared_model": {

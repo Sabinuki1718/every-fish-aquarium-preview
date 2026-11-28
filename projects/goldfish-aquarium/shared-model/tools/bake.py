@@ -60,7 +60,7 @@ def bake(V,F,m,pos,nor,views,photos,power=6):
         col=(img[y0,x0]*(1-ax)*(1-ay)+img[y0,x0+1]*ax*(1-ay)+img[y0+1,x0]*(1-ax)*ay+img[y0+1,x0+1]*ax*ay)
         acc+=col*w[:,None]; wsum+=w; print(key,'covered',(w>0.05).mean().round(3),flush=True)
     return acc,wsum
-def fill_uncovered(pos,acc,wsum,thr=0.02,G=96):
+def fill_uncovered(pos,acc,wsum,thr=0.02,G=128):
     ok=wsum>thr; col=np.zeros_like(acc); col[ok]=acc[ok]/wsum[ok,None]
     lo=pos.min(0); hi=pos.max(0); idx=((pos-lo)/(hi-lo+1e-9)*(G-1)).astype(int)
     gs=np.zeros((G,G,G,3)); gc=np.zeros((G,G,G))
@@ -74,7 +74,17 @@ def fill_uncovered(pos,acc,wsum,thr=0.02,G=96):
             for sh in (-1,1):
                 s2+=np.roll(gs,sh,ax); c2+=np.roll(gc,sh,ax)
         gs=np.where(empty[...,None],s2,gs); gc=np.where(empty,c2,gc)
-    fillc=gs[tuple(idx.T)]/np.maximum(gc[tuple(idx.T)],1e-9)[:,None]
+    # trilinear sampling of the dilated grid (nearest-voxel lookup shows as blocks on close-ups)
+    avg=gs/np.maximum(gc,1e-9)[...,None]; has=(gc>0).astype(float)
+    f=(pos-lo)/(hi-lo+1e-9)*(G-1); i0=np.clip(np.floor(f).astype(int),0,G-2); fr=f-i0
+    fillc=np.zeros((len(pos),3)); wsum2=np.zeros(len(pos))
+    for dx in (0,1):
+        for dy in (0,1):
+            for dz in (0,1):
+                w=(fr[:,0] if dx else 1-fr[:,0])*(fr[:,1] if dy else 1-fr[:,1])*(fr[:,2] if dz else 1-fr[:,2])
+                ii=(i0[:,0]+dx,i0[:,1]+dy,i0[:,2]+dz); w=w*has[ii]
+                fillc+=avg[ii]*w[:,None]; wsum2+=w
+    fillc/=np.maximum(wsum2,1e-9)[:,None]
     # smooth blend for weakly covered texels
     a=np.clip(wsum/0.15,0,1)[:,None]
     safe=np.where(wsum[:,None]>0,acc/np.maximum(wsum,1e-9)[:,None],0)

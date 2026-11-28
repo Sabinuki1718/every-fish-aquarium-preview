@@ -1,0 +1,98 @@
+<title>枯山水の金魚水槽</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
+<style>
+/* Layout: the tank fills a dark room; title top-left, controls float along the bottom edge,
+   the fish card opens top-right (bottom on phones), and the layout editor opens as a sheet above the controls. */
+:root{
+  --room:#101418; --room-2:#1a2027; --ink:#e8ebe8; --ink-soft:#a9b3ba; --accent:#d9a441; --line:#3a444d; --sheet:#171d23;
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--room);color:var(--ink);font-family:var(--body);overflow:hidden}
+#stage{position:relative;height:100%;background:radial-gradient(120% 90% at 50% 40%,var(--room-2) 40%,var(--room))}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+header{position:absolute;top:12px;left:0;right:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:grid;gap:2px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(20px,4.6vw,28px);letter-spacing:.08em;margin:0;text-wrap:balance}
+.hint{margin:0;color:var(--ink-soft);font-size:12.5px;line-height:1.6}
+body[data-mode="edit"] .hint-view,body[data-mode="view"] .hint-edit{display:none}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:8px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+button,select{font:500 14px var(--body);color:var(--ink);background:color-mix(in srgb,var(--sheet) 82%,transparent);border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--sheet))}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex}
+.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0;border-left:0}
+#watch-bar{display:inline-flex;gap:6px}
+#edit-panel{position:absolute;left:0;right:0;bottom:64px;max-height:calc(100% - 120px);display:flex;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.sheet{pointer-events:auto;width:min(560px,100%);max-height:min(42vh,100%);overflow:auto;background:color-mix(in srgb,var(--sheet) 94%,transparent);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > label{font-size:13px;color:var(--ink-soft);min-width:4.5em}
+input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.note{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.6}
+#info{position:absolute;top:84px;right:max(16px,env(safe-area-inset-right,0px));width:min(320px,calc(100% - 32px));background:color-mix(in srgb,var(--sheet) 90%,transparent);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#info p{margin:0;font-size:13px;line-height:1.7;color:var(--ink-soft)}
+#info .info-name{display:grid;gap:0}
+#info-name{font-family:var(--display);font-size:18px;color:var(--ink)}
+#info-sci{font-style:italic;font-size:12px}
+@media (max-width:600px){#info{top:auto;right:16px;padding:10px 12px;gap:6px}
+  #info-name{font-size:16px}
+  #info-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+  #info.open #info-text{display:block}}
+body[data-mode="edit"] #info{display:none}
+#status{position:absolute;inset:0;display:grid;place-items:center;padding-inline:16px;text-align:center}
+#status div{display:grid;gap:10px;justify-items:center;max-width:30em}
+#status p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.7}
+#toast{position:absolute;left:50%;top:76px;transform:translateX(-50%);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink)}
+.q{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)}
+.q select{min-height:32px;padding:4px 10px;font-size:12px}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}
+</style>
+<div id="stage">
+  <canvas id="view" aria-label="枯山水の金魚水槽：東錦・青文魚・黄頭の青白オランダが泳ぐ3D水槽"></canvas>
+  <header>
+    <h1>枯山水の金魚水槽</h1>
+    <p class="hint hint-view">ドラッグで回転、ピンチ・ホイールで拡大。金魚をタップすると、その1匹を追いかけて観察できます。</p>
+    <p class="hint hint-edit">石や水草をタップして選び、ドラッグで動かせます。下の欄でも調整できます。</p>
+  </header>
+  <div id="toast" role="status" hidden></div>
+  <aside id="info" hidden aria-live="polite">
+    <p class="info-name"><span id="info-name"></span><span id="info-sci"></span></p>
+    <p id="info-text"></p>
+  </aside>
+  <div id="edit-panel" hidden>
+    <div class="sheet">
+      <div class="row"><label for="obj-select">選択</label><select id="obj-select"><option value="">（なし）</option></select></div>
+      <div id="obj-controls" hidden style="display:grid;gap:10px">
+        <div class="row"><label for="pos-x">左右（cm）</label><input id="pos-x" type="range" min="-30" max="30" step="0.5"></div>
+        <div class="row"><label for="pos-z">前後（cm）</label><input id="pos-z" type="range" min="-15" max="15" step="0.5"></div>
+        <div class="row"><label for="rot-y">向き（度）</label><input id="rot-y" type="range" min="-180" max="180" step="1"></div>
+        <div class="row" id="stone-color"><label>この石の色</label><button type="button" data-color="blue">青系</button><button type="button" data-color="red">赤系</button></div>
+      </div>
+      <div class="row"><label>石をすべて</label><button type="button" data-all-color="blue">青系にする</button><button type="button" data-all-color="red">赤系にする</button></div>
+      <div class="row"><button type="button" id="reset">デフォルトに戻す</button></div>
+      <p class="note">配置と色はこのブラウザに保存され、次に開いたときに続きから表示されます。「デフォルトに戻す」で承認した配置と色に戻ります。</p>
+    </div>
+  </div>
+  <div class="bar">
+    <span class="seg"><button type="button" id="mode-view" aria-pressed="true">眺める</button><button type="button" id="mode-edit" aria-pressed="false">配置を変更</button></span>
+    <select id="watch-select" aria-label="観察する金魚"><option value="">観察：全体を見る</option></select>
+    <span id="watch-bar" hidden><button type="button" id="watch-pause" aria-pressed="false">止める</button><button type="button" id="watch-next">次の魚</button><button type="button" id="watch-end">全体へ</button></span>
+    <span id="views"><button type="button" data-view="front">正面</button> <button type="button" data-view="oblique">斜め</button> <button type="button" data-view="top">上から</button></span>
+    <span class="q"><span id="quality-now"></span><select id="quality" aria-label="画質"><option value="auto">画質：自動</option><option value="standard">標準（水面の反射・屈折と影あり）</option><option value="light">軽量（スマホ向け）</option></select></span>
+  </div>
+  <div id="status"><div><p>読み込み中…</p><button type="button" hidden>再読み込み</button></div></div>
+</div>
+<script>window.AQUARIUM_ASSETS={"layout": {"version": 4, "units": "cm; tank center at origin, floor y=0, front glass +z, left -x", "tank": {"w": 60, "d": 30, "h": 36, "water": 33, "background": "deep blue-grey back screen (gradient, darker at bottom)", "substrate": "大磯砂（黒・灰・茶の混じった丸い小砂利）。手前3cm→奥6cm。砂紋なし", "light": "white LED top light with soft caustics"}, "style": "枯山水風の石組み：左寄りに三尊石組（立石の主石＋脇石2）、右奥に二石組、散石2。計7石。前景は砂紋の『海』として空ける", "fish": [{"id": "fish-azumanishiki", "model": "species/carassius-auratus-azumanishiki/model/v2/fish.glb", "length_cm": 12, "pos": [-6, 19, 4], "heading_deg": 20}, {"id": "fish-seibun", "model": "species/carassius-auratus-seibun/model/v2/fish.glb", "length_cm": 12, "pos": [12, 13, 6], "heading_deg": 195}, {"id": "fish-kigashira", "model": "species/carassius-auratus-oranda-yellowhood-blue/model/v2/fish.glb", "length_cm": 12, "pos": [4, 25, -3], "heading_deg": -15}], "objects": [{"id": "stone-1", "kind": "stone", "role": "三尊石組・主石（立石）", "pos": [-12, 0, -6], "size": [9, 18, 8], "tilt": [0, 25, 6], "color": "blue-grey"}, {"id": "stone-2", "kind": "stone", "role": "三尊石組・左脇石", "pos": [-19, 0, -4], "size": [8, 10, 7], "tilt": [0, -30, -10], "color": "blue-grey"}, {"id": "stone-3", "kind": "stone", "role": "三尊石組・右脇石", "pos": [-5, 0, -2.5], "size": [6, 6, 6], "tilt": [0, 60, 8], "color": "blue-grey"}, {"id": "stone-4", "kind": "stone", "role": "二石組・主", "pos": [16, 0, -8], "size": [8, 11, 7], "tilt": [0, -20, -7], "color": "blue-grey"}, {"id": "stone-5", "kind": "stone", "role": "二石組・従", "pos": [21.5, 0, -5], "size": [5, 4.5, 5], "tilt": [0, 40, 0], "color": "blue-grey"}, {"id": "stone-6", "kind": "stone", "role": "散石（平石）", "pos": [4, 0, 3], "size": [4.5, 2, 4], "tilt": [0, 15, 0], "color": "blue-grey"}, {"id": "stone-7", "kind": "stone", "role": "散石", "pos": [-24, 0, 7], "size": [3.5, 2.5, 3], "tilt": [0, 70, 0], "color": "blue-grey"}, {"id": "plant-vallisneria-L", "kind": "plant", "species": "バリスネリア", "pos": [-25, 0, -11], "count": 18, "height": 28}, {"id": "plant-vallisneria-R", "kind": "plant", "species": "バリスネリア", "pos": [26, 0, -11], "count": 14, "height": 27}, {"id": "plant-cabomba-1", "kind": "plant", "species": "カボンバ", "role": "中央奥の高い群", "pos": [5, 0, -11], "count": 11, "height": 24}, {"id": "plant-cabomba-2", "kind": "plant", "species": "カボンバ", "role": "三尊石組の右後ろの低い群", "pos": [-4, 0, -8], "count": 5, "height": 12}, {"id": "plant-cabomba-3", "kind": "plant", "species": "カボンバ", "role": "二石組の左後ろの低い群", "pos": [11, 0, -9.5], "count": 4, "height": 10}], "notes": ["流木なし（ユーザー指定）", "水草はバリスネリアとカボンバ（ユーザー指定）。カボンバは金魚が食べることがある", "カボンバは高さ違いで3群（ユーザー指定）", "底床は大磯砂（ユーザー指定「大磯に戻します」）"], "assumptions": []}, "geometry": "models/oranda.json", "models": {"fish-azumanishiki": {"standard": "models/azumanishiki-2048.jpg", "light": "models/azumanishiki-1024.jpg"}, "fish-seibun": {"standard": "models/seibun-2048.jpg", "light": "models/seibun-1024.jpg"}, "fish-kigashira": {"standard": "models/kigashira-2048.jpg", "light": "models/kigashira-1024.jpg"}}, "textures": {"background": "textures/background.jpg", "gravel-oiso": "textures/gravel-oiso.jpg", "gravel-oiso-n": "textures/gravel-oiso-n.jpg", "stone-blue": "textures/stone-blue.jpg", "stone-red": "textures/stone-red.jpg"}};</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as T from 'three';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+window.THREE = Object.assign({}, T, { OrbitControls });
+for (const src of ["lib.js", "app.js"]) {
+  await new Promise((ok, fail) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = fail; document.head.append(s); });
+}
+</script>

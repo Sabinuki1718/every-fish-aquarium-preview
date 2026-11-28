@@ -1,0 +1,71 @@
+"""Assemble the 3D aquarium (step 5) from the approved layout (project.json -> layout version), fish models and textures.
+Outputs in aquarium/:
+  index.html             page for the Artifact viewer / a web server (three.js r170 from jsDelivr, files next to it)
+  aquarium-offline.html  one self-contained file (three.js, scripts, models, textures inlined)
+  app.js, lib.js, models/oranda.json (shared shape + fin attributes), models/<fish>-2048.jpg / -1024.jpg
+usage: python tools/build_aquarium.py"""
+import json, re, shutil, subprocess, sys, tempfile
+from pathlib import Path
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+AQ = ROOT / 'aquarium'
+SK = ROOT.parents[1] / '.agents/skills'
+sys.path.insert(0, str(SK / 'publish-aquarium-web/scripts'))
+from web_bundle import write_fish_assets, online_three_loader, offline_document, data_uri
+
+
+def lib_js():
+    parts = []
+    for f in ['build-aquarium-from-fish-model/assets/aquarium-state.mjs', 'build-aquarium-from-fish-model/assets/mobile-quality.mjs',
+              'build-aquarium-from-fish-model/assets/fish-watch.mjs']:
+        parts.append(re.sub(r'^export ', '', (SK / f).read_text(encoding='utf8'), flags=re.M))
+    return ('/* From .agents/skills/build-aquarium-from-fish-model/assets (aquarium-state, mobile-quality, fish-watch). */\n(() => {\n'
+            + '\n'.join(parts) + '\nwindow.AquariumLib = { createAquariumState, chooseAquariumQuality, aquariumDrawingSize, isTap, watchStart, followDelta, clampWatchCamera, nextWatchId };\n})();\n')
+
+
+def main():
+    L = json.load(open(ROOT / 'layout' / f"v{json.load(open(ROOT / 'project.json'))['layout']['version']}" / 'layout.json'))
+    md = AQ / 'models'; md.mkdir(parents=True, exist_ok=True)
+    for old in md.glob('*'): old.unlink()
+    models, geo = {}, None
+    for f in L['fish']:
+        name = f['id'].removeprefix('fish-')
+        # current model version: technical revision (texture fill fix) if present, else the layout's model
+        sp = f['model'].split('/')[1]
+        proj = next(s for s in json.load(open(ROOT / 'project.json'))['species'] if s['id'] == sp)
+        model = proj['stages']['model'].get('technical_revision', {}).get('file', f['model'])
+        u = write_fish_assets(ROOT / model, md, name)
+        g = json.load(open(md / u['geometry'])); (md / u['geometry']).unlink()
+        if geo is None: geo = g
+        elif g['meshes'][0]['p'] != geo['meshes'][0]['p']: raise SystemExit('fish shapes differ: ' + name)
+        models[f['id']] = {'standard': 'models/' + u['2048'], 'light': 'models/' + u['1024']}
+    # fin attributes
+    with tempfile.TemporaryDirectory() as td:
+        (Path(td) / 'g.json').write_text(json.dumps(geo)); subprocess.run([sys.executable, '-I', str(ROOT / 'tools/fin_mask.py'), str(Path(td) / 'g.json'), str(Path(td) / 'f.npz')], check=True)
+        fm = np.load(Path(td) / 'f.npz'); fin, root, kind = fm['fin'], fm['root'], fm['kind']
+    m = geo['meshes'][0]; I = np.array(m['i']).reshape(-1, 3)
+    tf = fin[I].mean(1) >= 0.5
+    out = {'units': 'm', 'forward': '-x', 'up': '+y', 'p': m['p'], 'n': m['n'], 'uv': m['uv'],
+           'f': [round(float(v), 3) for v in fin], 'r': [round(float(v), 5) for v in root], 'k': [int(v) for v in kind],
+           'iBody': I[~tf].ravel().tolist(), 'iFin': I[tf].ravel().tolist()}
+    (md / 'oranda.json').write_text(json.dumps(out, separators=(',', ':')), encoding='utf8')
+    textures = {n: f'textures/{n}.jpg' for n in ['background', 'gravel-oiso', 'gravel-oiso-n', 'stone-blue', 'stone-red']}
+    (AQ / 'lib.js').write_text(lib_js(), encoding='utf8')
+    shutil.copy(AQ / 'src' / 'app.js', AQ / 'app.js')
+    page = (AQ / 'src' / 'page.html').read_text(encoding='utf8')
+    assets = {'layout': L, 'geometry': 'models/oranda.json', 'models': models, 'textures': textures}
+    online = page.replace('__SCRIPTS__', '<script>window.AQUARIUM_ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';</script>\n'
+                          + online_three_loader(['lib.js', 'app.js']))
+    (AQ / 'index.html').write_text(online, encoding='utf8')
+    off = {'layout': L, 'geometry': data_uri(md / 'oranda.json', 'application/json'),
+           'textures': {k: data_uri(AQ / v) for k, v in textures.items()},
+           'models': {k: {'standard': data_uri(AQ / v['standard'])} for k, v in models.items()}}
+    for v in off['models'].values(): v['light'] = v['standard']
+    (AQ / 'aquarium-offline.html').write_text(offline_document(page, 'AQUARIUM_ASSETS', off, [AQ / 'lib.js', AQ / 'app.js']), encoding='utf8')
+    for p in ['index.html', 'aquarium-offline.html']:
+        print(p, f"{(AQ / p).stat().st_size / 1e6:.2f} MB")
+
+
+if __name__ == '__main__':
+    main()

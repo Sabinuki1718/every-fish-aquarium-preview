@@ -59,12 +59,34 @@ rd = np.zeros(len(P))
 for s in range(0, len(P), 500):
     rd[s:s+500] = np.sqrt(((P[s:s+500, None] - body[None]) ** 2).sum(-1)).min(1)
 # kind by position: model head -x, dorsal +y, length 0.12 (x -0.06..0.06)
-kind = np.zeros(len(P), int)
+def kind_at(px, py):
+    if px > 0.012: return 1
+    if py > 0.012: return 2
+    if px <= -0.02: return 3
+    return 4 if px <= 0.0 else 5
+# classify whole fin pieces (connected through fin vertices) by where their base attaches, not vertex by vertex
 f = fin > 0.2
-kind[f & (x > 0.012)] = 1
-kind[f & (x <= 0.012) & (y > 0.012)] = 2
-kind[f & (x <= -0.02) & (y <= 0.012)] = 3
-kind[f & (x > -0.02) & (x <= 0.0) & (y <= 0.012)] = 4
-kind[f & (x > 0.0) & (x <= 0.012) & (y <= 0.012)] = 5
+par = np.arange(len(P))
+def find(i):
+    while par[i] != i: par[i] = par[par[i]]; i = par[i]
+    return i
+for a_, b_, c_ in I:
+    for u_, v_ in ((a_, b_), (b_, c_), (a_, c_)):
+        if f[u_] and f[v_]: par[find(u_)] = find(v_)
+for gidx in np.unique(grp):                      # vertices at the same position (UV seams) are one
+    m = np.nonzero(grp == gidx)[0]
+    if len(m) > 1 and f[m].all():
+        for j in m[1:]: par[find(j)] = find(m[0])
+comp = np.array([find(i) for i in range(len(P))])
+kind = np.zeros(len(P), int)
+for j in np.nonzero(f)[0]: kind[j] = kind_at(P[j, 0], P[j, 1])
+for cpt in np.unique(comp[f]):
+    m = np.nonzero((comp == cpt) & f)[0]
+    base = m[np.argsort(rd[m])[:max(3, len(m) // 8)]]
+    kb = np.bincount([kind_at(P[j, 0], P[j, 1]) for j in base], minlength=6).argmax()
+    # a paired fin is a separate piece attached low on one side; its tip may reach back past the pelvic/anal border
+    if kb in (3, 4) and len(m) < 500 and abs(P[m, 2].mean()) > 0.004:
+        print('paired fin piece', kb, len(m), 'reassigned from', np.bincount(kind[m], minlength=6))
+        kind[m] = kb
 np.savez(sys.argv[2], fin=fin, root=rd, kind=kind, th=th)
 print('fin verts', f.sum(), 'of', len(P), 'kinds', np.bincount(kind, minlength=6), 'bbox', P.min(0).round(3), P.max(0).round(3))
